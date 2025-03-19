@@ -1,0 +1,108 @@
+metadata
+    Title : Water Elevation Transit System Class Model
+    Author : Michael Lee
+    Document ID : none
+    Version : 0.1
+    Creation date : 27-02-2025
+    Modification date : 27-02-2025
+    Organization : Model Integration, LLC / www.modelint.com
+    Copyright notice > MIT
+    Organization logo > mint
+domain Water Elevation Transit System, WETS
+subsystem Test, ELEV 1-99
+class Wets
+attributes
+    Name : Wets Name {I}
+--
+class Transit Lane
+attributes
+    Name : Transit Lane Name {I}
+    Wets : Wets Name {R1}
+--
+class Gate
+attributes
+    Name : Gate Name {I}
+    Status : Enumerated
+--
+class Culvert
+attributes
+    Name : Culvert Name {I}
+    Gate : Gate Name {R6}
+    Status : Enumerated
+--
+class Valve
+attributes
+    Name : Valve Name {I}
+    Culvert : Culvert Name {R8}
+    Status : Enumerated
+--
+class Transit Lane Gate
+attributes
+    Gate : Gate Name {I, R5}
+    Transit lane : Transit Lane Name {I2}
+    Position : Positive Integer {OR7, I2}
+--
+class Vessel
+attributes
+    License : Vessel License {I}
+    Direction : Enumerated
+--
+class Assigned Vessel
+attributes
+    License : Vessel License {I, R2}
+    Transit lane : Transit Land Name {I2, R4, R10}
+    Passing gate : Positive Integer {R10}
+--
+class Waiting Vessel
+attributes
+    License : Vessel License {I, R2}
+    Wets : Wets Name {R3}
+    Arrival time : Positive Integer {I2, OR9}
+--
+relationships
+    R1
+    is used by, 1 Wets
+    transfers vessels in, M Transit Lane
+    Transit Lane.Wets -> Wets.Name
+--
+    R2
+    Vessel +
+        Waiting Vessel
+        Assigned Vessel
+    <subclass>.License -> Vessel.License
+--
+    R3
+    is waiting for entry to, 1 Wets
+    has a backlog of, Mc Waiting Vessel
+    Waiting Vessel.Wets -> Wets.Name
+--
+    R4
+    is assigned for transfer to, 1 Transit Lane
+    is transferring, 1c Assigned Vessel
+    Assigned Vessel.Transit lane -> Transit Lane.Name
+--
+    R5
+    controls water levels with, M Gate
+    is used to control water levels for, 1 Transit Lane
+    1 Transit Lane Gate
+    Transit Lane Gate.Name -> Gate.Name
+--
+    R6
+    flows water past it through, 1 Culvert
+    allows water to flow past, 1 Gate
+    Gate.Culvert -> Culvert.Name
+--
+    OR7
+    downstream / upstream, Transit Lane Gate
+    Sequence : I2
+--
+    R8
+    controls water flow with, 1 Valve
+    controls water flowing through, 1 Culvert
+    Culvert.Valve -> Valve.Name
+--
+    OR9
+    later / earlier, Waiting Vessel
+    Arrival time : I2
+--
+
