@@ -1,0 +1,16 @@
+diagram class
+notation Starr
+presentation default
+orientation landscape
+color blue steel
+sheet D
+padding l150 b300
+frame Model Integration Diagram
+frame_presentation default
+nodes
+    Transit Lane 2,10
+    Wets 9-10,10
+connectors
+    +R1 : +/3 b+1|Wets : +/3 t*|Transit Lane
+
+

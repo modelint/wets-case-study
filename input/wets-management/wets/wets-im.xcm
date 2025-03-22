@@ -2,7 +2,7 @@ metadata
     Title : Water Elevation Transit System Class Model
     Author : Michael Lee
     Document ID : none
-    Version : 0.1
+    Version : 0.7
     Creation date : 27-02-2025
     Modification date : 27-02-2025
     Organization : Model Integration, LLC / www.modelint.com
@@ -13,45 +13,48 @@ subsystem Test, ELEV 1-99
 class Wets
 attributes
     Name : Wets Name {I}
+    Last arrival time : Positive Integer
 --
 class Transit Lane
 attributes
     Name : Transit Lane Name {I}
     Wets : Wets Name {R1}
+    Last transfer direction : Enumerated
 --
 class Gate
 attributes
     Name : Gate Name {I}
+    Culvert : Culvert Name {R6}
     Status : Enumerated
 --
 class Culvert
 attributes
     Name : Culvert Name {I}
-    Gate : Gate Name {R6}
+    Valve : Valve Name {R8}
     Status : Enumerated
 --
 class Valve
 attributes
     Name : Valve Name {I}
-    Culvert : Culvert Name {R8}
     Status : Enumerated
 --
 class Transit Lane Gate
 attributes
     Gate : Gate Name {I, R5}
     Transit lane : Transit Lane Name {I2}
-    Position : Positive Integer {OR7, I2}
+    Position : Positive Integer {I2, OR7}
 --
 class Vessel
 attributes
     License : Vessel License {I}
-    Direction : Enumerated
+    Transfer direction : Enumerated
 --
 class Assigned Vessel
 attributes
     License : Vessel License {I, R2}
     Transit lane : Transit Land Name {I2, R4, R10}
-    Passing gate : Positive Integer {R10}
+    Position : Transit Lane Gate Position {R10}
+    Status : Enumerated
 --
 class Waiting Vessel
 attributes
@@ -61,7 +64,7 @@ attributes
 --
 relationships
     R1
-    is used by, 1 Wets
+    transfers vessels for, 1 Wets
     transfers vessels in, M Transit Lane
     Transit Lane.Wets -> Wets.Name
 --
@@ -94,7 +97,7 @@ relationships
 --
     OR7
     downstream / upstream, Transit Lane Gate
-    Sequence : I2
+    Position : I2
 --
     R8
     controls water flow with, 1 Valve
