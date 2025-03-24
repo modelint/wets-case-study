@@ -2,7 +2,7 @@ metadata
     Title : Water Elevation Transit System Class Model
     Author : Michael Lee
     Document ID : none
-    Version : 0.7
+    Version : 0.8
     Creation date : 27-02-2025
     Modification date : 27-02-2025
     Organization : Model Integration, LLC / www.modelint.com
@@ -19,24 +19,23 @@ class Transit Lane
 attributes
     Name : Transit Lane Name {I}
     Wets : Wets Name {R1}
-    Last transfer direction : Enumerated
+    Last transfer direction : Enum
 --
 class Gate
 attributes
     Name : Gate Name {I}
     Culvert : Culvert Name {R6}
-    Status : Enumerated
+    Status : Enum
 --
 class Culvert
 attributes
     Name : Culvert Name {I}
     Valve : Valve Name {R8}
-    Status : Enumerated
 --
 class Valve
 attributes
     Name : Valve Name {I}
-    Status : Enumerated
+    Status : Enum
 --
 class Transit Lane Gate
 attributes
@@ -47,14 +46,14 @@ attributes
 class Vessel
 attributes
     License : Vessel License {I}
-    Transfer direction : Enumerated
+    Transfer direction : Enum
 --
 class Assigned Vessel
 attributes
     License : Vessel License {I, R2}
     Transit lane : Transit Land Name {I2, R4, R10}
     Position : Transit Lane Gate Position {R10}
-    Status : Enumerated
+    Status : Enum
 --
 class Waiting Vessel
 attributes
