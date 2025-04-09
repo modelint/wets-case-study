@@ -2,7 +2,7 @@ metadata
     Title : Water Elevation Transit System Class Model
     Author : Michael Lee
     Document ID : none
-    Version : 0.8
+    Version : 0.9
     Creation date : 27-02-2025
     Modification date : 27-02-2025
     Organization : Model Integration, LLC / www.modelint.com
@@ -40,7 +40,7 @@ attributes
 class Transit Lane Gate
 attributes
     Gate : Gate Name {I, R5}
-    Transit lane : Transit Lane Name {I2}
+    Transit lane : Transit Lane Name {I2, R5}
     Position : Positive Integer {I2, OR7}
 --
 class Vessel
@@ -51,7 +51,7 @@ attributes
 class Assigned Vessel
 attributes
     License : Vessel License {I, R2}
-    Transit lane : Transit Land Name {I2, R4, R10}
+    Transit lane : Transit Lane Name {I2, R4, R10}
     Position : Transit Lane Gate Position {R10}
     Status : Enum
 --
@@ -87,7 +87,8 @@ relationships
     controls water levels with, M Gate
     is used to control water levels for, 1 Transit Lane
     1 Transit Lane Gate
-    Transit Lane Gate.Name -> Gate.Name
+    Transit Lane Gate.Gate -> Gate.Name
+    Transit Lane Gate.Transit lane -> Transit Lane.Name
 --
     R6
     flows water past it through, 1 Culvert
@@ -107,4 +108,8 @@ relationships
     later / earlier, Waiting Vessel
     Arrival time : I2
 --
-
+    R10
+    is moving past this, 1 Transit Lane Gate
+    is being passed by this, 1c Assigned Vessel
+    Assigned Vessel.(Transit lane, Position) -> Transit Lane Gate.(Transit lane, Position)
+--
