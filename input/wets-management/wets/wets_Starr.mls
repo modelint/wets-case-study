@@ -8,9 +8,29 @@ padding l150 b300
 frame Model Integration Diagram
 frame_presentation default
 nodes
-    Transit Lane 2,10
-    Wets 9-10,10
+    Vessel 6,2
+    Waiting Vessel 8,3-4
+    Assigned Vessel 4,3-4
+    Wets 8,7-8
+    Transit Lane 4,7-8
+    Gate 4,11-12
+    Culvert 4,15-16
+    Transit Lane Gate 1-2,9-10
+    Valve 1-2,15-16
 connectors
-    +R1 : +/3 b+1|Wets : +/3 t*|Transit Lane
+    +R1 : +/2 t|Transit Lane : +/1 b*|Wets
+    +R3 : -/1 r|Waiting Vessel : +/2 l*|Wets
+    +R4 : -/1 r|Assigned Vessel : +/2 l*|Transit Lane
+    +R6 : -/2 r|Gate : +/3 l*|Culvert
+    -R8 : +/2 b|Culvert : +/2 t*|Valve
+    +R10 : +/2 b|Assigned Vessel : -/2 l-2|Transit Lane Gate
+    -R2 : r|Vessel { l-2|Waiting Vessel, l|Assigned Vessel }
+    -R5 : -/3 r*|Transit Lane : -/2 l|Gate, t|Transit Lane Gate
+    +OR9.2-1 : +/1 t-2|Waiting Vessel : -/1 l+2|Waiting Vessel : L9 L2R+2
+    +OR7.2-1 : +/1 t-2|Transit Lane Gate : -/1 l+2|Transit Lane Gate : L2 L8R+2
+
+
+
+
 
 
