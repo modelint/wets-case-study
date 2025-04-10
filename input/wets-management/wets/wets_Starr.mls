@@ -25,7 +25,7 @@ connectors
     -R8 : +/2 b|Culvert : +/2 t*|Valve
     +R10 : +/2 b|Assigned Vessel : -/2 l-2|Transit Lane Gate
     -R2 : r|Vessel { l-2|Waiting Vessel, l|Assigned Vessel }
-    -R5 : -/3 r*|Transit Lane : -/2 l|Gate, t|Transit Lane Gate
+    +R5 : -/3 r*|Transit Lane : -/2 l|Gate, t|Transit Lane Gate
     +OR9.2-1 : +/1 t-2|Waiting Vessel : -/1 l+2|Waiting Vessel : L9 L2R+2
     +OR7.2-1 : +/1 t-2|Transit Lane Gate : -/1 l+2|Transit Lane Gate : L2 L8R+2
 
