@@ -1,0 +1,32 @@
+// Class: Wets
+// Activity: Service transit completed 
+// Event Parameters: transit lane, completed license
+
+//  Start by sending the Assigned Vessel a Transit completed event and then
+//  delete the Supertype Vessel and associated subtype Assigned Vessel.
+
+Transit completed (vessel license: ^completed license) -> VESSEL
+!*Vessel(License: ^completed license), Assigned Vessel(License: ^completed license)
+
+// Now see if there is a next waiting vessel
+
+next waiting vessel .= me/R3/Waiting Vessel/OR9/(-^Arrival time)
+next waiting vessel?
+
+// There is a next waiting vessel
+{
+//  Get the 1st gate in this available Transit Lane
+
+    first gate .= ^transit lane/R5/Transit Lane Gate/OR7/(-^Position)
+
+//  Migrate the Waiting Vessel to an Assigned Vessel.  
+ 
+    next waiting vessel >> Assigned Vessel(Status: .moving) &R10 first gate, &R4 ^transit lane
+
+//  Send an event to the transit lane to let it know it has a vessel to move.
+
+    Vessel assigned -> ^transit lane
+}
+//  Go back to the Idle state and wait for more work
+
+Continue -> me
