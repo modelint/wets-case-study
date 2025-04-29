@@ -2,9 +2,8 @@
 // Activity: Service transit request
 // Event Parameters: new license, direction
 
-// Make sure this isn't a redundant request
-//
-// First attempt to find a vessel with the same license number
+// Make sure this isn't a redundant request by first attempting
+// to find a vessel with the same license number
 
 identical vessel .= Vessel(License == ^new license) 
 

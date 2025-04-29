@@ -4,8 +4,8 @@
 
 // See if this vessel is waiting.
 
-!target vessel .= Waiting Vessel(License == ^old license) 
-identical vessel?
+identical vessel .= Waiting Vessel(License == ^old license) 
+!identical vessel?
 
 // There is not a waiting vessel with this license number so
 // send the requestor a request denied.
