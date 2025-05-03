@@ -119,8 +119,13 @@ activity
         //  traverse R3 from me to a Waiting Vessel and then 
         //  traverse R2 from that Waiting Vessel to a Vessel and then
         //  get that Vessel's Transfer direction attribute and set requested direction to that value
+        requested dir = /R3/R2/Vessel.Transfer direction
 
         //  if requested direction == up then first gate direction = downstream else first gate direction = upstream
+
+        requested dir == .up?
+            first gate .= /R1/R5/Transit Lane Gate/OR7/downstream/~| :
+            first gate .= /R1/R5/Transit Lane Gate/OR7/upstream/~|
 
         //  first gate = the end Transit Lane Gate on OR7 going in the first gate direction
         //  ========
