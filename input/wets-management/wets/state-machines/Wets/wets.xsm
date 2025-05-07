@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
     Modification date : May 2, 2025
-    Version : 0.5
+    Version : 0.6
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -22,7 +22,7 @@ transitions
     Request removal > Service Removal Request
     Transit completed > Service Transit Completed
 --
-state Service Transit Request(new license : Vessel License, requested direction : Transfer Direction) // Is Transfer Direction correct type?
+state Service Transit Request(new license : Vessel License, requested direction : Vessel Transfer direction) //ML Is Vessel Transfer direction correct type?
 activity
     // Make sure this isn't a redundant request by first attempting
     // to find a vessel with the same license number
@@ -34,9 +34,9 @@ activity
 
         Request denied(vessel license: ^new license) -> VESSEL :
 
-        // If not, then update the last arrival time
+        // If not, then increment the last arrival time
         {
-            me.last arrival time = me.last arrival time +1
+            ++last arrival time 
 
             // Now see if there are any available transit lanes
 
@@ -60,7 +60,7 @@ activity
 
                    // Create an Assigned Vessel and establish relationships
 
-                   *Vessel(License: ^new license, Transfer direction: ^requested direction) &R2 *Assigned Vessel( Status: .moving) &R10 first gate, &R4 chosen transit lane  
+                   *Vessel(License: ^new license, Transfer direction: ^requested direction) &R2 *Assigned Vessel( Status: .moving) &R10 first gate, &R4 chosen transit lane  //ML Does "first gate" instance set Assigned Vessel.Position OK for R10
                 } :
 
                // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
@@ -129,22 +129,22 @@ activity
 
         // There is an earliest waiting vessel
         {    
-        // First, get the earliest waiting vessel's desired direction
+            // First, get the earliest waiting vessel's requested direction
 
-        requested direction = earliest waiting vessel/R2/Vessel.Transfer direction
+            requested direction = earliest waiting vessel/R2/Vessel.Transfer direction
 
-        // Get the first gate for traversing the chosen transit lane in the requested direction.
-        // If requested direction is up, then first gate will be downstream, otherwise it will be upstream.
+            // Get the first gate for traversing the chosen transit lane in the requested direction.
+            // If requested direction is up, then first gate will be downstream, otherwise it will be upstream.
 
-        requested direction == .up?
-            first gate .= free transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
-            first gate .= free transit lane/R5/Transit Lane Gate/OR7/upstream/~|
+            requested direction == .up?
+                first gate .= free transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
+                first gate .= free transit lane/R5/Transit Lane Gate/OR7/upstream/~|
 
-        // Migrate the Waiting Vessel to an Assigned Vessel.
+            // Migrate the Waiting Vessel to an Assigned Vessel.
 
-        earliest waiting vessel >> Assigned Vessel(Status: .moving) &R10 first gate, &R4 free transit lane 
+            earliest waiting vessel >> Assigned Vessel(Status: .moving) &R10 first gate, &R4 free transit lane  //ML Does "first gate" instance set Assigned Vessel.Position OK for R10
 
-        //  Send an event to the transit lane to let it know it has a vessel to move.
+            //  Send an event to the transit lane to let it know it has a vessel to move.
 
             Vessel assigned -> free transit lane 
         }
