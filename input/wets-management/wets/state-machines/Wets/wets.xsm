@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
     Modification date : May 2, 2025
-    Version : 0.3
+    Version : 0.4
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -22,7 +22,7 @@ transitions
     Request removal > Service Removal Request
     Transit completed > Service Transit Completed
 --
-state Service Transit Request(new license : Vessel License, direction : Transfer Direction)
+state Service Transit Request(new license : Vessel License, requested direction : Transfer Direction) // Is Transfer Direction correct type?
 activity
     // Make sure this isn't a redundant request by first attempting
     // to find a vessel with the same license number
@@ -31,45 +31,57 @@ activity
 
     identical vessel?
         // If there is vessel with the same license number, reject this request
+
         Request denied(vessel license: ^new license) -> VESSEL :
+
         // If not, then update the last arrival time
         {
             me.last arrival time = me.last arrival time +1
 
             // Now see if there are any available transit lanes
-            available transit lanes ..= /R1/Transit Lane( ! /R4/Assigned Vessel )
+
+            available transit lanes ..= /R1/Transit Lane( ! /R4/Assigned Vessel )  //ML Plausible but not totally understood
             available transit lanes?
 
-                // There are available transit lanes, see if there is one the same direction as the requesting vessel
-                {
-                    chosen transit lane .= available transit lanes(1, Last transfer direction : ^direction)
+               // There are available transit lanes, see if there is one the same Last transfer direction as the requested direction
+               {
+                   chosen transit lane .= available transit lanes(1, Last transfer direction : ^requested direction)
 
-                    // If there isn't one in the same direction, just use one of the available ones
-                    !chosen transit lane?
-                        chosen transit lane .= available transit lanes(1)
+                   // If there isn't one in the same direction, just use one of the available ones
 
-                    // Get the first gate for traversing the transit lane in the requested direction
-                    //  **** This is broken. See Service Transit Completed
-                    first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/downstream/~| 
-                    //  ****
-                    // Create an Assigned Vessel and establish relationships
-                    *Vessel(License: ^new license, Transfer direction: ^direction) &R2 *Assigned Vessel(
-                        Status: .moving) &R10 first gate, &R4 chosen transit lane
+                   !chosen transit lane? chosen transit lane .= available transit lanes(1)
+
+                   // Get the first gate for traversing the chosen transit lane in the requested direction
+
+                   ^requested direction == .up?
+                       position of first gate = free transit lane/R5/Transit Lane Gate/OR7/downstream/~|.Position :
+                       position of first gate = free transit lane/R5/Transit Lane Gate/OR7/upstream/~|.Position
+
+                   // Create an Assigned Vessel and establish relationships
+
+                   *Vessel(License: ^new license, Transfer direction: ^requested direction) &R2 *Assigned Vessel( Status: .moving) &R10 position of first gate, &R4 chosen transit lane  //ML Is R10 set properly given position of first gate" isn't an instance set?
                 } :
-                // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
-                *Vessel(License: ^new license, Transfer direction: ^direction) &R2 *Waiting Vessel(
-                    Arrival time: me.last arrival time) &R3 me :
 
-        // Send an event to the requesting vessel to let it know that its request has been granted
-        Request granted(license: ^new license) -> VESSEL
+               // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
 
-        // Send an event to the transit lane to let it know it has a vessel to move
-        Vessel assigned -> chosen transit lane
-    }
+                *Vessel(License: ^new license, Transfer direction: ^direction) &R2 *Waiting Vessel(Arrival time: me.last arrival time) &R3 me
 
+            // Send an event to the requesting vessel to let it know that its request has been granted
+
+            Request granted(license: ^new license) -> VESSEL
+
+            // Send an event to the transit lane to let it know it has a vessel to move
+
+            Vessel assigned -> chosen transit lane
+        }
     //  Go back to the Idle state and wait for more work
+
     Continue -> me
+
 transitions
+    Request transit >
+    Request removal >
+    Transit completed >
     Continue > IDLE
 --
 state Service Removal Request( old license : Vessel License )
@@ -79,26 +91,31 @@ activity
     identical vessel .= Waiting Vessel(License == ^old license)
     !identical vessel?
 
-    // There is not a waiting vessel with this license number so
-    // send the requestor a request denied.
+        // There is not a waiting vessel with this license number so
+        // send the requestor a request denied.
 
-    Request denied(vessel license: ^old license) -> VESSEL :
-    {
-    // This vessel is waiting, so send it a Request granted event
-    // and delete it and its super type.
+        Request denied(vessel license: ^old license) -> VESSEL :
+        {
+        // This vessel is waiting, so send it a Request granted event
+        // and delete it and its super type.
 
-        Request granted(license: ^old license) -> VESSEL
-        !*Vessel(License: ^old license), Waiting Vessel(License: ^old license)
-    }
+            Request granted(license: ^old license) -> VESSEL
+            !*Vessel(License: ^old license), Waiting Vessel(License: ^old license)
+        }
     //  Go back to the Idle state and wait for more work.
+
     Continue -> me
+
 transitions
+    Request transit >
+    Request removal >
+    Transit completed >
     Continue > IDLE
 --
 state Service Transit Completed(free transit lane id : Transit Lane Name, completed license : Vessel License)
 activity
 
-    //  Get the free transit lade instance
+    //  Get the free transit lane instance
     
     free transit lane .= Transit Lane (Name : ^free transit lane id)
 
@@ -119,12 +136,11 @@ activity
 
         requested dir = earliest waiting vessel/R2/Vessel.Transfer direction
 
-        //  Then, based on this direction, get the position of the 1st Transit Lane Gate in 
-        //  the ^free transit lane that the waiting vessel will need to enter to go in the 
-        //  direction it requested.
-
-        //  If requested direction is up, then first gate will be downstream, otherwise it 
-        //  will be upstream. 
+        //  Next, based on this direction, get the position of the 1st Transit Lane Gate in 
+        //  the free transit lane that the waiting vessel will need to enter to go in the 
+        //  direction it requested, namely:
+        //      If requested direction is up, then first gate will be downstream,
+        //      otherwise it will be upstream. 
 
         requested dir == .up?
             position of first gate = free transit lane/R5/Transit Lane Gate/OR7/downstream/~|.Position :
@@ -132,7 +148,7 @@ activity
 
         //  Migrate the Waiting Vessel to an Assigned Vessel.
 
-            earliest waiting vessel >> Assigned Vessel(Status: .moving) &R10 position of first gate, &R4 free transit lane //ML Not sure of &R10
+            earliest waiting vessel >> Assigned Vessel(Status: .moving) &R10 position of first gate, &R4 free transit lane //ML Not sure of &R10 value
 
         //  Send an event to the transit lane to let it know it has a vessel to move.
 
@@ -141,6 +157,10 @@ activity
     //  Go back to the Idle state and wait for more work
 
     Continue -> me
+
 transitions
+    Request transit >
+    Request removal >
+    Transit completed >
     Continue > IDLE
 --
