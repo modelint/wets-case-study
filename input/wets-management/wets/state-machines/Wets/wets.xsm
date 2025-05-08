@@ -22,7 +22,7 @@ transitions
     Request removal > Service Removal Request
     Transit completed > Service Transit Completed
 --
-state Service Transit Request(new license : Vessel License, requested direction : Vessel Transfer direction) //ML Is Vessel Transfer direction correct type?
+state Service Transit Request(new license : Vessel License, direction : Vessel Transfer direction) 
 activity
     // Make sure this isn't a redundant request by first attempting
     // to find a vessel with the same license number
@@ -40,12 +40,12 @@ activity
 
             // Now see if there are any available transit lanes
 
-            available transit lanes ..= /R1/Transit Lane( ! /R4/Assigned Vessel )  //ML Plausible but not totally understood
+            available transit lanes ..= /R1/Transit Lane( ! /R4/Assigned Vessel )
             available transit lanes?
 
                // There are available transit lanes, see if there is one the same Last transfer direction as the requested direction
                {
-                   chosen transit lane .= available transit lanes(1, Last transfer direction : ^requested direction)
+                   chosen transit lane .= available transit lanes(1, Last transfer direction : ^direction)
 
                    // If there isn't one in the same direction, just use one of the available ones
 
@@ -54,13 +54,13 @@ activity
                    // Get the first gate for traversing the chosen transit lane in the requested direction.
                    // If requested direction is up, then first gate will be downstream, otherwise it will be upstream.
 
-                   ^requested direction == .up?
+                   ^direction == .up?
                        first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
                        first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/upstream/~|
 
                    // Create an Assigned Vessel and establish relationships
 
-                   *Vessel(License: ^new license, Transfer direction: ^requested direction) &R2 *Assigned Vessel( Status: .moving) &R10 first gate, &R4 chosen transit lane  //ML Does "first gate" instance set Assigned Vessel.Position OK for R10
+                   *Vessel(License: ^new license, Transfer direction: ^direction) &R2 *Assigned Vessel( Status: .moving) &R10 first gate, &R4 chosen transit lane  
                 } :
 
                // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
@@ -137,16 +137,16 @@ activity
             // If requested direction is up, then first gate will be downstream, otherwise it will be upstream.
 
             requested direction == .up?
-                first gate .= free transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
-                first gate .= free transit lane/R5/Transit Lane Gate/OR7/upstream/~|
+                first gate .= ^free transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
+                first gate .= ^free transit lane/R5/Transit Lane Gate/OR7/upstream/~|
 
             // Migrate the Waiting Vessel to an Assigned Vessel.
 
-            earliest waiting vessel >> Assigned Vessel(Status: .moving) &R10 first gate, &R4 free transit lane  //ML Does "first gate" instance set Assigned Vessel.Position OK for R10
+            earliest waiting vessel >> Assigned Vessel(Status: .moving) &R10 first gate, &R4 ^free transit lane  
 
             //  Send an event to the transit lane to let it know it has a vessel to move.
 
-            Vessel assigned -> free transit lane 
+            Vessel assigned -> ^free transit lane 
         }
     //  Go back to the Idle state and wait for more work
 
