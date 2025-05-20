@@ -13,7 +13,7 @@ subsystem Test, ELEV 1-99
 class Wets
 attributes
     Name : Wets Name {I}
-    Last arrival time : Positive Integer
+    Latest waiting position : Positive Integer
 --
 class Transit Lane
 attributes
@@ -59,7 +59,7 @@ class Waiting Vessel
 attributes
     License : Vessel License {I, R2}
     Wets : Wets Name {R3}
-    Arrival time : Positive Integer {I2, OR9}
+    Waiting position : Positive Integer {I2, OR9}
 --
 relationships
     R1
