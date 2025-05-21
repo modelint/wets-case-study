@@ -22,7 +22,7 @@ transitions
     Request removal > Service Removal Request
     Transit completed > Service Transit Completed
 --
-state Service Transit Request(new license : Vessel License, direction : Vessel Transfer direction) 
+state Service Transit Request(new license : Vessel License, direction : Transfer direction) 
 activity
     // Make sure this isn't a redundant request by first attempting
     // to find a vessel with the same license number
