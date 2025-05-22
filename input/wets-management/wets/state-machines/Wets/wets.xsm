@@ -34,9 +34,9 @@ activity
 
         Request denied(vessel license: ^new license) -> VESSEL :
 
-        // If not, then increment the last arrival time
+        // If not, then increment the Last waiting position
         {
-            ++last arrival time 
+            ++Last waiting position 
 
             // Now see if there are any available transit lanes
 
@@ -65,7 +65,7 @@ activity
 
                // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
 
-                *Vessel(License: ^new license, Transfer direction: ^direction) &R2 *Waiting Vessel(Arrival time: me.last arrival time) &R3 me
+                *Vessel(License: ^new license, Transfer direction: ^direction) &R2 *Waiting Vessel(Arrival time: me.Last waiting position) &R3 me
 
             // Send an event to the requesting vessel to let it know that its request has been granted
 
@@ -147,7 +147,11 @@ activity
             //  Send an event to the transit lane to let it know it has a vessel to move.
 
             Vessel assigned -> ^free transit lane 
-        }
+        } :
+        // There is no earliest waiting vessel so reset the Last waiting position
+
+        Last waiting position = 0
+
     //  Go back to the Idle state and wait for more work
 
     Continue -> me
