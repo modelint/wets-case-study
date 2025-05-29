@@ -2,8 +2,8 @@ metadata
     Title : Transit Lane State Machine Diagram
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
-    Modification date : May 23, 2025
-    Version : 0.1
+    CReation date : May 23, 2025
+    Version : 0.2
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -11,11 +11,11 @@ domain Wets Management
 class Transit Lane
 events
     Vessel assigned
-    Requires adjustment
+    Make adjustment
     Start transit
     Transfer complete
     Continue transit
-    Transit complete
+    Completed transit
 --
 state IDLE
 activity
@@ -24,31 +24,83 @@ transitions
 --
 state Assess Water Level ()
 activity
-    // Scrall here...
+    // See is the Assigned Vessel's transfer direction is the same as this
+    // Transit Lane's Last transfer direction
+
+    (R4/R2/Transfer direction == Last transfer direction)?
+
+    // Same transfer direction, so no water adjustments to do. Start transit.
+
+        Start transit -> me :
     
+    // Different transfer direction, so go do water adjustments. 
+
+        Make adjustment -> me
+
 transitions
-    Requires adjustment > Adjust Water Level
+    Make adjustment > Adjust Water Level
     Start transit > Request Gate Transfer
 --
 state Adjust Water Level ()
 activity
-    // Scrall here...
-    
+    // See whether we need to adjust the water levels up or down.
+
+    (R4/R2/Transfer direction == up)?
+    {
+    //  Adjust water levels for an up transit. Algorithm to be designed.
+    } :
+    {
+    Adjust water levels for a down transfer. Algorithm to be designed.
+    }
+    // Water levels adjusted, start the transit.
+    Start transit -> me 
+
 transitions
     Start transit > Request Gate Transfer
 --
 state Request Gate Transfer ()
 activity
-    // Scrall here...
+    // Get the next gate needing to do a transfer
+
+    next gate .= /R4/R10/Transit Lane Gate
+
+    Move Vessel -> next gate
     
 transitions
     Transfer complete > Assess Transit Complete
 --
 state Assess Transit Complete ()
 activity
-    // Scrall here...
-    
+    // Get the last Transit Lane moved past
+
+    last transit lane gate .= /R4/R10/Gate
+
+    // Get the next Transit Lane Gate in the vessel's transfer direction
+
+    /R4/R2/Transfer direction == up?
+    // Going up
+        next transit lane .= last transit lane gate/OR7/upstream :
+    //Going Down
+        next transit lane .= last transit lane gate/OR7/downstream
+
+    // Is there a next transit lane gate or are we finished?
+
+    next transit lane?
+    // Yes we have one, relate the vessel to this new gate  via R10 and continue transit
+    {
+        // HELP - Don't know how to update/change a relationship.
+
+        Continue transfer -> me
+    } :
+    {
+    // No, we don't have one, the last transfer must have completed the vessel's transit.
+    // Report transit completed to Wets and return to idel state. 
+
+        Transit completed (free transit lane : me, completed license : /R4/R2/License) -> /R1/
+        Completed transit -> me
+    }
+
 transitions
     Continue transit > Request Gate Transfer
-    Transit complete > Idle
+    Completed transit> Idle
 --
