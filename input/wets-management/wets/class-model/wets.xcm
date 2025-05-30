@@ -2,9 +2,9 @@ metadata
     Title : Water Elevation Transit System Class Model
     Author : Michael Lee
     Document ID : none
-    Version : 0.10
+    Version : 0.11
     Creation date : 27-02-2025
-    Modification date : 22-05-2025
+    Modification date: 29-05-2025
     Organization : Model Integration, LLC / www.modelint.com
     Copyright notice > MIT
     Organization logo > mint
@@ -19,7 +19,7 @@ class Transit Lane
 attributes
     Name : Transit Lane Name {I}
     Wets : Wets Name {R1}
-    Last transfer direction : Enum
+    Available transfer direction : Enum
 --
 class Gate
 attributes

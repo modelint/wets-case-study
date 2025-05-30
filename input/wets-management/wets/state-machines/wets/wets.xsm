@@ -3,26 +3,26 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
     Modification date : May 22, 2025
-    Version : 0.7
+    Version : 0.8
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
 domain Wets Management
 class Wets
 events
-    Request transit
-    Request removal
-    Transit completed
+    Transfer request
+    Removal request
+    Transfer completed
     Continue
 --
 state IDLE
 activity
 transitions
-    Request transit > Service Transit Request
-    Request removal > Service Removal Request
-    Transit completed > Service Transit Completed
+    Transfer request > Service Transit Request
+    Removal request > Service Removal Request
+    Transfer completed > Service Transfer Completed
 --
-state Service Transit Request(new license : Vessel License, direction : Transfer direction) 
+state Service Transfer Request(new license : Vessel License, direction : Transit direction) 
 activity
     // Make sure this isn't a redundant request by first attempting
     // to find a vessel with the same license number
@@ -43,9 +43,9 @@ activity
             available transit lanes ..= /R1/Transit Lane( ! /R4/Assigned Vessel )
             available transit lanes?
 
-               // There are available transit lanes, see if there is one the same Last transfer direction as the requested direction
+               // There are available transit lanes, see if there is one the same available transfer direction as the requested direction
                {
-                   chosen transit lane .= available transit lanes(1, Last transfer direction : ^direction)
+                   chosen transit lane .= available transit lanes(1, available transfer direction : ^direction)
 
                    // If there isn't one in the same direction, just use one of the available ones
 
@@ -80,9 +80,9 @@ activity
     Continue -> me
 
 transitions
-    Request transit >
-    Request removal >
-    Transit completed >
+    Transfer request >
+    Removal request >
+    Transfer completed >
     Continue > IDLE
 --
 state Service Removal Request( old license : Vessel License )
@@ -108,18 +108,18 @@ activity
     Continue -> me
 
 transitions
-    Request transit >
-    Request removal >
-    Transit completed >
+    Transfer request >
+    Removal request >
+    Transfer completed >
     Continue > IDLE
 --
-state Service Transit Completed(free transit lane : Transit Lane, completed license : Vessel License)
+state Service Transfer Completed(free transit lane : Transit Lane, completed license : Vessel License)
 activity
 
-    //  Send the Assigned Vessel a Transit completed event and then
+    //  Send the Assigned Vessel a Transfer completed event and then
     //  delete the Supertype Vessel and associated subtype Assigned Vessel.
 
-    Transit completed (vessel license : ^completed license) -> VESSEL
+    Transfer completed (vessel license : ^completed license) -> VESSEL
     !*Vessel(License: ^completed license), Assigned Vessel(License: ^completed license)
 
     // Now get the earliest waiting vessel
@@ -157,8 +157,8 @@ activity
     Continue -> me
 
 transitions
-    Request transit >
-    Request removal >
-    Transit completed >
+    Transfer request >
+    Removal request >
+    Transfer completed >
     Continue > IDLE
 --
