@@ -27,7 +27,7 @@ activity
     // See if the Assigned Vessel's transfer direction is the same as this
     // Transit Lane's Available transfer direction
 
-    (/R4/R2/Transfer direction == Available transfer direction)?
+    (/R4/R2/Vessel.Transfer direction == Available transfer direction)?
 
     // Same transfer direction, so no water adjustments to do. Start transit.
 
@@ -45,7 +45,7 @@ state Adjust Water Level ()
 activity
     // See whether we need to adjust the water levels up or down.
 
-    (/R4/R2/Transfer direction == up)?
+    (/R4/R2/Vessel.Transfer direction == up)?
     {
         // Adjust water levels for an up transfer. Algorithm to be designed.
         // Update this attribute.
@@ -89,7 +89,7 @@ activity
 
     // Is there a next transit lane gate or are we finished?
 
-    next transit lane?  //HELP - Assuming if there is no next gate this will evaluate to false
+    next transit lane?  //HELP - Assuming if there is a next gate this will evaluate to true
     // Yes we have one, relate the vessel to this new gate via R10 and continue transit
     {
         // HELP - Not sure how to update/change this relationship.
@@ -100,7 +100,7 @@ activity
     // No, we don't have one, the last gate move must have completed the vessel's transfer.
     // Report transit completed to Wets and return to idel state. 
 
-        Transfer completed (free transit lane : me, completed license : /R4/R2/License) -> /R1/Wets
+        Transfer completed (free transit lane : me, completed license : /R4/R2/Vessel.License) -> /R1/Wets
         Finished transfer -> me
     }
 
