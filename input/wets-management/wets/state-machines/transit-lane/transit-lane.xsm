@@ -45,16 +45,16 @@ state Adjust Water Level ()
 activity
     // See whether we need to adjust the water levels up or down.
 
-    (/R4/R2/Vessel.Transfer direction == up)?
+    (/R4/R2/Vessel.Transfer direction == _up)?
     {
         // Adjust water levels for an up transfer. Algorithm to be designed.
         // Update this attribute.
-        Available transfer direction = up
+        Available transfer direction = _up
     } :
     {
         //Adjust water levels for a down transfer. Algorithm to be designed.
         // Update this attribute.
-        Available transfer direction = down
+        Available transfer direction = _down
     }
     // Water levels adjusted, start the transit.
     Start transit -> me 
@@ -81,18 +81,18 @@ activity
 
     // Get the next Transit Lane Gate in the vessel's transfer direction
 
-    /R4/R2/Transfer direction == up?
+    /R4/R2/Vessel.Transfer direction == _up?
     // Going up
-        next transit lane .= last transit lane gate/OR7/upstream :  //HELP - How to increment up one?
+        next transit lane gate .= last transit lane gate/OR7/upstream :  
     //Going Down
-        next transit lane .= last transit lane gate/OR7/downstream  //HELP - How to increment down one?
+        next transit lane gate .= last transit lane gate/OR7/downstream 
 
     // Is there a next transit lane gate or are we finished?
 
-    next transit lane?  //HELP - Assuming if there is a next gate this will evaluate to true
-    // Yes we have one, relate the vessel to this new gate via R10 and continue transit
+    next transit lane gate?  
+    // Yes we have one, relate the vessel to this new gate via R10 and continue transfer
     {
-        // HELP - Not sure how to update/change this relationship.
+        /R4/Assigned Vessel &R10 next transit lane gate
 
         Continue transfer -> me
     } :
