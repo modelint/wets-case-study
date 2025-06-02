@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
     Creation date : May 23, 2025
-    Version : 0.3
+    Version : 0.4
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -68,7 +68,7 @@ activity
 
     move gate .= /R4/R10/Transit Lane Gate
 
-    Move Vessel -> move gate
+    Move vessel -> move gate
     
 transitions
     Move complete > Assess Transfer Complete
@@ -77,22 +77,22 @@ state Assess Transfer Complete ()
 activity
     // Get the last Transit Lane Gate moved past
 
-    last transit lane gate .= /R4/R10/Gate
+    last transit lane gate .= /R4/R10/Transit Lane Gate
 
     // Get the next Transit Lane Gate in the vessel's transfer direction
 
     /R4/R2/Transfer direction == up?
     // Going up
-        next transit lane .= last transit lane gate/OR7/upstream :
+        next transit lane .= last transit lane gate/OR7/upstream :  //HELP - How to increment up one?
     //Going Down
-        next transit lane .= last transit lane gate/OR7/downstream
+        next transit lane .= last transit lane gate/OR7/downstream  //HELP - How to increment down one?
 
     // Is there a next transit lane gate or are we finished?
 
-    next transit lane?
+    next transit lane?  //HELP - Assuming if there is no next gate this will evaluate to false
     // Yes we have one, relate the vessel to this new gate via R10 and continue transit
     {
-        // HELP - Don't know how to update/change this relationship.
+        // HELP - Not sure how to update/change this relationship.
 
         Continue transfer -> me
     } :
@@ -100,7 +100,7 @@ activity
     // No, we don't have one, the last gate move must have completed the vessel's transfer.
     // Report transit completed to Wets and return to idel state. 
 
-        Transfer completed (free transit lane : me, completed license : /R4/R2/License) -> /R1/
+        Transfer completed (free transit lane : me, completed license : /R4/R2/License) -> /R1/Wets
         Finished transfer -> me
     }
 
