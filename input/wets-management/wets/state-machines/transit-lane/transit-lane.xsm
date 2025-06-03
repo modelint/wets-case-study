@@ -98,7 +98,7 @@ activity
     } :
     {
     // No, we don't have one, the last gate move must have completed the vessel's transfer.
-    // Report transit completed to Wets and return to idel state. 
+    // Report transfer completed to Wets and return to idle state. 
 
         Transfer completed (free transit lane : me, completed license : /R4/R2/Vessel.License) -> /R1/Wets
         Finished transfer -> me

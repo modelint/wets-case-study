@@ -1,0 +1,77 @@
+metadata
+    Title : Transit Lane Gate State Machine Diagram
+    Author : Michael M. Lee
+    Document ID : mint.wets.td.5
+    Creation date : June 3, 2025
+    Version : 0.1
+    Organization : Model Integration, LLC
+    Copyright notice > MIT
+    Organization logo > mint
+domain Wets Management
+class Transit Lane Gate 
+events
+    Move vessel
+    Valve opened
+    Flow zero
+    Gate opened
+    Vessel moved
+    Gate closed
+    Valve closed
+    Moce completed
+--
+state Secured At Rest ()
+activity
+//TBD
+
+transitions
+    Move vessel > Open Valve
+--
+state Open Valve ()
+activity
+    // TBD
+
+transitions
+    Valve opened > Wait For Zero Flow
+--
+state Wait For Zero Flow ()
+activity
+    // TBD 
+
+transitions
+    Flow zero > Open Gate
+--
+state Open Gate ()
+activity
+    // TBD
+    
+transitions
+    Gate Opened > Move Vessel
+--
+state Move Vessel ()
+activity
+    // TBD
+
+transitions
+    Vessel moved > Close Gate
+--
+state Close Gate ()
+activity
+    // TBD 
+
+transitions
+    Gate Closed > Close Valve
+--
+state Close Valve ()
+activity
+    // TBD
+    
+transitions
+    Valve closed > Complete Move
+--
+state Complete Move ()
+activity
+    // TBD
+
+transitions
+    Move completed > Secured At Rest
+--
