@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.5
     Creation date : June 3, 2025
-    Version : 0.1
+    Version : 0.2
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -21,56 +21,75 @@ events
 --
 state Secured At Rest ()
 activity
-//TBD
-
 transitions
     Move vessel > Open Valve
 --
 state Open Valve ()
 activity
-    // TBD
+    // Direct my valve to open
+
+    My valve name = /R5/R6/R8/Valve.Name
+    Open (valve name : My valve name) -> VALVE
 
 transitions
     Valve opened > Wait For Zero Flow
 --
 state Wait For Zero Flow ()
 activity
-    // TBD 
+    // Direct my culvert to notify me when the flow is zero
+
+    My culvert name = /R5/R6/Culvert.Name
+    Indicate no flow (culvert name : My culvert name) -> CULVERT
 
 transitions
     Flow zero > Open Gate
 --
 state Open Gate ()
 activity
-    // TBD
+    // Direct this gate to open
+
+    Open (gate name : me.Gate) -> GATE
     
 transitions
     Gate Opened > Move Vessel
 --
 state Move Vessel ()
 activity
-    // TBD
+    // Change vessel status to "moving" and direct my vessel to move past this gate
+
+    /R10/Awaiting Vessel.status = _moving
+    My vessel license = /R10/Assigned vessel.License
+    Move past gate (vessel license : My vessel license, transit lane gate name : me.Gate)
 
 transitions
     Vessel moved > Close Gate
 --
 state Close Gate ()
 activity
-    // TBD 
+    // Change my vessel status to "secured" and direct this gate to close.
+
+    /R10/Awaiting Vessel.status = _secured
+    Close (gate name : me.Gate) -> GATE
 
 transitions
     Gate Closed > Close Valve
 --
 state Close Valve ()
 activity
-    // TBD
+    // Direct my valve to close
+
+    My valve name = /R5/R6/R8/Valve.Name
+    Close (valve name : My valve name) -> VALVE
     
 transitions
     Valve closed > Complete Move
 --
 state Complete Move ()
 activity
-    // TBD
+    // Notify my Transit Lane that the requested move has been completed.
+
+    My transit lane := /R5/Transit Lane
+    Move completed () -> My transit lane
 
 transitions
     Move completed > Secured At Rest
