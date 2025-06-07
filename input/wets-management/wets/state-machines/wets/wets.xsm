@@ -15,14 +15,14 @@ events
     Transfer completed
     Continue
 --
-state IDLE
+state Idle
 activity
 transitions
     Transfer request > Service Transit Request
     Removal request > Service Removal Request
     Transfer completed > Service Transfer Completed
 --
-state Service Transfer Request(new license : Vessel License, direction : Transit direction) 
+state Service Transfer Request(new license : Vessel License, direction : Transfer direction) 
 activity
     // Make sure this isn't a redundant request by first attempting
     // to find a vessel with the same license number
@@ -54,7 +54,7 @@ activity
                    // Get the first gate for traversing the chosen transit lane in the requested direction.
                    // If requested direction is up, then first gate will be downstream, otherwise it will be upstream.
 
-                   ^direction == .up?
+                   ^direction == _up?
                        first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
                        first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/upstream/~|
 
@@ -65,7 +65,7 @@ activity
 
                // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
 
-                *Vessel(License: ^new license, Transfer direction: ^direction) &R2 *Waiting Vessel(Arrival time: me.Last waiting position) &R3 me
+                *Vessel(License: ^new license, Transfer direction: ^direction) &R2 *Waiting Vessel(Waiting position: me.Last waiting position) &R3 me
 
             // Send an event to the requesting vessel to let it know that its request has been granted
 
@@ -80,10 +80,7 @@ activity
     Continue -> me
 
 transitions
-    Transfer request >
-    Removal request >
-    Transfer completed >
-    Continue > IDLE
+    Continue > Idle
 --
 state Service Removal Request( old license : Vessel License )
 activity
@@ -108,10 +105,7 @@ activity
     Continue -> me
 
 transitions
-    Transfer request >
-    Removal request >
-    Transfer completed >
-    Continue > IDLE
+    Continue > Idle
 --
 state Service Transfer Completed(free transit lane : Transit Lane, completed license : Vessel License)
 activity
@@ -142,7 +136,7 @@ activity
 
             // Migrate the Waiting Vessel to an Assigned Vessel.
 
-            earliest waiting vessel >> Assigned Vessel(Status: .moving) &R10 first gate, &R4 ^free transit lane  
+            earliest waiting vessel >> Assigned Vessel(Status: _moving) &R10 first gate, &R4 ^free transit lane  
 
             //  Send an event to the transit lane to let it know it has a vessel to move.
 
@@ -157,8 +151,5 @@ activity
     Continue -> me
 
 transitions
-    Transfer request >
-    Removal request >
-    Transfer completed >
-    Continue > IDLE
+    Continue > Idle
 --

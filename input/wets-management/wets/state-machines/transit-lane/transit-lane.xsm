@@ -17,7 +17,7 @@ events
     Continue transfer
     Finished transfer
 --
-state IDLE
+state Idle
 activity
 transitions
     Vessel assigned > Assess Water Level
@@ -39,7 +39,7 @@ activity
 
 transitions
     Make adjustments > Adjust Water Level
-    Start transit > Request Gate Move
+    Start transfer > Request Gate Move
 --
 state Adjust Water Level ()
 activity
@@ -82,9 +82,9 @@ activity
     // Get the next Transit Lane Gate in the vessel's transfer direction
 
     /R4/R2/Vessel.Transfer direction == _up?
-    // Going up
+    // Going up, next gate will bw upstream
         next transit lane gate .= last transit lane gate/OR7/upstream :  
-    //Going Down
+    //Going down, next gate will be downstream
         next transit lane gate .= last transit lane gate/OR7/downstream 
 
     // Is there a next transit lane gate or are we finished?
@@ -105,6 +105,6 @@ activity
     }
 
 transitions
-    Continue transit > Request Gate Move
+    Continue transfer > Request Gate Move
     Finished transfer > Idle
 --

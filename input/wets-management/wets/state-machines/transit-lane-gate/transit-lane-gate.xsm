@@ -17,7 +17,7 @@ events
     Vessel moved
     Gate closed
     Valve closed
-    Moce completed
+    Move completed
 --
 state Secured At Rest ()
 activity
@@ -36,7 +36,8 @@ transitions
 --
 state Wait For Zero Flow ()
 activity
-    // Direct my culvert to notify me when the flow is zero
+    // Direct my culvert to notify me when the flow throught it
+    // from the open valve is zero
 
     My culvert name = /R5/R6/Culvert.Name
     Indicate no flow (culvert name : My culvert name) -> CULVERT
@@ -46,7 +47,7 @@ transitions
 --
 state Open Gate ()
 activity
-    // Direct this gate to open
+    // Direct this gate, with an open valve and no water flow through its culvert, to open
 
     Open (gate name : me.Gate) -> GATE
     
@@ -55,11 +56,11 @@ transitions
 --
 state Move Vessel ()
 activity
-    // Change vessel status to "moving" and direct my vessel to move past this gate
+    // Change my vessel status to "moving" and direct it to move past this gate
 
     /R10/Awaiting Vessel.status = _moving
     My vessel license = /R10/Assigned vessel.License
-    Move past gate (vessel license : My vessel license, transit lane gate name : me.Gate)
+    Move past gate (vessel license : My vessel license, transit lane gate name : me.Gate) -> VESSEL
 
 transitions
     Vessel moved > Close Gate
