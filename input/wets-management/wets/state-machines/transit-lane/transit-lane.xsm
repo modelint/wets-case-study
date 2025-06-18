@@ -29,9 +29,9 @@ activity
 
     (/R4/R2/Vessel.Transfer direction == Available transfer direction)?
 
-    // Same transfer direction, so no water adjustments to do. Start transit.
+    // Same transfer direction, so no water adjustments to do. Start transfer.
 
-        Start transit -> me :
+        Start transfer -> me :
     
     // Different transfer directions, so go do water adjustments. 
 
@@ -56,11 +56,11 @@ activity
         // Update this attribute.
         Available transfer direction = _down
     }
-    // Water levels adjusted, start the transit.
-    Start transit -> me 
+    // Water levels adjusted, start the transfer.
+    Start transfer -> me 
 
 transitions
-    Start transit > Request Gate Move
+    Start transfer > Request Gate Move
 --
 state Request Gate Move ()
 activity
