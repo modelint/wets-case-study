@@ -90,7 +90,8 @@ activity
     // Notify my Transit Lane that the requested move has been completed.
 
     My transit lane := /R5/Transit Lane
-    Move completed () -> My transit lane
+    Move complete () -> My transit lane
+    Move completed () -> me
 
 transitions
     Move completed > Secured At Rest
