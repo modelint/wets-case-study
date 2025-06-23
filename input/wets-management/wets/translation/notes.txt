@@ -1,0 +1,79 @@
+1. In Wets.Service Transfer Request
+
+This statement look vaguely wrong to me:
+
+    available transit lanes ..= /R1/Transit Lane( ! /R4/Assigned Vessel )
+
+I interpret it as a traversal from and instance of Wets across R1 to Transit Lane followed
+by a traversal to the complement from Transit Lane across R4 to Assigned Vessel.
+The term in parentheses seem to say that the traversal to R4 state that the R4 traversal
+starts at the Wets instance, since it is my understanding that traversal paths that
+start with "/" are presumed to be instances of "me". I think it should be
+
+    (! ./R4/Assigned Vessel )
+
+or at least that would have been clearer to me.
+
+2. WTF
+
+    ^direction == _up?
+        first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
+        first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/upstream/~|
+
+OK I found the construct in the documentation -- awkward construct.
+
+3. I think statements like:
+
+*Vessel(License: ^new license, Transfer direction: ^direction) &R2
+    *Assigned Vessel( Status: .moving) &R10 first gate, &R4 chosen transit lane
+
+are backwards. Vessel does not refer to Assigned Vessel. It's the other way around.
+I think it should be:
+
+*Assigned Vessel(License: ^new license, Status: .moving)
+    &R2 *Vessel( License: ^new license, Transfer_direction ^direction) &R10 first gate, &R4 chosen transit lane
+
+whether the first statement is correct Scrall or not.
+
+4. In the class collaboration diagram, the external entity events to Vessel use "vessel license"
+as the parameter name. In the action language, just "license" is used. Pick one.
+
+5. In Wets.Service Transfer Completed activity:
+
+    Transfer completed (vessel license : ^completed license) -> VESSEL
+
+should be:
+
+    Transit completed (vessel license : ^completed license) -> VESSEL
+
+6. In Transit Lane Gate.Complete Move activity:
+
+    Move completed () -> My transit lane
+
+should be:
+
+    Move complete () -> My transit lane
+    -------------^
+
+7.  In Transit Lane.Assess Water Level activity:
+
+    Start transit -> me :
+
+should be:
+
+    Start transfer -> me :
+
+to match the state model diagram.
+Same comment for Transit Lane.Adjust Water Level activity.
+
+
+
+########################  Previous notes
+1. Missing definition of Vessel License data type -- assumed some arbitrary string like a motor vehicle license.
+2. Missing definition of Wets Name data type -- assumed some short string.
+3. Suggest arrival time types be better defined and explained.
+4. 2nd argument to Service Transit Request is typed as "Vessel Transfer direction",
+   class model only has "Transfer direction" type,
+   pick one
+5. 1st argument to Service Transit Completed -- assuming "free transit lane" parameter is of type
+   "Transit Lane Name"

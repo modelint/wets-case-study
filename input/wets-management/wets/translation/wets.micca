@@ -1,0 +1,798 @@
+# This file contains the micca source for the WETS domain as
+# analyzed by Michael Lee.
+# This translation is derived from the Model Integration
+# Wets Case Study repository on github.
+#
+# class model xcm metadata
+#    Title : Water Elevation Transit System Class Model
+#    Author : Michael Lee
+#    Document ID : none
+#    Version : 0.11
+#    Creation date : 27-02-2025
+#    Modification date: 29-05-2025
+#    Organization : Model Integration, LLC / www.modelint.com
+#    Copyright notice > MIT
+#    Organization logo > mint
+#
+
+domain wets {
+    typealias WetsName_t {char [16]}
+    typealias VesselLicense_t {char [16]}
+    typealias GateName_t {char [16]}
+    typealias ValveName_t {char [16]}
+    typealias CulvertName_t {char [16]}
+    typealias TransferDirection_t {enum {
+        dir_up,
+        dir_down,
+    }}
+    typealias MotionStatus_t {enum {
+        ms_moving,
+        ms_secured,
+    }}
+    typealias TransitLaneName_t {char [16]}
+    typealias GateStatus_t {enum {
+        gt_open,
+        gt_opening,
+        gt_closed,
+        gt_closing,
+    }}
+    typealias ValveStatus_t {enum {
+        vl_open,
+        vl_opening,
+        vl_closed,
+        vl_closing,
+    }}
+
+    class Wets {
+        attribute Name WetsName_t
+        attribute Last_waiting_position uint8_t -default 0
+
+        #state model xsm metadata
+        #   Title : Wets State Machine Diagram
+        #   Author : Michael M. Lee
+        #   Document ID : mint.wets.td.4
+        #   Modification date : May 22, 2025
+        #   Version : 0.8
+        #   Organization : Model Integration, LLC
+        #   Copyright notice > MIT
+        #   Organization logo > mint
+
+        statemodel {
+            initialstate Idle
+            defaulttrans CH
+
+            state Idle {} {}
+            transition Idle - Transfer_request -> Service_Transfer_Request
+            transition Idle - Removal_request -> Service_Removal_Request
+            transition Idle - Transfer_completed -> Service_Transfer_Completed
+
+##############
+# // Make sure this isn't a redundant request by first attempting
+# // to find a vessel with the same license number
+# 
+# identical vessel .= Vessel(License == ^new license)
+# 
+# identical vessel?
+#     // If there is vessel with the same license number, reject this request
+# 
+#     Request denied(vessel license: ^new license) -> VESSEL :
+# 
+#     // If not, then increment the Last waiting position
+#     {
+#         ++Last waiting position
+# 
+#         // Now see if there are any available transit lanes
+# 
+#         available transit lanes ..= /R1/Transit Lane( ! /R4/Assigned Vessel )
+#         available transit lanes?
+# 
+#            // There are available transit lanes, see if there is one the same available
+#            // transfer direction as the requested direction
+#            {
+#                chosen transit lane .= available transit lanes(1, available transfer direction : ^direction)
+# 
+#                // If there isn't one in the same direction, just use one of the available ones
+# 
+#                !chosen transit lane? chosen transit lane .= available transit lanes(1)
+# 
+#                // Get the first gate for traversing the chosen transit lane in the requested direction.
+#                // If requested direction is up, then first gate will be downstream, otherwise it will be upstream.
+# 
+#                ^direction == _up?
+#                    first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
+#                    first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/upstream/~|
+# 
+#                // Create an Assigned Vessel and establish relationships
+# 
+#                *Vessel(License: ^new license, Transfer direction: ^direction)
+#                   &R2 *Assigned Vessel( Status: .moving) &R10 first gate, &R4 chosen transit lane
+#             } :
+# 
+#            // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
+# 
+#             *Vessel(License: ^new license, Transfer direction: ^direction)
+#               &R2 *Waiting Vessel(Waiting position: me.Last waiting position) &R3 me
+# 
+#         // Send an event to the requesting vessel to let it know that its request has been granted
+# 
+#         Request granted(license: ^new license) -> VESSEL
+# 
+#         // Send an event to the transit lane to let it know it has a vessel to move
+# 
+#         Vessel assigned -> chosen transit lane
+#     }
+# //  Go back to the Idle state and wait for more work
+# 
+# Continue -> me
+##############
+
+            state Service_Transfer_Request {
+                new_license VesselLicense_t
+                direction TransferDirection_t
+            } {
+            <%  Vessel findWhere identical_vessel {strcmp(identical_vessel->License, new_license) == 0} %>
+                if (identical_vessel != NULL) {
+            <%      VESSEL Request_denied vessel_license new_license %>;
+                } else {
+                    // This variable reference must be available within the else scope.
+            <%      Transit_Lane refvar chosen_transit_lane                                             %>
+                    // Once we are here, we will create an instance of Vessel and we need
+                    // the variable scope to be available for the _if_ test below
+            <%      Vessel create v License new_license Transfer_direction direction                    %>
+
+            <%      instance self assign {Last_waiting_position waiting_position}                       %>
+                    waiting_position += 1;
+            <%      instance self update Last_waiting_position waiting_position                         %>
+
+                    // Micca does not have a "traverse complement" (or semi-minus or anti-join) operation
+                    // so we have to construct one ourselves. The strategy is to select all the
+                    // related Transit Lane instances and iterate over them to determine which
+                    // one is _not_ related across R4. Those instances are then added to the
+                    // set of available transit lanes (which starts off empty).
+            <%      Transit_Lane instset available_transit_lanes                                        %>
+            <%      instance self selectRelated transit_lanes ~R1                                       %>
+            <%      instset transit_lanes foreachInstance possible_lane                                 %>
+            <%      instance possible_lane findOneRelated assigned_vessel ~R4                           %>
+                    if (assigned_vessel == NULL) {
+            <%          instset available_transit_lanes add possible_lane                               %>
+                    }
+            <%      end                                                                                 %>
+
+                    if (<% instset available_transit_lanes notempty %>) {
+            <%          instset available_transit_lanes foreachInstance chosen_transit_lane             %>
+                            if (<% instance chosen_transit_lane attr Available_transfer_direction %> == direction) {
+                                break;
+                            }
+            <%          end                                                                             %>
+                        if (chosen_transit_lane == NULL) {
+            <%              instset available_transit_lanes selectOneInstance chosen_transit_lane       %>
+                        }
+
+            <%          Transit_Lane_Gate refvar first_gate                                             %>
+                        if (direction == dir_up) {
+                            first_gate =
+                                <% Transit_Lane_Gate operation Upstream_head transit_lane chosen_transit_lane %>;
+                        } else {
+                            first_gate =
+                                <% Transit_Lane_Gate operation Downstream_head transit_lane chosen_transit_lane %>;
+                        }
+            <%          Assigned_Vessel create av Status ms_moving R2 v R10 first_gate R4 chosen_transit_lane %>
+                    } else {
+            <%          Waiting_Vessel create wv Waiting_position waiting_position R2 v R3 self         %>
+                    }
+
+            <%      VESSEL Request_granted vessel_license new_license %>;
+            <%      instance chosen_transit_lane signal Vessel_assigned                                 %>
+                }
+            <%  instance self signal Continue                                                           %>
+            }
+            transition Service_Transfer_Request - Transfer_request -> IG
+            transition Service_Transfer_Request - Removal_request -> IG
+            transition Service_Transfer_Request - Transfer_completed -> IG
+            transition Service_Transfer_Request - Continue -> Idle
+
+##############
+#    // See if this vessel is waiting.
+#
+#    identical vessel .= Waiting Vessel(License == ^old license)
+#    !identical vessel?
+#
+#        // There is not a waiting vessel with this license number so
+#        // send the requestor a request denied.
+#
+#        Request denied(vessel license: ^old license) -> VESSEL :
+#        {
+#        // This vessel is waiting, so send it a Request granted event
+#        // and delete it and its super type.
+#
+#            Request granted(license: ^old license) -> VESSEL
+#            !*Vessel(License: ^old license), Waiting Vessel(License: ^old license)
+#        }
+#    //  Go back to the Idle state and wait for more work.
+#
+#    Continue -> me
+##############
+
+            state Service_Removal_Request {
+                old_license VesselLicense_t
+            } {
+                // Since we have elided the License attribute from Waiting Vessel, we
+                // go at the Vessel instances first and then follow them down to the
+                // Waiting Vessels. Besides since we may do a deletion across R2, we need to find
+                // both instances.
+            <%  Vessel findWhere identical_vessel {strcmp(identical_vessel->License, old_license) == 0} %>
+                if (identical_vessel == NULL) {
+            <%      VESSEL Request_denied vessel_license old_license %>;
+            <%      instance identical_vessel findOneRelated waiting_vessel {~R2 Waiting_Vessel}        %>
+                    if (waiting_vessel == NULL) {
+            <%          VESSEL Request_denied vessel_license old_license %>;
+                    } else {
+            <%          VESSEL Request_granted vessel_license old_license %>;
+            <%          instance waiting_vessel delete                                                  %>
+            <%          instance identical_vessel delete                                                %>
+                    }
+                }
+            <%  instance self signal Continue                                                           %>
+            }
+            transition Service_Removal_Request - Transfer_request -> IG
+            transition Service_Removal_Request - Removal_request -> IG
+            transition Service_Removal_Request - Transfer_completed -> IG
+            transition Service_Removal_Request - Continue -> Idle
+
+##############
+#    //  Send the Assigned Vessel a Transfer completed event and then
+#    //  delete the Supertype Vessel and associated subtype Assigned Vessel.
+#
+#    Transfer completed (vessel license : ^completed license) -> VESSEL
+#    !*Vessel(License: ^completed license), Assigned Vessel(License: ^completed license)
+#
+#    // Now get the earliest waiting vessel
+#
+#    earliest waiting vessel .= me/R3/OR9/earlier/~|
+#    earliest waiting vessel?
+#
+#        // There is an earliest waiting vessel
+#        {
+#            // First, get the earliest waiting vessel's requested direction
+#
+#            requested direction = earliest waiting vessel/R2/Vessel.Transfer direction
+#
+#            // Get the first gate for traversing the chosen transit lane in the requested direction.
+#            // If requested direction is up, then first gate will be downstream, otherwise it will be upstream.
+#
+#            requested direction == .up?
+#                first gate .= ^free transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
+#                first gate .= ^free transit lane/R5/Transit Lane Gate/OR7/upstream/~|
+#
+#            // Migrate the Waiting Vessel to an Assigned Vessel.
+#
+#            earliest waiting vessel >> Assigned Vessel(Status: _moving) &R10 first gate, &R4 ^free transit lane
+#
+#            //  Send an event to the transit lane to let it know it has a vessel to move.
+#
+#            Vessel assigned -> ^free transit lane
+#        } :
+#        // There is no earliest waiting vessel so reset the Last waiting position
+#
+#        Last waiting position = 0
+#
+#    //  Go back to the Idle state and wait for more work
+#
+#    Continue -> me
+##############
+
+            state Service_Transfer_Completed {
+                free_transit_lane {struct Transit_Lane *}
+                completed_license VesselLicense_t
+            } {
+            <%  VESSEL Transfer_completed vessel_license completed_license %>;
+            <%  Vessel findWhere identical_vessel {strcmp(identical_vessel->License, completed_license) == 0}   %>
+                assert(identical_vessel != NULL);
+            <%  instance identical_vessel findOneRelated assigned_vessel {~R2 Assigned_Vessel}                  %>
+            <%  instance assigned_vessel delete                                                                 %>
+            <%  instance identical_vessel delete                                                                %>
+
+            <%  Waiting_Vessel refvar earliest_waiting_vessel                                                   %>
+                earliest_waiting_vessel = <% Waiting_Vessel operation earliest wets self %>;
+                if (earliest_waiting_vessel != NULL) {
+            <%      instance earliest_waiting_vessel findOneRelated vessel R2                                   %>
+            <%      instance vessel assign {Transfer_direction requested_direction}                             %>
+
+            <%      Transit_Lane_Gate refvar first_gate                                                         %>
+                    if (requested_direction == dir_up) {
+                        first_gate =
+                            <% Transit_Lane_Gate operation Downstream_head transit_lane free_transit_lane %>;
+                    } else {
+                        first_gate =
+                            <% Transit_Lane_Gate operation Upstream_head transit_lane free_transit_lane %>;
+                    }
+            <%      R2 reclassify earliest_waiting_vessel Assigned_Vessel av \
+                        Status ms_moving R10 first_gate R4 free_transit_lane %>
+            <%      instance free_transit_lane signal Vessel_assigned                                           %>
+                } else {
+            <%      instance self update Last_waiting_position 0                                                %>
+                }
+
+            <%  instance self signal Continue                                                                   %>
+            }
+            transition Service_Transfer_Completed - Transfer_request -> IG
+            transition Service_Transfer_Completed - Removal_request -> IG
+            transition Service_Transfer_Completed - Transfer_completed -> IG
+            transition Service_Transfer_Completed - Continue -> Idle
+        }
+    }
+
+    class Transit_Lane {
+        attribute Name TransitLaneName_t
+        attribute Available_transfer_direction TransferDirection_t
+
+        #state model xsm metadata
+        #    Title : Transit Lane State Machine Diagram
+        #    Author : Michael M. Lee
+        #    Document ID : mint.wets.td.4
+        #    Creation date : May 23, 2025
+        #    Version : 0.4
+        #    Organization : Model Integration, LLC
+        #    Copyright notice > MIT
+        #    Organization logo > mint
+
+        statemodel {
+            initialstate Idle
+            defaulttrans CH
+
+            # empty
+            state Idle {} {
+            }
+            transition Idle - Vessel_assigned -> Assess_Water_Level
+
+##############
+#    // See if the Assigned Vessel's transfer direction is the same as this
+#    // Transit Lane's Available transfer direction
+#
+#    (/R4/R2/Vessel.Transfer direction == Available transfer direction)?
+#
+#    // Same transfer direction, so no water adjustments to do. Start transit.
+#
+#        Start transit -> me :
+#
+#    // Different transfer directions, so go do water adjustments.
+#
+#        Make adjustments -> me
+##############
+            state Assess_Water_Level {} {
+            <%  instance self findOneRelated assigned_vessel ~R4                    %>
+                // Since we get to this state only after a vessel has been assigned
+                // we are assured that R4 from Transit Lane to Assigned Vessel
+                // results in finding an instance of Assigned Vessel.
+                assert(assigned_vessel != NULL);
+            <%  instance assigned_vessel findOneRelated vessel R2                   %>
+            <%  instance vessel assign Transfer_direction                           %>
+            <%  instance self assign Available_transfer_direction                   %>
+                if (Transfer_direction == Available_transfer_direction) {
+            <%      instance self signal Start_transfer                             %>
+                } else {
+            <%      instance self signal Make_adjustments                           %>
+                }
+            }
+            transition Assess_Water_Level - Make_adjustments -> Adjust_Water_Level
+            transition Assess_Water_Level - Start_transfer -> Request_Gate_Move
+
+##############
+#    // See whether we need to adjust the water levels up or down.
+#
+#    (/R4/R2/Vessel.Transfer direction == _up)?
+#    {
+#        // Adjust water levels for an up transfer. Algorithm to be designed.
+#        // Update this attribute.
+#        Available transfer direction = _up
+#    } :
+#    {
+#        //Adjust water levels for a down transfer. Algorithm to be designed.
+#        // Update this attribute.
+#        Available transfer direction = _down
+#    }
+#    // Water levels adjusted, start the transit.
+#    Start transit -> me
+##############
+            state Adjust_Water_Level {} {
+            <%  instance self findOneRelated vessel ~R4 R2                          %>
+            // Note we forgo the test about R4 in this state since we must pass
+            // through Assess Water Level to get here.
+            <%  instance vessel assign Transfer_direction                           %>
+                if (Transfer_direction == dir_up) {
+                    // Do some magic
+            <%      instance self update Available_transfer_direction dir_up        %>
+                } else {
+                    // Do some other magic
+            <%      instance self update Available_transfer_direction dir_down      %>
+                }
+            <%      instance self signal Start_transfer                             %>
+            }
+            transition Adjust_Water_Level - Start_transfer -> Request_Gate_Move
+
+##############
+#    // Get the gate needing to do a move
+#
+#    move gate .= /R4/R10/Transit Lane Gate
+#
+#    Move vessel -> move gate
+##############
+            state Request_Gate_Move {} {
+            <%  instance self findOneRelated move_gate ~R4 R10                      %>
+            <%  instance move_gate signal Move_vessel                               %>
+            }
+            transition Request_Gate_Move - Move_complete -> Assess_Transfer_Complete
+
+##############
+#    // Get the last Transit Lane Gate moved past
+#
+#    last transit lane gate .= /R4/R10/Transit Lane Gate
+#
+#    // Get the next Transit Lane Gate in the vessel's transfer direction
+#
+#    /R4/R2/Vessel.Transfer direction == _up?
+#    // Going up, next gate will bw upstream
+#        next transit lane gate .= last transit lane gate/OR7/upstream :
+#    //Going down, next gate will be downstream
+#        next transit lane gate .= last transit lane gate/OR7/downstream
+#
+#    // Is there a next transit lane gate or are we finished?
+#
+#    next transit lane gate?
+#    // Yes we have one, relate the vessel to this new gate via R10 and continue transfer
+#    {
+#        /R4/Assigned Vessel &R10 next transit lane gate
+#
+#        Continue transfer -> me
+#    } :
+#    {
+#    // No, we don't have one, the last gate move must have completed the vessel's transfer.
+#    // Report transfer completed to Wets and return to idle state.
+#
+#        Transfer completed (free transit lane : me, completed license : /R4/R2/Vessel.License) -> /R1/Wets
+#        Finished transfer -> me
+#    }
+##############
+            state Assess_Transfer_Complete {} {
+            <%  instance self findOneRelated assigned_vessel ~R4                        %>
+            <%  instance assigned_vessel findOneRelated last_transit_lane_gate R10      %>
+            <%  instance assigned_vessel findOneRelated vessel R2                       %>
+            <%  instance vessel assign Transfer_direction                               %>
+            <%  instance last_transit_lane_gate assign {Transit_position last_position} %>
+            <%  Transit_Lane_Gate refvar next_transit_lane_gate                         %>
+                if (Transfer_direction == dir_up) {
+                    uint32_t next_position = last_position + 1;
+            <%      instance self findRelatedWhere next_transit_lane_gate\
+                        {next_transit_lane_gate->Transit_position == next_position}\
+                        {~R5 Transit_Lane_Gate}                                         %>
+                } else if (last_position != 0) {
+                    uint32_t next_position = last_position - 1;
+            <%      instance self findRelatedWhere next_transit_lane_gate\
+                        {next_transit_lane_gate->Transit_position == next_position}\
+                        {~R5 Transit_Lane_Gate}                                         %>
+                }
+
+                if (next_transit_lane_gate != NULL) {
+            <%      R10 reference assigned_vessel next_transit_lane_gate                %>
+            <%      instance self signal Continue_transfer                              %>
+                } else {
+            <%      instance vessel assign License                                      %>
+            <%      instance self findOneRelated wets R1                                %>
+            <%      instance wets signal Transfer_completed free_transit_lane self completed_license License    %>
+            <%      instance self signal Finished_transfer                              %>
+                }
+            }
+            transition Assess_Transfer_Complete - Continue_transfer -> Request_Gate_Move
+            transition Assess_Transfer_Complete - Finished_transfer -> Idle
+        }
+    }
+
+    class Gate {
+        attribute Name GateName_t
+        attribute Status GateStatus_t
+    }
+
+    class Valve {
+        attribute Name ValveName_t
+        attribute Status ValveStatus_t
+    }
+
+    # Transit Lane Gate participates in an ordinal reflexive association.
+    # The association is a "sequential" association, i.e. a list.
+    # We implement this by using a number and a couple of class operations
+    # to find the beginning and end by simply finding the smallest and
+    # largest value of the Transit position attribute.
+    class Transit_Lane_Gate {
+        attribute Transit_position uint32_t -default 0
+
+        #state model xsm metadata
+        #    Title : Transit Lane Gate State Machine Diagram
+        #    Author : Michael M. Lee
+        #    Document ID : mint.wets.td.5
+        #    Creation date : June 3, 2025
+        #    Version : 0.2
+        #    Organization : Model Integration, LLC
+        #    Copyright notice > MIT
+        #    Organization logo > mint
+
+        statemodel {
+            initialstate Secured_At_Rest
+            defaulttrans CH
+
+##############
+# empty
+##############
+            state Secured_At_Rest {} {}
+            transition Secured_At_Rest - Move_vessel -> Open_Valve
+
+##############
+#    // Direct my valve to open
+#
+#    My valve name = /R5/R6/R8/Valve.Name
+#    Open (valve name : My valve name) -> VALVE
+##############
+            state Open_Valve {} {
+            <%  instance self findOneRelated my_valve ~R5 R6 R8     %>
+            <%  instance my_valve assign {Name My_valve_name}       %>
+            <%  VALVE Open valve_name My_valve_name %>;
+            }
+            transition Open_Valve - Valve_opened -> Wait_For_Zero_Flow
+
+##############
+#    // Direct my culvert to notify me when the flow throught it
+#    // from the open valve is zero
+#
+#    My culvert name = /R5/R6/Culvert.Name
+#    Indicate no flow (culvert name : My culvert name) -> CULVERT
+##############
+            state Wait_For_Zero_Flow {} {
+            <%  instance self findOneRelated my_culvert ~R5 R6      %>
+            <%  instance my_culvert assign Name                     %>
+            <%  CULVERT Indicate_no_flow culvert_name Name %>;
+            }
+            transition Wait_For_Zero_Flow - Flow_zero -> Open_Gate
+
+##############
+#    // Direct this gate, with an open valve and no water flow through its culvert, to open
+#
+#    Open (gate name : me.Gate) -> GATE
+##############
+            state Open_Gate {} {
+            <%  instance self findOneRelated my_gate ~R5            %>
+            <%  instance my_gate assign {Name my_gate_name}         %>
+            <%  GATE Open gate_name my_gate_name %>;
+            }
+            transition Open_Gate - Gate_opened -> Move_Vessel
+
+##############
+#    // Change my vessel status to "moving" and direct it to move past this gate
+#
+#    /R10/Awaiting Vessel.status = _moving
+#    My vessel license = /R10/Assigned vessel.License
+#    Move past gate (vessel license : My vessel license, transit lane gate name : me.Gate) -> VESSEL
+##############
+            state Move_Vessel {} {
+            <%  instance self findOneRelated awaiting_vessel ~R10       %>
+            <%  instance awaiting_vessel update Status ms_moving        %>
+            <%  instance awaiting_vessel findOneRelated my_vessel R2    %>
+            <%  instance my_vessel assign {License My_vessel_license}   %>
+            <%  instance self findOneRelated my_gate ~R5                %>
+            <%  instance my_gate assign {Name My_gate_name}             %>
+            <%  VESSEL Move_past_gate vessel_license My_vessel_license transit_lane_gate_name My_gate_name %>;
+            }
+            transition Move_Vessel - Vessel_moved -> Close_Gate
+
+##############
+#    // Change my vessel status to "secured" and direct this gate to close.
+#
+#    /R10/Awaiting Vessel.status = _secured
+#    Close (gate name : me.Gate) -> GATE
+##############
+            state Close_Gate {} {
+            <%  instance self findOneRelated awaiting_vessel ~R10   %>
+            <%  instance awaiting_vessel update Status ms_secured   %>
+            <%  instance self findOneRelated my_gate ~R5            %>
+            <%  instance my_gate assign {Name My_gate_name}         %>
+            <%  GATE Close gate_name My_gate_name %>;
+            }
+            transition Close_Gate - Gate_closed -> Close_Valve
+
+##############
+#    // Direct my valve to close
+#
+#    My valve name = /R5/R6/R8/Valve.Name
+#    Close (valve name : My valve name) -> VALVE
+##############
+            state Close_Valve {} {
+            <%  instance self findOneRelated my_valve ~R5 R6 R8     %>
+            <%  instance my_valve assign {Name My_valve_name}       %>
+            <%  VALVE Close valve_name My_valve_name %>;
+            }
+            transition Close_Valve - Valve_closed -> Complete_Move
+
+##############
+#    // Notify my Transit Lane that the requested move has been completed.
+#
+#    My transit lane := /R5/Transit Lane
+#    Move completed () -> My transit lane
+##############
+            state Complete_Move {} {
+            <%  instance self findOneRelated My_transit_lane R5     %>
+            <%  instance My_transit_lane signal Move_complete       %>
+            <%  instance self signal Move_completed                 %>
+            }
+            transition Complete_Move - Move_completed -> Secured_At_Rest
+        }
+
+        # These two class operations were introduced into the translation
+        # to handle the OR7 association traversal. Note that OR7 does not
+        # appear as a micca association. This association is used as a
+        # sequential relation and the only operations present in the
+        # state activities happen at the head or tail. The Transit Position
+        # attribute is used to keep the order implied by the association.
+        # The values of Transit Position are ordered by the initial instance
+        # population and do not change at run time since we don't create
+        # Transit Lane instance or Gates on the fly.
+        classop {struct Transit_Lane_Gate *} Upstream_head {
+            transit_lane {struct Transit_Lane *}
+        } {
+        <%  Transit_Lane_Gate refvar upstream_gate                                          %>
+        <%  instance transit_lane selectRelated lane_gates {~R5 Transit_Lane_Gate}          %>
+            unsigned max_pos = UINT32_MAX;
+        <%  instset lane_gates foreachInstance lane_gate                                    %>
+        <%      instance lane_gate assign Transit_position                                  %>
+                if (Transit_position < max_pos) {
+                    max_pos = Transit_position;
+                    upstream_gate = lane_gate;
+                }
+        <%  end                                                                             %>
+            return upstream_gate;
+        }
+
+        classop {struct Transit_Lane_Gate *} Downstream_head {
+            transit_lane {struct Transit_Lane *}
+        } {
+        <%  Transit_Lane_Gate refvar downstream_gate                                        %>
+        <%  instance transit_lane selectRelated lane_gates {~R5 Transit_Lane_Gate}          %>
+            unsigned min_pos = 0;
+        <%  instset lane_gates foreachInstance lane_gate                                    %>
+        <%      instance lane_gate assign Transit_position                                  %>
+                if (Transit_position > min_pos) {
+                    min_pos = Transit_position;
+                    downstream_gate = lane_gate;
+                }
+        <%  end                                                                             %>
+            return downstream_gate;
+        }
+    }
+
+    class Vessel {
+        attribute License VesselLicense_t
+        attribute Transfer_direction TransferDirection_t
+    }
+
+    class Assigned_Vessel {
+        attribute Status MotionStatus_t
+    }
+
+    class Waiting_Vessel {
+        attribute Waiting_position uint8_t
+
+        # Waiting Vessel participates in an ordinal reflexive association, OR9.
+        # The association is a "sequential" association, i.e. a list.
+        # We implement this by using the Waiting Position attribute.
+        # The state activities are only interested in finding the head of the
+        # implied list. The values of Waiting Position are managed by the
+        # Wets class to insure that they are monotonically increasing.
+        # Note this function can return NULL which indicates that there
+        # are no Waiting Vessel instances for this Wets.
+        classop {struct Waiting_Vessel *} earliest {
+            wets {struct Wets *}
+        } {
+        <%  Waiting_Vessel refvar earliest                          %>
+
+            // For some reason micca is unhappy about using the "wets"
+            // argument directly in the selectRelated command.
+        <%  Wets refvar the_wets                                    %>
+            the_wets = wets;
+        <%  instance the_wets selectRelated waiting_vessels ~R3     %>
+            if (<% instset waiting_vessels empty %>) {
+                return NULL;
+            }
+            unsigned max_pos = UINT32_MAX;
+        <%  instset waiting_vessels foreachInstance waiting_vessel   %>
+        <%      instance waiting_vessel assign Waiting_position      %>
+                if (Waiting_position < max_pos) {
+                    max_pos = Waiting_position;
+                    earliest = waiting_vessel;
+                }
+        <%  end                                                     %>
+            return earliest;
+        }
+    }
+
+    class Culvert {
+        attribute Name CulvertName_t
+    }
+
+    association R1 Transit_Lane +--1 Wets
+
+    generalization R2 -union Vessel\
+        Waiting_Vessel Assigned_Vessel
+
+    association R3 Waiting_Vessel *--1 Wets
+
+    association R4 Assigned_Vessel ?--1 Transit_Lane
+
+    association R5 -associator Transit_Lane_Gate\
+        Gate +--1 Transit_Lane
+
+    association R6 Gate 1--1 Culvert
+
+    association R8 Culvert 1--1 Valve
+
+    association R10 Assigned_Vessel ?--1 Transit_Lane_Gate
+
+    eentity VESSEL {
+        operation void Request_granted {
+            vessel_license {const char *}
+        } {
+            MRT_DEBUG("Transfer request granted: %s\n", vessel_license);
+        }
+
+        operation void Request_denied {
+            vessel_license {const char *}
+        } {
+            MRT_DEBUG("Transfer request denied: %s\n", vessel_license);
+        }
+
+        operation void Transfer_completed {
+            vessel_license {const char *}
+        } {
+            MRT_DEBUG("Transfer completed: %s\n", vessel_license);
+        }
+
+        operation void Move_past_gate {
+            vessel_license {const char *}
+            transit_lane_gate_name GateName_t
+        } {
+            MRT_DEBUG("Move vessel '%s' past gate '%s'\n", vessel_license, transit_lane_gate_name);
+        }
+    }
+
+    eentity VALVE {
+        operation void Open {
+            valve_name {const char *}
+        } {
+            MRT_DEBUG("Open valve: %s\n", valve_name);
+        }
+
+        operation void Close {
+            valve_name {const char *}
+        } {
+            MRT_DEBUG("Close valve: %s\n", valve_name);
+        }
+    }
+
+    eentity CULVERT {
+        operation void Indicate_no_flow {
+            culvert_name {const char *}
+        } {
+            MRT_DEBUG("Indicate no flow: %s\n", culvert_name);
+        }
+    }
+
+    eentity GATE {
+        operation void Open {
+            gate_name {const char *}
+        } {
+            MRT_DEBUG("Open gate: %s\n", gate_name);
+        }
+
+        operation void Close {
+            gate_name {const char *}
+        } {
+            MRT_DEBUG("Close gate: %s\n", gate_name);
+        }
+    }
+}

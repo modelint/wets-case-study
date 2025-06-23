@@ -1,0 +1,95 @@
+# This file contains an initial instance population for the WETS Case Study
+# Scenario 1: Empty WETS
+# ======================
+# No vessels
+# 3 Transit Lanes
+# 5 Gates per Transit Lane
+# 1 Culvert per Gate
+# 1 Valve per Culvert
+
+population wets {
+    class Wets {
+        instance toadscanal Name {"ToadsCanal"}
+    }
+    class Vessel {
+        allocate 32
+    }
+    class Transit_Lane {
+        table   {Name           Available_transfer_direction    R1}\
+        north   {{"North"}      dir_up                          toadscanal}\
+        middle  {{"Middle"}     dir_down                        toadscanal}\
+        south   {{"South"}      dir_up                          toadscanal}\
+    }
+    class Transit_Lane_Gate {
+        table       {Transit_position       R5}\
+        g1_north    {1                      {Transit_Lane north Gate g1}}\
+        g2_north    {2                      {Transit_Lane north Gate g2}}\
+        g3_north    {3                      {Transit_Lane north Gate g3}}\
+        g4_north    {4                      {Transit_Lane north Gate g4}}\
+        g5_north    {5                      {Transit_Lane north Gate g5}}\
+        g11_middle  {1                      {Transit_Lane middle Gate g11}}\
+        g12_middle  {2                      {Transit_Lane middle Gate g12}}\
+        g13_middle  {3                      {Transit_Lane middle Gate g13}}\
+        g14_middle  {4                      {Transit_Lane middle Gate g14}}\
+        g15_middle  {5                      {Transit_Lane middle Gate g15}}\
+        g1_south    {1                      {Transit_Lane south Gate g6}}\
+        g2_south    {2                      {Transit_Lane south Gate g7}}\
+        g3_south    {3                      {Transit_Lane south Gate g8}}\
+        g4_south    {4                      {Transit_Lane south Gate g9}}\
+        g5_south    {5                      {Transit_Lane south Gate g10}}\
+    }
+    class Gate {
+        table       {Name           Status              R6}\
+        g1          {{"G1"}         gt_closed           c1}\
+        g2          {{"G2"}         gt_closed           c2}\
+        g3          {{"G3"}         gt_closed           c3}\
+        g4          {{"G4"}         gt_closed           c4}\
+        g5          {{"G5"}         gt_closed           c5}\
+        g6          {{"G6"}         gt_closed           c6}\
+        g7          {{"G7"}         gt_closed           c7}\
+        g8          {{"G8"}         gt_closed           c8}\
+        g9          {{"G9"}         gt_closed           c9}\
+        g10         {{"G10"}        gt_closed           c10}\
+        g11         {{"G11"}        gt_closed           c11}\
+        g12         {{"G12"}        gt_closed           c12}\
+        g13         {{"G13"}        gt_closed           c13}\
+        g14         {{"G14"}        gt_closed           c14}\
+        g15         {{"G15"}        gt_closed           c15}\
+    }
+    class Culvert {
+        table       {Name           R8}\
+        c1          {{"C1"}         v1}\
+        c2          {{"C2"}         v2}\
+        c3          {{"C3"}         v3}\
+        c4          {{"C4"}         v4}\
+        c5          {{"C5"}         v5}\
+        c6          {{"C6"}         v6}\
+        c7          {{"C7"}         v7}\
+        c8          {{"C8"}         v8}\
+        c9          {{"C9"}         v9}\
+        c10         {{"C10"}        v10}\
+        c11         {{"C11"}        v11}\
+        c12         {{"C12"}        v12}\
+        c13         {{"C13"}        v13}\
+        c14         {{"C14"}        v14}\
+        c15         {{"C15"}        v15}\
+    }
+    class Valve {
+        table       {Name           Status}\
+        v1          {{"V1"}         vl_closed}\
+        v2          {{"V2"}         vl_closed}\
+        v3          {{"V3"}         vl_closed}\
+        v4          {{"V4"}         vl_closed}\
+        v5          {{"V5"}         vl_closed}\
+        v6          {{"V6"}         vl_closed}\
+        v7          {{"V7"}         vl_closed}\
+        v8          {{"V8"}         vl_closed}\
+        v9          {{"V9"}         vl_closed}\
+        v10         {{"V10"}        vl_closed}\
+        v11         {{"V11"}        vl_closed}\
+        v12         {{"V12"}        vl_closed}\
+        v13         {{"V13"}        vl_closed}\
+        v14         {{"V14"}        vl_closed}\
+        v15         {{"V15"}        vl_closed}\
+    }
+}

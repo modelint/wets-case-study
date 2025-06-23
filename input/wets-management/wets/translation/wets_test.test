@@ -1,0 +1,215 @@
+#!/usr/bin/env tclsh
+#*++
+# Project:
+#   WETS
+#
+# Module:
+#   WETS tests
+#*--
+
+package require Tcl 8.6
+package require cmdline
+package require logger
+package require logger::utils
+package require logger::appender
+package require tcltest
+package require mecate
+package require miccautil
+package require fileutil
+package require csv
+
+set optlist {
+    {level.arg warn {Log debug level}}
+    {nostart {Don't start test harness program automatically}}
+    {timeout.arg 5000 {Command timeout in ms}}
+    {nocolor {Don't colorize logging output}}
+    {showstates {Show state transitions on sequence diagrams}}
+}
+array set options [::cmdline::getKnownOptions argv $optlist]
+
+::mecate::log::setlevel $options(level)
+
+tcltest::configure {*}$argv
+
+namespace eval ::wets::test {
+    set logger [::logger::init wets::test]
+    set appenderType console
+    if {!$::options(nocolor) && [dict exist [fconfigure stdout] -mode]} {
+        set appenderType colorConsole
+    }
+    ::logger::utils::applyAppender -appender $appenderType -serviceCmd $logger\
+            -appenderArgs {-conversionPattern {\[%c\] \[%p\] '%m'}}
+    ::logger::import -all -force -namespace log wets::test
+
+    namespace import ::tcltest::*
+    namespace import ::ral::*
+    namespace import ::ralutil::*
+
+    # Utility proc log a formated event trace
+    proc logTrace {level trace} {
+        log::$level [::mecate eventTraceFormat $trace]
+    }
+    proc logInstr {level trace} {
+        log::$level [::mecate instrTraceFormat $trace]
+    }
+    proc logFatal {level trace} {
+        log::$level [::mecate fatalTraceFormat $trace]
+    }
+
+    proc setupForTestCase {} {
+        wetstest eloop halt
+        deleteTraces
+    }
+    proc deleteTraces {} {
+        wetstest clearEventTraceCache
+        wetstest discardEventTraces
+        wetstest clearInstrTraceCache
+        wetstest discardInstrTraces
+        wetstest clearFatalTraceCache
+        wetstest discardFatalTraces
+    }
+    proc format_missing_report {model_cmd} {
+        set active [pipe {
+            $model_cmd reportTransitions * |
+            relation restrictwith ~\
+                {$NewState ne "IG" && $NewState ne "CH"} |
+            relation eliminate ~ Domain
+        }]
+    
+        log::debug \n[relformat $active "Active Transitions"]
+    
+        format_missing_states_report $active "Unexecuted state activities"\
+                missing_states_report.txt
+        format_missing_trans_report $active "Missing transitions" missing_trans_report.txt
+    }
+    proc format_missing_states_report {active_trans title report_file} {
+        set missing_states [pipe {
+            relation summarizeby $active_trans {Model NewState} ms_rel\
+                Executed int {rsum($ms_rel, "TransCount")} |
+            relation restrictwith ~ {$Executed == 0} |
+            relation rename ~ NewState State |
+            relation group ~ Missing State Executed
+        }]
+    
+        set report {}
+    
+        relation foreach missing $missing_states -ascending Model {
+            relation assign $missing
+            append report\
+                    ".$title for the *$Model* state model\n"\
+                    {[format="csv",options="header,unbreakable,compact",width="75%",cols="4,1"]}\
+                    \n|===============\n\
+                    State,Executed\n\
+                    [::ral csv $Missing State 1]\
+                    |===============\n\n
+        }
+    
+        if {$report eq {}} {
+            set report "\n*All state activities executed.*\n"
+        }
+    
+        ::fileutil::writeFile $report_file $report
+    
+        return
+    }
+    proc format_missing_trans_report {active_trans title report_file} {
+        set missing_trans [pipe {
+            relation restrictwith $active_trans {$TransCount == 0} |
+            relation group ~ Transitions State Event NewState TransCount
+        }]
+    
+        set report {}
+    
+        relation foreach missing $missing_trans -ascending Model {
+            relation assign $missing
+            append report\
+                    ".$title for the *$Model* state model\n"\
+                    {[format="csv",options="header,unbreakable,compact",cols="3,2,3,1"]}\
+                    \n|===============\n\
+                    State,Event,NewState,Count\n\
+                    [::ral csv $Transitions State 1]\
+                    |===============\n\n
+        }
+    
+        if {$report eq {}} {
+            set report "\n*All state transitions taken.*\n"
+        }
+    
+        ::fileutil::writeFile $report_file $report
+    
+        return
+    }
+
+    # The test script starts by creating an object of the "rein" class
+    # to interact with the test harness.
+    mecate rein create ::wetstest -timeout $::options(timeout)
+    wetstest seqDiagConfig -showstates $::options(showstates)
+
+    if {!$::options(nostart)} {
+        wetstest start ./wets_test_harness
+    }
+
+    # Load up the domain information
+    miccautil model create wets_model wets.ral
+
+    # Fatal errors can come at any time, so be prepared.
+    wetstest fatalNotify [namespace code {logFatal error}]
+
+    # Form a connection to the test harness.
+    wetstest connect
+
+    wetstest traceNotify [namespace code {logTrace info}]
+    wetstest instrNotify [namespace code {logInstr info}]
+
+    try {
+        wetstest trace on
+        wetstest instr on
+
+        # Patch in the transition counting
+        wets_model startMecateTransitionCount wetstest
+
+        log::info "**** Begin Test Set 1 ****"
+        setupForTestCase
+
+        # Transfer request going up
+        wetstest signal wets Wets toadscanal Transfer_request "VS-9300" 0
+        wetstest eloop toc nowait
+
+        # A Transit Lane has been assigned and V1 has been requested to open.
+        # Move things along with a Valve opened event.
+        wetstest signal wets Transit_Lane_Gate g1_north Valve_opened
+        wetstest eloop toc nowait
+
+        # Indicate that water flow has stopped
+        wetstest signal wets Transit_Lane_Gate g1_north Flow_zero
+        wetstest eloop toc nowait
+
+        # Open the gate
+        wetstest signal wets Transit_Lane_Gate g1_north Gate_opened
+        wetstest eloop toc nowait
+
+        # Move the vessel through the gate
+        wetstest signal wets Transit_Lane_Gate g1_north Vessel_moved
+        wetstest eloop toc nowait
+
+        # Close the gate
+        wetstest signal wets Transit_Lane_Gate g1_north Gate_closed
+        wetstest eloop toc nowait
+
+        # Close the valve
+        wetstest signal wets Transit_Lane_Gate g1_north Valve_closed
+        wetstest eloop toc nowait
+
+        wets_model stopMecateTransitionCount wetstest
+
+        format_missing_report wets_model
+
+        wetstest seqDiagToFile test1_toc.txt
+        deleteTraces
+    } finally {
+        wetstest destroy
+        wets_model destroy
+    }
+
+    cleanupTests
+}
