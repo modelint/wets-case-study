@@ -59,6 +59,9 @@ CLEANFILES =\
 	$(DOMAIN_NAME).h\
 	$(PROGNAME).c\
 	$(PROGNAME)\
+	micca_rt*\
+	missing*report.txt\
+	test1_toc.txt\
 	bosal.h\
 	*.o\
 	*.ral\
@@ -66,6 +69,7 @@ CLEANFILES =\
 	*.gcov\
 	*.gcno\
 	*.gcda\
+	*.png\
 	$(NULL)
 
 .PHONY : all generate coverage runtests harness clean FORCE
