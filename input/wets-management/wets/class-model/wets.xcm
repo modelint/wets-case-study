@@ -2,9 +2,9 @@ metadata
     Title : Water Elevation Transit System Class Model
     Author : Michael Lee
     Document ID : none
-    Version : 0.11
+    Version : 0.12
     Creation date : 27-02-2025
-    Modification date: 29-05-2025
+    Modification date: 10-07-2025
     Organization : Model Integration, LLC / www.modelint.com
     Copyright notice > MIT
     Organization logo > mint
@@ -60,6 +60,13 @@ attributes
     License : Vessel License {I, R2}
     Wets : Wets Name {R3}
     Waiting position : Positive Integer {I2, OR9}
+--
+class Adjustment Step
+attributes
+    Transit lane : Transit Lane Name {I, R11, R14}
+    Adjustment direction : Enum {I}
+    Adjustment step : Positive Integer {I, OR13}
+    Position : Transit Lane Gate Position {R14}
 --
 relationships
     R1
