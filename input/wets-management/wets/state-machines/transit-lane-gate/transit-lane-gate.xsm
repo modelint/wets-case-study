@@ -18,11 +18,15 @@ events
     Gate closed
     Valve closed
     Move completed
+    Adjust level
+    Adjust completed
+
 --
 state Secured At Rest ()
 activity
 transitions
     Move vessel > Open Valve
+    Adjust level > Open ValveAdj
 --
 state Open Valve ()
 activity
@@ -34,6 +38,16 @@ activity
 transitions
     Valve opened > Wait For Zero Flow
 --
+state Open Valve 2 ()
+activity
+    // Direct my valve to open
+
+    My valve name = /R5/R6/R8/Valve.Name
+    Open (valve name : My valve name) -> VALVE
+
+transitions
+    Valve opened > Wait For Zero Flow 2
+--
 state Wait For Zero Flow ()
 activity
     // Direct my culvert to notify me when the flow throught it
@@ -44,6 +58,17 @@ activity
 
 transitions
     Flow zero > Open Gate
+--
+state Wait For Zero Flow 2 ()
+activity
+    // Direct my culvert to notify me when the flow throught it
+    // from the open valve is zero
+
+    My culvert name = /R5/R6/Culvert.Name
+    Indicate no flow (culvert name : My culvert name) -> CULVERT
+
+transitions
+    Flow zero > Close Valve 2
 --
 state Open Gate ()
 activity
@@ -85,6 +110,16 @@ activity
 transitions
     Valve closed > Complete Move
 --
+state Close Valve 2 ()
+activity
+    // Direct my valve to close
+
+    My valve name = /R5/R6/R8/Valve.Name
+    Close (valve name : My valve name) -> VALVE
+    
+transitions
+    Valve closed > Complete Adjust 
+--
 state Complete Move ()
 activity
     // Notify my Transit Lane that the requested move has been completed.
@@ -95,4 +130,15 @@ activity
 
 transitions
     Move completed > Secured At Rest
+--
+state Complete Adjust ()
+activity
+    // Notify my Transit Lane that the requested adjustment has been completed.
+
+    My transit lane := /R5/Transit Lane
+    Adjust complete () -> My transit lane
+    Adjust completed () -> me
+
+transitions
+    Adjust completed > Secured At Rest
 --

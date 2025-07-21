@@ -13,9 +13,11 @@ events
     Vessel assigned
     Make adjustments
     Start transfer
-    Move Complete
+    Move complete
     Continue transfer
     Finished transfer
+    Adjust complete
+    Continue adjustment
 --
 state Idle
 activity
@@ -33,7 +35,10 @@ activity
 
         Start transfer -> me :
     
-    // Different transfer directions, so go do water adjustments. 
+    // Different transfer directions, so first set up R12 to point to first 
+    // Adjustment Step to do the required a raise or lower  ==> Scrall TBD
+    //
+    // Then go do the work
 
         Make adjustments -> me
 
@@ -72,6 +77,29 @@ activity
     
 transitions
     Move complete > Assess Transfer Complete
+--
+state Request Gate Adjustment ()
+activity
+    // SCRALL TBD
+    // 1. Get the gate needing to do an adjustment 
+    // 2. Send Adjust level event to this gate 
+    
+transitions
+    Adjust complete > Assess Adjustment Complete
+--
+state Assess Adjustment Complete ()
+activity
+    // SCRALL TBD
+    // 1. Get the last Transit Lane Gate adjusted
+    // 2. Get the next Transit Lane Gate to be adjusted 
+    // 3. If there is a next Transit Lane Gate to be adjusted
+    //      Update R12 and send a Continue adjustment event to me
+    //    Else
+    //      Reset R12 and send a Start transfer event to me
+    
+transitions
+    Continue adjustment > Request Gate Adjustment
+    Start transfer > Request Gate Move
 --
 state Assess Transfer Complete ()
 activity
