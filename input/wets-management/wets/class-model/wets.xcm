@@ -41,7 +41,7 @@ class Transit Lane Gate
 attributes
     Gate : Gate Name {I, R5}
     Transit lane : Transit Lane Name {I2, R5}
-    Transit position : Positive Integer {I2, OR7}
+    Position : Positive Integer {I2, OR7}
 --
 class Vessel
 attributes
@@ -51,8 +51,7 @@ attributes
 class Assigned Vessel
 attributes
     License : Vessel License {I, R2}
-    Transit lane : Transit Lane Name {I2, R4, R10}
-    Transit position : Transit Lane Gate Position {R10}
+    Transit lane : Transit Lane Name {I2, R4}
     Status : Enum
 --
 class Waiting Vessel
@@ -65,8 +64,19 @@ class Adjustment Step
 attributes
     Transit lane : Transit Lane Name {I, R11, R14}
     Adjustment direction : Enum {I}
-    Adjustment step : Positive Integer {I, OR13}
+    Step number : Positive Integer {I, OR13}
     Position : Transit Lane Gate Position {R14}
+--
+class Active Step
+attributes
+    Transit lane : Transit Lane Name {I, R12}
+    Adjustment direction : Adjustment Step Adjustment direction {R12}
+    Step number : Adjustment Step Step number
+--
+class Active Gate Move
+attributes
+    Transit lane : Transit Lane Name {I, R10}
+    Position : Positive Integer {R10}
 --
 relationships
     R1
@@ -116,7 +126,24 @@ relationships
     Waiting position : I2
 --
     R10
-    is moving past this, 1 Transit Lane Gate
+    is moving past this, 1c Transit Lane Gate
     is being passed by this, 1c Assigned Vessel
-    Assigned Vessel.(Transit lane, Transit position) -> Transit Lane Gate.(Transit lane, Transit position)
+    1 Active Gate Move
+    Active Gate Move.Transit lane -> Assigned Vessel.Transit lane
+    Active Gate Move.Transit lane -> Transit Lane Gate.Transit lane
+    Active Gate Move.Position -> Transit Lane Gate.Position
+--
+    R11
+    adjusts water level with, M Adjustment Step
+    adjusts water level in, 1 Transit Lane
+    Adjustment Step.Transit lane -> Transit Lane.Name
+--
+    R12
+    is making an adjustment with, 1c Adjustment Step
+    is being used to make an adjustment by, 1c Transit Lane
+    1 Active Step
+    Active Step.Transit lane -> Transit Lane.Name
+    Active Step.Transit lane -> Adjustment Step.Transit lane
+    Active Step.Adjustment direction -> Adjustment Step.Adjustment direction
+    Active Step.Step number -> Adjustment Step.Step number
 --
