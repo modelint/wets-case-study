@@ -130,8 +130,8 @@ relationships
     is being passed by this, 1c Assigned Vessel
     1 Active Gate Move
     Active Gate Move.Transit lane -> Assigned Vessel.Transit lane
-    Active Gate Move.Transit lane -> Transit Lane Gate.Transit lane
-    Active Gate Move.Position -> Transit Lane Gate.Position
+    Active Gate Move.(Transit lane, Position) -> Transit Lane Gate.(Transit lane, Position)
+
 --
     R11
     adjusts water level with, M Adjustment Step
@@ -143,7 +143,5 @@ relationships
     is being used to make an adjustment by, 1c Transit Lane
     1 Active Step
     Active Step.Transit lane -> Transit Lane.Name
-    Active Step.Transit lane -> Adjustment Step.Transit lane
-    Active Step.Adjustment direction -> Adjustment Step.Adjustment direction
-    Active Step.Step number -> Adjustment Step.Step number
+    Active Step.(Transit lane, Adjustment direction, Step number) -> Adjustment Step.(Transit lane, Adjustment direction, Step number)
 --
