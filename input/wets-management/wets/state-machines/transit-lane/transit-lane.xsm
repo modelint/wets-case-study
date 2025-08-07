@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
     Creation date : May 23, 2025
-    Version : 0.4
+    Version : 0.5
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -35,36 +35,22 @@ activity
 
         Start transfer -> me :
     
-    // Different transfer directions, so first set up R12 to point to first 
-    // Adjustment Step to do the required a raise or lower  ==> Scrall TBD
-    //
-    // Then go do the work
-
-        Make adjustments -> me
+    // Different transfer directions, so we need to:
+    //1 - Change the Available transfer direction for this Transit Lane
+    Available transfer direction == _up
+        Available transfer direction = _down :
+        Available transfer direction - _up
+    //2 - Get the set of Adjustment Steps to do this
+    adjustment step set .. = /R12/Adjustment Step (transit lane : Name, Adjustment direction : Available transfer direction)
+    //3 - Get the first step in this set
+    starting step .= adjustment step set/OR13/first/~|
+    //4 - Create the associative class Active Step
+    *Active Step &R12 me, starting step
+    //5 - Then go do the Active Step adjustment
+    Make adjustments -> me
 
 transitions
     Make adjustments > Adjust Water Level
-    Start transfer > Request Gate Move
---
-state Adjust Water Level ()
-activity
-    // See whether we need to adjust the water levels up or down.
-
-    (/R4/R2/Vessel.Transfer direction == _up)?
-    {
-        // Adjust water levels for an up transfer. Algorithm to be designed.
-        // Update this attribute.
-        Available transfer direction = _up
-    } :
-    {
-        //Adjust water levels for a down transfer. Algorithm to be designed.
-        // Update this attribute.
-        Available transfer direction = _down
-    }
-    // Water levels adjusted, start the transfer.
-    Start transfer -> me 
-
-transitions
     Start transfer > Request Gate Move
 --
 state Request Gate Move ()
@@ -80,22 +66,26 @@ transitions
 --
 state Request Gate Adjustment ()
 activity
-    // SCRALL TBD
-    // 1. Get the gate needing to do an adjustment 
-    // 2. Send Adjust level event to this gate 
-    
+    // Tell the gate for the Active Step to adjust its level.
+    Adjust level -> /R12/Adjustment Step/R14/
+
 transitions
     Adjust complete > Assess Adjustment Complete
 --
 state Assess Adjustment Complete ()
 activity
-    // SCRALL TBD
-    // 1. Get the last Transit Lane Gate adjusted
-    // 2. Get the next Transit Lane Gate to be adjusted 
-    // 3. If there is a next Transit Lane Gate to be adjusted
-    //      Update R12 and send a Continue adjustment event to me
-    //    Else
-    //      Reset R12 and send a Start transfer event to me
+    // 1 - Get the next Transit Lane Gate to be adjusted 
+    next step .= /R12/Adjustment Step/OR13/after
+    !*/R12/Active Step // Don't need this anymore
+    // 2 - Do we have a next step?
+    next step?
+    //3A - We have a next step create a new Active Step and go do it
+    {
+        *Active Step & R12 me, next step
+        Make adjustments -> me
+    } :
+    //3B - We don't have a next step, start the transfer
+    {   Start transfer -> me}
     
 transitions
     Continue adjustment > Request Gate Adjustment
