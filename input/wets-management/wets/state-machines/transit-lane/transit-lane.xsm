@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
     Creation date : May 23, 2025
-    Version : 0.5
+    Version : 0.7
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -37,20 +37,20 @@ activity
     
     // Different transfer directions, so we need to:
     //1 - Change the Available transfer direction for this Transit Lane
-    Available transfer direction == _up
+    Available transfer direction == _up?
         Available transfer direction = _down :
-        Available transfer direction - _up
+        Available transfer direction = _up
     //2 - Get the set of Adjustment Steps to do this
-    adjustment step set .. = /R12/Adjustment Step (transit lane : Name, Adjustment direction : Available transfer direction)
+    adjustment step set .. = /R11/Adjustment Step (transit lane : Name ; Adjustment direction : Available transfer direction)
     //3 - Get the first step in this set
-    starting step .= adjustment step set/OR13/first/~|
+    starting step .= adjustment step set/OR13/before/~|
     //4 - Create the associative class Active Step
     *Active Step &R12 me, starting step
     //5 - Then go do the Active Step adjustment
     Make adjustments -> me
 
 transitions
-    Make adjustments > Adjust Water Level
+    Make adjustments > Request Gate Adjustment
     Start transfer > Request Gate Move
 --
 state Request Gate Move ()
@@ -67,21 +67,22 @@ transitions
 state Request Gate Adjustment ()
 activity
     // Tell the gate for the Active Step to adjust its level.
-    Adjust level -> /R12/Adjustment Step/R14/
+    Adjust level -> /R12/Adjustment Step/R14/Transit Lane Gate
 
 transitions
     Adjust complete > Assess Adjustment Complete
 --
 state Assess Adjustment Complete ()
 activity
-    // 1 - Get the next Transit Lane Gate to be adjusted 
+    // 1 - Get the next Transit Lane Gate to be adjusted
+    //     and delete the old one.
     next step .= /R12/Adjustment Step/OR13/after
-    !*/R12/Active Step // Don't need this anymore
+    !*/R12/Active Step 
     // 2 - Do we have a next step?
     next step?
     //3A - We have a next step create a new Active Step and go do it
     {
-        *Active Step & R12 me, next step
+        *Active Step &R12 me, next step
         Make adjustments -> me
     } :
     //3B - We don't have a next step, start the transfer
