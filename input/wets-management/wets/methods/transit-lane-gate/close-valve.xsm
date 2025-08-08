@@ -1,0 +1,8 @@
+//
+// Transit Lane Gate.Close valve()
+//
+// Sends an event to the VALVE external entity associated with this Transit Lane Gate
+// telling it to close
+
+My valve name = /R5/R6/R8/Valve.Name
+Close (valve name : My valve name) -> VALVE
