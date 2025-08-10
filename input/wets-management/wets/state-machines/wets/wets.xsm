@@ -45,22 +45,26 @@ activity
 
                // There are available transit lanes, see if there is one the same available transfer direction as the requested direction
                {
-                   chosen transit lane .= available transit lanes(1, available transfer direction : ^direction)
+                    chosen transit lane .= available transit lanes(1, available transfer direction : ^direction)
 
-                   // If there isn't one in the same direction, just use one of the available ones
+                    // If there isn't one in the same direction, just use one of the available ones
 
-                   !chosen transit lane? chosen transit lane .= available transit lanes(1)
+                    !chosen transit lane? chosen transit lane .= available transit lanes(1)
 
-                   // Get the first gate for traversing the chosen transit lane in the requested direction.
-                   // If requested direction is up, then first gate will be downstream, otherwise it will be upstream.
+                    // Get the first gate for traversing the chosen transit lane in the requested direction.
+                    / If requested direction is up, then first gate will be downstream, otherwise it will be upstream.
 
-                   ^direction == _up?
-                       first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
-                       first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/upstream/~|
+                    ^direction == _up?
+                        first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/downstream/~| :
+                        first gate .= chosen transit lane/R5/Transit Lane Gate/OR7/upstream/~|
 
-                   // Create an Assigned Vessel and establish relationships
+                    // Create an Assigned Vessel and establish relationships
 
-                   *Vessel(License: ^new license, Transfer direction: ^direction) &R2 *Assigned Vessel( Status: .moving) &R10 first gate, &R4 chosen transit lane  
+                    new vessel .= *Vessel(License: ^new license, Transfer direction: ^direction) &R2 *Assigned Vessel( Status: _moving) &R4 chosen transit lane
+
+                    // Create the associative class Active Gate Move 
+
+                    *Active Gate Move &R10 new vessel/R2/Assigned Vessel, first gate
                 } :
 
                // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
@@ -136,7 +140,11 @@ activity
 
             // Migrate the Waiting Vessel to an Assigned Vessel.
 
-            earliest waiting vessel >> Assigned Vessel(Status: _moving) &R10 first gate, &R4 ^free transit lane  
+            earliest waiting vessel >> Assigned Vessel(Status: _moving) &R4 ^free transit lane  
+
+            // Create the associative object Active Gate Move
+
+            *Active Gate Move &R10 ^free transit lane/R4/Assigned Vessel, first gate
 
             //  Send an event to the transit lane to let it know it has a vessel to move.
 
