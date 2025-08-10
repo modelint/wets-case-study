@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
     Modification date : August 9, 2025
-    Version : 0.9
+    Version : 0.10
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -114,10 +114,14 @@ transitions
 state Service Transfer Completed(free transit lane : Transit Lane, completed license : Vessel License)
 activity
 
-    //  Send the Assigned Vessel a Transfer completed event and then
-    //  delete the Supertype Vessel and associated subtype Assigned Vessel.
+    // Send the  Vessel a Transfer completed event
 
     Transfer completed (vessel license : ^completed license) -> VESSEL
+
+    // Next delete the associated class Active Gate Move followed by deleting 
+    // the Supertype Vessel and associated subtype Assigned Vessel.
+
+    !*/R4/R10Active Gate Move
     !*Vessel(License: ^completed license), Assigned Vessel(License: ^completed license)
 
     // Now get the earliest waiting vessel
