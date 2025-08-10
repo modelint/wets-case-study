@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.5
     Creation date : June 3, 2025
-    Version : 0.5
+    Version : 0.6
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -26,7 +26,7 @@ state Secured At Rest ()
 activity
 transitions
     Move vessel > Open Valve
-    Adjust level > Open ValveAdj
+    Adjust level > Open Valve Adjust
 --
 state Open Valve ()
 activity
@@ -48,7 +48,7 @@ transitions
 --
 state Wait For Zero Flow ()
 activity
-    // Direct my culvert to notify me when the flow throught it
+    // Direct my culvert to notify me when the flow through it
     // from the open valve is zero
 
     Transit Lane Gate.Wait for zero flow()
@@ -58,7 +58,7 @@ transitions
 --
 state Wait For Zero Flow Adjust ()
 activity
-    // Direct my culvert to notify me when the flow throught it
+    // Direct my culvert to notify me when the flow through it
     // from the open valve is zero
 
     Transit Lane Gate.Wait for zero flow()
