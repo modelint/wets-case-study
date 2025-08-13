@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.5
     Creation date : June 3, 2025
-    Version : 0.2
+    Version : 0.6
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -18,32 +18,53 @@ events
     Gate closed
     Valve closed
     Move completed
+    Adjust level
+    Adjust completed
+
 --
 state Secured At Rest ()
 activity
 transitions
     Move vessel > Open Valve
+    Adjust level > Open Valve Adjust
 --
 state Open Valve ()
 activity
     // Direct my valve to open
 
-    My valve name = /R5/R6/R8/Valve.Name
-    Open (valve name : My valve name) -> VALVE
+    Transit Lane Gate.Open valve()
 
 transitions
     Valve opened > Wait For Zero Flow
 --
+state Open Valve Adjust ()
+activity
+    // Direct my valve to open
+
+    Transit Lane Gate.Open valve()
+
+transitions
+    Valve opened > Wait For Zero Flow Adjust
+--
 state Wait For Zero Flow ()
 activity
-    // Direct my culvert to notify me when the flow throught it
+    // Direct my culvert to notify me when the flow through it
     // from the open valve is zero
 
-    My culvert name = /R5/R6/Culvert.Name
-    Indicate no flow (culvert name : My culvert name) -> CULVERT
+    Transit Lane Gate.Wait for zero flow()
 
 transitions
     Flow zero > Open Gate
+--
+state Wait For Zero Flow Adjust ()
+activity
+    // Direct my culvert to notify me when the flow through it
+    // from the open valve is zero
+
+    Transit Lane Gate.Wait for zero flow()
+
+transitions
+    Flow zero > Close Valve Adjust
 --
 state Open Gate ()
 activity
@@ -79,11 +100,19 @@ state Close Valve ()
 activity
     // Direct my valve to close
 
-    My valve name = /R5/R6/R8/Valve.Name
-    Close (valve name : My valve name) -> VALVE
+    Transit Lane Gate. Close valve()
     
 transitions
     Valve closed > Complete Move
+--
+state Close Valve Adjust ()
+activity
+    // Direct my valve to close
+
+    Transit Lane Gate. Close valve()
+    
+transitions
+    Valve closed > Complete Adjust 
 --
 state Complete Move ()
 activity
@@ -95,4 +124,15 @@ activity
 
 transitions
     Move completed > Secured At Rest
+--
+state Complete Adjust ()
+activity
+    // Notify my Transit Lane that the requested adjustment has been completed.
+
+    My transit lane := /R5/Transit Lane
+    Adjust complete () -> My transit lane
+    Adjust completed () -> me
+
+transitions
+    Adjust completed > Secured At Rest
 --

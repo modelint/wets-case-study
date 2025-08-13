@@ -1,0 +1,8 @@
+//
+// Transit Lane Gate.Wait for zero flow()
+//
+// Sends an event to the CULVERT external entity associated with this Transit Lane Gate
+// telling it to notify me when there is zero water flow.
+
+My culvert name = /R5/R6/Culvert.Name
+Indicate no flow (culvert name : My culcert name) -> CULVERT

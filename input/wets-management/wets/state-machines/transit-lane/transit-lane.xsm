@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
     Creation date : May 23, 2025
-    Version : 0.4
+    Version : 0.8
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -13,9 +13,11 @@ events
     Vessel assigned
     Make adjustments
     Start transfer
-    Move Complete
+    Move complete
     Continue transfer
     Finished transfer
+    Adjust complete
+    Continue adjustment
 --
 state Idle
 activity
@@ -33,33 +35,22 @@ activity
 
         Start transfer -> me :
     
-    // Different transfer directions, so go do water adjustments. 
-
-        Make adjustments -> me
-
-transitions
-    Make adjustments > Adjust Water Level
-    Start transfer > Request Gate Move
---
-state Adjust Water Level ()
-activity
-    // See whether we need to adjust the water levels up or down.
-
-    (/R4/R2/Vessel.Transfer direction == _up)?
-    {
-        // Adjust water levels for an up transfer. Algorithm to be designed.
-        // Update this attribute.
+    // Different transfer directions, so we need to:
+    //1 - Change the Available transfer direction for this Transit Lane
+    Available transfer direction == _up?
+        Available transfer direction = _down :
         Available transfer direction = _up
-    } :
-    {
-        //Adjust water levels for a down transfer. Algorithm to be designed.
-        // Update this attribute.
-        Available transfer direction = _down
-    }
-    // Water levels adjusted, start the transfer.
-    Start transfer -> me 
+    //2 - Get the set of Adjustment Steps to do this
+    adjustment step set .. = /R11/Adjustment Step (transit lane : Name ; Adjustment direction : Available transfer direction)
+    //3 - Get the first step in this set
+    starting step .= adjustment step set/OR13/before/~|
+    //4 - Create the associative class Active Step
+    *Active Step &R12 me, starting step
+    //5 - Then go do the Active Step adjustment
+    Make adjustments -> me
 
 transitions
+    Make adjustments > Request Gate Adjustment
     Start transfer > Request Gate Move
 --
 state Request Gate Move ()
@@ -72,6 +63,34 @@ activity
     
 transitions
     Move complete > Assess Transfer Complete
+--
+state Request Gate Adjustment ()
+activity
+    // Tell the gate for the Active Step to adjust its level.
+    Adjust level -> /R12/Adjustment Step/R14/Transit Lane Gate
+
+transitions
+    Adjust complete > Assess Adjustment Complete
+--
+state Assess Adjustment Complete ()
+activity
+    // 1 - Get the next Transit Lane Gate to be adjusted
+    //     and delete the old one.
+    next step .= /R12/Adjustment Step/OR13/after
+    !*/R12/Active Step 
+    // 2 - Do we have a next step?
+    next step?
+    //3A - We have a next step create a new Active Step and go do it
+    {
+        *Active Step &R12 me, next step
+        Make adjustments -> me
+    } :
+    //3B - We don't have a next step, start the transfer
+    {   Start transfer -> me}
+    
+transitions
+    Continue adjustment > Request Gate Adjustment
+    Start transfer > Request Gate Move
 --
 state Assess Transfer Complete ()
 activity
@@ -90,9 +109,10 @@ activity
     // Is there a next transit lane gate or are we finished?
 
     next transit lane gate?  
-    // Yes we have one, relate the vessel to this new gate via R10 and continue transfer
+    // Yes we have one, relate the vessel to this new gate via R10 and the
+    // associative class Active Gate Move and continue transfer
     {
-        /R4/Assigned Vessel &R10 next transit lane gate
+        *Active Gate Move &R10 /R4/Assigned Vessel, next transit lane gate
 
         Continue transfer -> me
     } :
