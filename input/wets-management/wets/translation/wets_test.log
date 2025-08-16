@@ -1,0 +1,922 @@
+tclsh wets_test.test -verbose bet -level info -showstates 
+[mecate] [info] 'starting harness program, "./wets_test_harness"'
+[mecate] [info] 'connecting to localhost:3906'
+trace on
+instr on
+[wets::test] [info] '**** Begin Test Set 1 ****'
+eloop halt
+signal wets Wets toadscanal Transfer_request VS-9300 0
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:33.840.823: Transition: ?.? - Transfer_request -> Wets.toadscanal: Idle ==> Service_Transfer_Request'
+[wets::test] [info] '2025-08-16T10:44:33.840.968: Transition: Wets.toadscanal - Continue -> Wets.toadscanal: Service_Transfer_Request ==> Idle'
+[wets::test] [info] '2025-08-16T10:44:33.840.975: Transition: Wets.toadscanal - Vessel_assigned -> Transit_Lane.north: Idle ==> Assess_Water_Level'
+[wets::test] [info] '2025-08-16T10:44:33.840.988: Transition: Transit_Lane.north - Start_transfer -> Transit_Lane.north: Assess_Water_Level ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:33.841.001: Transition: Transit_Lane.north - Move_vessel -> Transit_Lane_Gate.g1_north: Secured_At_Rest ==> Open_Valve'
+[wets::test] [info] 'First up request assigned to north'
+signal wets Transit_Lane_Gate g1_north Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:33.886.172: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g1_north: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g1_north Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:33.928.062: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g1_north: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g1_north Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:33.971.243: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g1_north: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g1_north Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.013.791: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g1_north: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g1_north Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.056.773: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g1_north: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g1_north Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.099.664: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g1_north: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:34.099.813: Transition: Transit_Lane_Gate.g1_north - Move_completed -> Transit_Lane_Gate.g1_north: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:34.099.846: Transition: Transit_Lane_Gate.g1_north - Move_complete -> Transit_Lane.north: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:34.099.942: Transition: Transit_Lane.north - Continue_transfer -> Transit_Lane.north: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:34.099.999: Transition: Transit_Lane.north - Move_vessel -> Transit_Lane_Gate.g2_north: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g2_north Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.147.142: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g2_north: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g2_north Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.190.739: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g2_north: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g2_north Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.232.658: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g2_north: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g2_north Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.274.414: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g2_north: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g2_north Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.316.972: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g2_north: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g2_north Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.360.554: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g2_north: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:34.360.718: Transition: Transit_Lane_Gate.g2_north - Move_completed -> Transit_Lane_Gate.g2_north: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:34.360.756: Transition: Transit_Lane_Gate.g2_north - Move_complete -> Transit_Lane.north: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:34.360.815: Transition: Transit_Lane.north - Continue_transfer -> Transit_Lane.north: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:34.360.896: Transition: Transit_Lane.north - Move_vessel -> Transit_Lane_Gate.g3_north: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g3_north Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.408.927: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g3_north: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g3_north Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.452.543: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g3_north: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g3_north Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.496.554: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g3_north: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g3_north Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.539.339: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g3_north: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g3_north Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.581.898: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g3_north: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g3_north Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.626.111: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g3_north: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:34.626.305: Transition: Transit_Lane_Gate.g3_north - Move_completed -> Transit_Lane_Gate.g3_north: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:34.626.345: Transition: Transit_Lane_Gate.g3_north - Move_complete -> Transit_Lane.north: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:34.626.407: Transition: Transit_Lane.north - Continue_transfer -> Transit_Lane.north: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:34.626.464: Transition: Transit_Lane.north - Move_vessel -> Transit_Lane_Gate.g4_north: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g4_north Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.675.605: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g4_north: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g4_north Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.719.957: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g4_north: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g4_north Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.763.387: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g4_north: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g4_north Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.806.202: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g4_north: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g4_north Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.849.951: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g4_north: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g4_north Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.894.380: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g4_north: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:34.894.538: Transition: Transit_Lane_Gate.g4_north - Move_completed -> Transit_Lane_Gate.g4_north: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:34.894.574: Transition: Transit_Lane_Gate.g4_north - Move_complete -> Transit_Lane.north: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:34.894.640: Transition: Transit_Lane.north - Continue_transfer -> Transit_Lane.north: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:34.894.716: Transition: Transit_Lane.north - Move_vessel -> Transit_Lane_Gate.g5_north: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g5_north Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.944.055: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g5_north: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g5_north Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:34.987.820: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g5_north: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g5_north Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.031.188: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g5_north: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g5_north Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.074.787: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g5_north: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g5_north Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.118.805: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g5_north: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g5_north Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.162.941: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g5_north: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:35.163.146: Transition: Transit_Lane_Gate.g5_north - Move_completed -> Transit_Lane_Gate.g5_north: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:35.163.182: Transition: Transit_Lane_Gate.g5_north - Move_complete -> Transit_Lane.north: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:35.163.254: Transition: Transit_Lane.north - Finished_transfer -> Transit_Lane.north: Assess_Transfer_Complete ==> Idle'
+[wets::test] [info] '2025-08-16T10:44:35.163.288: Transition: Transit_Lane.north - Transfer_completed -> Wets.toadscanal: Idle ==> Service_Transfer_Completed'
+[wets::test] [info] '2025-08-16T10:44:35.163.438: Transition: Wets.toadscanal - Continue -> Wets.toadscanal: Service_Transfer_Completed ==> Idle'
+[wets::test] [info] '**** Begin Test Set 2 ****'
+eloop halt
+signal wets Wets toadscanal Transfer_request VS-9301 0
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.243.656: Transition: ?.? - Transfer_request -> Wets.toadscanal: Idle ==> Service_Transfer_Request'
+[wets::test] [info] '2025-08-16T10:44:35.243.765: Transition: Wets.toadscanal - Continue -> Wets.toadscanal: Service_Transfer_Request ==> Idle'
+[wets::test] [info] '2025-08-16T10:44:35.243.777: Transition: Wets.toadscanal - Vessel_assigned -> Transit_Lane.north: Idle ==> Assess_Water_Level'
+[wets::test] [info] '2025-08-16T10:44:35.243.803: Transition: Transit_Lane.north - Start_transfer -> Transit_Lane.north: Assess_Water_Level ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:35.243.823: Transition: Transit_Lane.north - Move_vessel -> Transit_Lane_Gate.g1_north: Secured_At_Rest ==> Open_Valve'
+[wets::test] [info] 'Second up request assigned to north'
+signal wets Wets toadscanal Transfer_request VS-9305 0
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.286.873: Transition: ?.? - Transfer_request -> Wets.toadscanal: Idle ==> Service_Transfer_Request'
+[wets::test] [info] '2025-08-16T10:44:35.286.968: Transition: Wets.toadscanal - Continue -> Wets.toadscanal: Service_Transfer_Request ==> Idle'
+[wets::test] [info] '2025-08-16T10:44:35.286.977: Transition: Wets.toadscanal - Vessel_assigned -> Transit_Lane.south: Idle ==> Assess_Water_Level'
+[wets::test] [info] '2025-08-16T10:44:35.287.012: Transition: Transit_Lane.south - Make_adjustments -> Transit_Lane.south: Assess_Water_Level ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:35.287.029: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g5_south: Secured_At_Rest ==> Open_Valve_Adjust'
+[wets::test] [info] 'Third up request assigned to south'
+signal wets Transit_Lane_Gate g1_north Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.331.111: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g1_north: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g1_north Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.373.334: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g1_north: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g1_north Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.415.792: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g1_north: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g1_north Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.459.691: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g1_north: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g1_north Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.502.048: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g1_north: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g1_north Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.545.041: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g1_north: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:35.545.166: Transition: Transit_Lane_Gate.g1_north - Move_completed -> Transit_Lane_Gate.g1_north: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:35.545.192: Transition: Transit_Lane_Gate.g1_north - Move_complete -> Transit_Lane.north: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:35.545.241: Transition: Transit_Lane.north - Continue_transfer -> Transit_Lane.north: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:35.545.285: Transition: Transit_Lane.north - Move_vessel -> Transit_Lane_Gate.g2_north: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g2_north Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.591.680: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g2_north: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g2_north Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.634.974: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g2_north: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g2_north Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.677.467: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g2_north: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g2_north Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.719.770: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g2_north: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g2_north Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.762.523: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g2_north: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g2_north Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.804.653: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g2_north: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:35.804.779: Transition: Transit_Lane_Gate.g2_north - Move_completed -> Transit_Lane_Gate.g2_north: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:35.804.804: Transition: Transit_Lane_Gate.g2_north - Move_complete -> Transit_Lane.north: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:35.804.879: Transition: Transit_Lane.north - Continue_transfer -> Transit_Lane.north: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:35.804.927: Transition: Transit_Lane.north - Move_vessel -> Transit_Lane_Gate.g3_north: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g3_north Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.854.513: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g3_north: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g3_north Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.897.217: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g3_north: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g3_north Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.940.037: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g3_north: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g3_north Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:35.983.032: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g3_north: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g3_north Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.026.892: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g3_north: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g3_north Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.070.906: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g3_north: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:36.071.138: Transition: Transit_Lane_Gate.g3_north - Move_completed -> Transit_Lane_Gate.g3_north: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:36.071.186: Transition: Transit_Lane_Gate.g3_north - Move_complete -> Transit_Lane.north: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:36.071.279: Transition: Transit_Lane.north - Continue_transfer -> Transit_Lane.north: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:36.071.335: Transition: Transit_Lane.north - Move_vessel -> Transit_Lane_Gate.g4_north: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g4_north Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.120.629: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g4_north: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g4_north Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.164.190: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g4_north: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g4_north Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.208.296: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g4_north: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g4_north Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.252.138: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g4_north: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g4_north Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.296.011: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g4_north: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g4_north Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.339.570: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g4_north: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:36.339.696: Transition: Transit_Lane_Gate.g4_north - Move_completed -> Transit_Lane_Gate.g4_north: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:36.339.724: Transition: Transit_Lane_Gate.g4_north - Move_complete -> Transit_Lane.north: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:36.339.775: Transition: Transit_Lane.north - Continue_transfer -> Transit_Lane.north: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:36.339.831: Transition: Transit_Lane.north - Move_vessel -> Transit_Lane_Gate.g5_north: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g5_north Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.386.233: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g5_north: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g5_north Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.430.018: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g5_north: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g5_north Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.474.058: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g5_north: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g5_north Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.518.085: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g5_north: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g5_north Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.563.303: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g5_north: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g5_north Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.607.552: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g5_north: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:36.607.769: Transition: Transit_Lane_Gate.g5_north - Move_completed -> Transit_Lane_Gate.g5_north: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:36.607.815: Transition: Transit_Lane_Gate.g5_north - Move_complete -> Transit_Lane.north: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:36.607.941: Transition: Transit_Lane.north - Finished_transfer -> Transit_Lane.north: Assess_Transfer_Complete ==> Idle'
+[wets::test] [info] '2025-08-16T10:44:36.607.967: Transition: Transit_Lane.north - Transfer_completed -> Wets.toadscanal: Idle ==> Service_Transfer_Completed'
+[wets::test] [info] '2025-08-16T10:44:36.608.093: Transition: Wets.toadscanal - Continue -> Wets.toadscanal: Service_Transfer_Completed ==> Idle'
+signal wets Transit_Lane_Gate g5_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.696.403: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g5_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g5_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.738.288: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g5_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g5_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.780.636: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g5_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:36.780.710: Transition: Transit_Lane_Gate.g5_south - Adjust_completed -> Transit_Lane_Gate.g5_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:36.780.725: Transition: Transit_Lane_Gate.g5_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:36.780.758: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:36.780.783: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g4_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g4_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.828.217: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g4_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g4_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.871.194: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g4_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g4_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.913.600: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g4_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:36.913.667: Transition: Transit_Lane_Gate.g4_south - Adjust_completed -> Transit_Lane_Gate.g4_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:36.913.682: Transition: Transit_Lane_Gate.g4_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:36.913.710: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:36.913.734: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g3_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g3_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:36.959.853: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g3_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g3_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.004.258: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g3_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g3_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.047.992: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g3_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:37.048.092: Transition: Transit_Lane_Gate.g3_south - Adjust_completed -> Transit_Lane_Gate.g3_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:37.048.115: Transition: Transit_Lane_Gate.g3_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:37.048.154: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:37.048.185: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g2_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g2_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.095.167: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g2_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g2_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.140.207: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g2_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g2_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.183.260: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g2_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:37.183.343: Transition: Transit_Lane_Gate.g2_south - Adjust_completed -> Transit_Lane_Gate.g2_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:37.183.361: Transition: Transit_Lane_Gate.g2_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:37.183.391: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:37.183.420: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g5_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g5_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.228.383: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g5_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g5_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.270.753: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g5_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g5_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.312.880: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g5_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:37.312.969: Transition: Transit_Lane_Gate.g5_south - Adjust_completed -> Transit_Lane_Gate.g5_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:37.312.984: Transition: Transit_Lane_Gate.g5_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:37.313.021: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:37.313.052: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g4_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g4_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.359.059: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g4_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g4_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.403.606: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g4_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g4_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.447.629: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g4_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:37.447.746: Transition: Transit_Lane_Gate.g4_south - Adjust_completed -> Transit_Lane_Gate.g4_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:37.447.773: Transition: Transit_Lane_Gate.g4_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:37.447.833: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:37.447.908: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g3_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g3_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.494.146: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g3_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g3_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.537.336: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g3_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g3_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.580.579: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g3_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:37.580.691: Transition: Transit_Lane_Gate.g3_south - Adjust_completed -> Transit_Lane_Gate.g3_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:37.580.723: Transition: Transit_Lane_Gate.g3_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:37.580.774: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:37.580.825: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g5_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g5_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.632.231: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g5_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g5_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.674.689: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g5_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g5_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.716.412: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g5_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:37.716.510: Transition: Transit_Lane_Gate.g5_south - Adjust_completed -> Transit_Lane_Gate.g5_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:37.716.530: Transition: Transit_Lane_Gate.g5_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:37.716.565: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:37.716.584: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g4_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g4_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.768.160: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g4_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g4_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.811.055: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g4_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g4_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.853.744: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g4_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:37.853.889: Transition: Transit_Lane_Gate.g4_south - Adjust_completed -> Transit_Lane_Gate.g4_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:37.853.915: Transition: Transit_Lane_Gate.g4_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:37.853.942: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:37.853.965: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g5_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g5_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.906.003: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g5_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g5_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.948.999: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g5_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g5_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:37.993.139: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g5_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:37.993.287: Transition: Transit_Lane_Gate.g5_south - Adjust_completed -> Transit_Lane_Gate.g5_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:37.993.324: Transition: Transit_Lane_Gate.g5_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:37.993.392: Transition: Transit_Lane.south - Start_transfer -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:37.993.453: Transition: Transit_Lane.south - Move_vessel -> Transit_Lane_Gate.g1_south: Secured_At_Rest ==> Open_Valve'
+[wets::test] [info] '**** Begin Test Set 3 ****'
+eloop halt
+signal wets Transit_Lane_Gate g1_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.086.053: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g1_south: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g1_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.127.906: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g1_south: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g1_south Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.170.360: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g1_south: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g1_south Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.214.077: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g1_south: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g1_south Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.256.137: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g1_south: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g1_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.298.703: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g1_south: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:38.298.805: Transition: Transit_Lane_Gate.g1_south - Move_completed -> Transit_Lane_Gate.g1_south: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:38.298.829: Transition: Transit_Lane_Gate.g1_south - Move_complete -> Transit_Lane.south: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:38.298.891: Transition: Transit_Lane.south - Continue_transfer -> Transit_Lane.south: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:38.298.929: Transition: Transit_Lane.south - Move_vessel -> Transit_Lane_Gate.g2_south: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g2_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.344.208: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g2_south: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g2_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.387.144: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g2_south: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g2_south Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.430.804: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g2_south: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g2_south Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.473.847: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g2_south: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g2_south Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.517.477: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g2_south: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g2_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.560.918: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g2_south: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:38.561.091: Transition: Transit_Lane_Gate.g2_south - Move_completed -> Transit_Lane_Gate.g2_south: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:38.561.133: Transition: Transit_Lane_Gate.g2_south - Move_complete -> Transit_Lane.south: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:38.561.208: Transition: Transit_Lane.south - Continue_transfer -> Transit_Lane.south: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:38.561.260: Transition: Transit_Lane.south - Move_vessel -> Transit_Lane_Gate.g3_south: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g3_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.611.123: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g3_south: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g3_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.654.102: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g3_south: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g3_south Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.696.560: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g3_south: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g3_south Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.739.776: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g3_south: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g3_south Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.782.718: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g3_south: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g3_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.824.838: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g3_south: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:38.824.931: Transition: Transit_Lane_Gate.g3_south - Move_completed -> Transit_Lane_Gate.g3_south: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:38.824.951: Transition: Transit_Lane_Gate.g3_south - Move_complete -> Transit_Lane.south: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:38.824.976: Transition: Transit_Lane.south - Continue_transfer -> Transit_Lane.south: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:38.824.994: Transition: Transit_Lane.south - Move_vessel -> Transit_Lane_Gate.g4_south: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g4_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.873.741: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g4_south: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g4_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.918.444: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g4_south: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g4_south Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:38.960.690: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g4_south: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g4_south Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.003.013: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g4_south: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g4_south Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.046.765: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g4_south: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g4_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.091.685: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g4_south: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:39.091.949: Transition: Transit_Lane_Gate.g4_south - Move_completed -> Transit_Lane_Gate.g4_south: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:39.091.997: Transition: Transit_Lane_Gate.g4_south - Move_complete -> Transit_Lane.south: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:39.092.096: Transition: Transit_Lane.south - Continue_transfer -> Transit_Lane.south: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:39.092.179: Transition: Transit_Lane.south - Move_vessel -> Transit_Lane_Gate.g5_south: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g5_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.138.734: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g5_south: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g5_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.182.051: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g5_south: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g5_south Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.226.368: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g5_south: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g5_south Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.268.819: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g5_south: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g5_south Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.314.283: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g5_south: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g5_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.357.586: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g5_south: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:39.357.742: Transition: Transit_Lane_Gate.g5_south - Move_completed -> Transit_Lane_Gate.g5_south: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:39.357.768: Transition: Transit_Lane_Gate.g5_south - Move_complete -> Transit_Lane.south: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:39.357.821: Transition: Transit_Lane.south - Finished_transfer -> Transit_Lane.south: Assess_Transfer_Complete ==> Idle'
+[wets::test] [info] '2025-08-16T10:44:39.357.853: Transition: Transit_Lane.south - Transfer_completed -> Wets.toadscanal: Idle ==> Service_Transfer_Completed'
+[wets::test] [info] '2025-08-16T10:44:39.358.017: Transition: Wets.toadscanal - Continue -> Wets.toadscanal: Service_Transfer_Completed ==> Idle'
+[wets::test] [info] '**** Begin Test Set 4 ****'
+eloop halt
+signal wets Wets toadscanal Transfer_request VS-9302 1
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.434.661: Transition: ?.? - Transfer_request -> Wets.toadscanal: Idle ==> Service_Transfer_Request'
+[wets::test] [info] '2025-08-16T10:44:39.434.847: Transition: Wets.toadscanal - Continue -> Wets.toadscanal: Service_Transfer_Request ==> Idle'
+[wets::test] [info] '2025-08-16T10:44:39.434.875: Transition: Wets.toadscanal - Vessel_assigned -> Transit_Lane.middle: Idle ==> Assess_Water_Level'
+[wets::test] [info] '2025-08-16T10:44:39.434.901: Transition: Transit_Lane.middle - Start_transfer -> Transit_Lane.middle: Assess_Water_Level ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:39.434.922: Transition: Transit_Lane.middle - Move_vessel -> Transit_Lane_Gate.g5_middle: Secured_At_Rest ==> Open_Valve'
+[wets::test] [info] 'First down request assigned to middle'
+read wets Transit_Lane north
+[wets::test] [info] 'Available_transfer_direction 0 Name North'
+read wets Transit_Lane middle
+[wets::test] [info] 'Available_transfer_direction 1 Name Middle'
+read wets Transit_Lane south
+[wets::test] [info] 'Available_transfer_direction 0 Name South'
+signal wets Wets toadscanal Transfer_request VS-9307 1
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.478.602: Transition: ?.? - Transfer_request -> Wets.toadscanal: Idle ==> Service_Transfer_Request'
+[wets::test] [info] '2025-08-16T10:44:39.478.700: Transition: Wets.toadscanal - Continue -> Wets.toadscanal: Service_Transfer_Request ==> Idle'
+[wets::test] [info] '2025-08-16T10:44:39.478.710: Transition: Wets.toadscanal - Vessel_assigned -> Transit_Lane.south: Idle ==> Assess_Water_Level'
+[wets::test] [info] '2025-08-16T10:44:39.478.740: Transition: Transit_Lane.south - Make_adjustments -> Transit_Lane.south: Assess_Water_Level ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:39.478.759: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g1_south: Secured_At_Rest ==> Open_Valve_Adjust'
+[wets::test] [info] 'Second down request assigned to south'
+signal wets Transit_Lane_Gate g5_middle Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.522.673: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g5_middle: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g5_middle Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.564.837: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g5_middle: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g5_middle Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.607.276: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g5_middle: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g5_middle Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.649.948: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g5_middle: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g5_middle Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.692.902: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g5_middle: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g5_middle Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.736.925: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g5_middle: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:39.737.106: Transition: Transit_Lane_Gate.g5_middle - Move_completed -> Transit_Lane_Gate.g5_middle: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:39.737.146: Transition: Transit_Lane_Gate.g5_middle - Move_complete -> Transit_Lane.middle: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:39.737.218: Transition: Transit_Lane.middle - Continue_transfer -> Transit_Lane.middle: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:39.737.297: Transition: Transit_Lane.middle - Move_vessel -> Transit_Lane_Gate.g4_middle: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g4_middle Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.783.397: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g4_middle: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g4_middle Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.826.108: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g4_middle: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g4_middle Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.869.810: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g4_middle: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g4_middle Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.912.822: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g4_middle: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g4_middle Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.956.313: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g4_middle: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g4_middle Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:39.999.217: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g4_middle: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:39.999.359: Transition: Transit_Lane_Gate.g4_middle - Move_completed -> Transit_Lane_Gate.g4_middle: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:39.999.389: Transition: Transit_Lane_Gate.g4_middle - Move_complete -> Transit_Lane.middle: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:39.999.452: Transition: Transit_Lane.middle - Continue_transfer -> Transit_Lane.middle: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:39.999.517: Transition: Transit_Lane.middle - Move_vessel -> Transit_Lane_Gate.g3_middle: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g3_middle Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.047.229: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g3_middle: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g3_middle Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.089.836: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g3_middle: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g3_middle Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.132.880: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g3_middle: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g3_middle Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.176.365: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g3_middle: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g3_middle Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.219.405: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g3_middle: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g3_middle Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.263.388: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g3_middle: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:40.263.563: Transition: Transit_Lane_Gate.g3_middle - Move_completed -> Transit_Lane_Gate.g3_middle: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:40.263.606: Transition: Transit_Lane_Gate.g3_middle - Move_complete -> Transit_Lane.middle: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:40.263.685: Transition: Transit_Lane.middle - Continue_transfer -> Transit_Lane.middle: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:40.263.753: Transition: Transit_Lane.middle - Move_vessel -> Transit_Lane_Gate.g2_middle: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g2_middle Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.313.095: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g2_middle: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g2_middle Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.358.345: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g2_middle: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g2_middle Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.400.506: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g2_middle: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g2_middle Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.443.242: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g2_middle: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g2_middle Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.488.081: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g2_middle: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g2_middle Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.533.317: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g2_middle: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:40.533.479: Transition: Transit_Lane_Gate.g2_middle - Move_completed -> Transit_Lane_Gate.g2_middle: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:40.533.519: Transition: Transit_Lane_Gate.g2_middle - Move_complete -> Transit_Lane.middle: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:40.533.591: Transition: Transit_Lane.middle - Continue_transfer -> Transit_Lane.middle: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:40.533.652: Transition: Transit_Lane.middle - Move_vessel -> Transit_Lane_Gate.g1_middle: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g1_middle Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.582.172: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g1_middle: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g1_middle Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.624.719: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g1_middle: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g1_middle Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.667.531: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g1_middle: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g1_middle Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.711.559: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g1_middle: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g1_middle Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.755.092: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g1_middle: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g1_middle Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.797.133: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g1_middle: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:40.797.210: Transition: Transit_Lane_Gate.g1_middle - Move_completed -> Transit_Lane_Gate.g1_middle: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:40.797.223: Transition: Transit_Lane_Gate.g1_middle - Move_complete -> Transit_Lane.middle: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:40.797.247: Transition: Transit_Lane.middle - Finished_transfer -> Transit_Lane.middle: Assess_Transfer_Complete ==> Idle'
+[wets::test] [info] '2025-08-16T10:44:40.797.257: Transition: Transit_Lane.middle - Transfer_completed -> Wets.toadscanal: Idle ==> Service_Transfer_Completed'
+[wets::test] [info] '2025-08-16T10:44:40.797.303: Transition: Wets.toadscanal - Continue -> Wets.toadscanal: Service_Transfer_Completed ==> Idle'
+[wets::test] [info] '**** Begin Test Set 5 ****'
+eloop halt
+signal wets Transit_Lane_Gate g1_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.883.900: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g1_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g1_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.926.217: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g1_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g1_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:40.968.810: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g1_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:40.968.933: Transition: Transit_Lane_Gate.g1_south - Adjust_completed -> Transit_Lane_Gate.g1_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:40.968.955: Transition: Transit_Lane_Gate.g1_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:40.968.996: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:40.969.038: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g2_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g2_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.017.917: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g2_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g2_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.060.077: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g2_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g2_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.102.187: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g2_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:41.102.280: Transition: Transit_Lane_Gate.g2_south - Adjust_completed -> Transit_Lane_Gate.g2_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:41.102.298: Transition: Transit_Lane_Gate.g2_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:41.102.330: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:41.102.357: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g1_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g1_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.154.064: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g1_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g1_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.197.114: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g1_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g1_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.239.816: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g1_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:41.239.939: Transition: Transit_Lane_Gate.g1_south - Adjust_completed -> Transit_Lane_Gate.g1_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:41.239.961: Transition: Transit_Lane_Gate.g1_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:41.240.001: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:41.240.034: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g3_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g3_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.289.036: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g3_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g3_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.332.157: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g3_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g3_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.374.522: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g3_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:41.374.637: Transition: Transit_Lane_Gate.g3_south - Adjust_completed -> Transit_Lane_Gate.g3_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:41.374.658: Transition: Transit_Lane_Gate.g3_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:41.374.713: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:41.374.755: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g2_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g2_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.421.046: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g2_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g2_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.464.643: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g2_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g2_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.507.719: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g2_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:41.507.898: Transition: Transit_Lane_Gate.g2_south - Adjust_completed -> Transit_Lane_Gate.g2_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:41.507.934: Transition: Transit_Lane_Gate.g2_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:41.508.001: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:41.508.042: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g1_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g1_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.555.568: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g1_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g1_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.598.547: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g1_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g1_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.641.663: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g1_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:41.641.817: Transition: Transit_Lane_Gate.g1_south - Adjust_completed -> Transit_Lane_Gate.g1_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:41.641.852: Transition: Transit_Lane_Gate.g1_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:41.641.944: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:41.641.979: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g4_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g4_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.689.051: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g4_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g4_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.732.636: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g4_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g4_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.774.734: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g4_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:41.774.837: Transition: Transit_Lane_Gate.g4_south - Adjust_completed -> Transit_Lane_Gate.g4_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:41.774.874: Transition: Transit_Lane_Gate.g4_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:41.774.920: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:41.774.952: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g3_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g3_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.821.319: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g3_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g3_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.865.196: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g3_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g3_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.908.572: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g3_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:41.908.768: Transition: Transit_Lane_Gate.g3_south - Adjust_completed -> Transit_Lane_Gate.g3_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:41.908.812: Transition: Transit_Lane_Gate.g3_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:41.908.921: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:41.908.965: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g2_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g2_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:41.958.490: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g2_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g2_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.002.122: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g2_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g2_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.044.963: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g2_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:42.045.071: Transition: Transit_Lane_Gate.g2_south - Adjust_completed -> Transit_Lane_Gate.g2_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:42.045.096: Transition: Transit_Lane_Gate.g2_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:42.045.146: Transition: Transit_Lane.south - Continue_adjustment -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Adjustment'
+[wets::test] [info] '2025-08-16T10:44:42.045.190: Transition: Transit_Lane.south - Adjust_level -> Transit_Lane_Gate.g1_south: Secured_At_Rest ==> Open_Valve_Adjust'
+signal wets Transit_Lane_Gate g1_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.094.728: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g1_south: Open_Valve_Adjust ==> Wait_For_Zero_Flow_Adjust'
+signal wets Transit_Lane_Gate g1_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.136.973: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g1_south: Wait_For_Zero_Flow_Adjust ==> Close_Valve_Adjust'
+signal wets Transit_Lane_Gate g1_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.180.007: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g1_south: Close_Valve_Adjust ==> Complete_Adjust'
+[wets::test] [info] '2025-08-16T10:44:42.180.098: Transition: Transit_Lane_Gate.g1_south - Adjust_completed -> Transit_Lane_Gate.g1_south: Complete_Adjust ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:42.180.117: Transition: Transit_Lane_Gate.g1_south - Adjust_complete -> Transit_Lane.south: Request_Gate_Adjustment ==> Assess_Adjustment_Complete'
+[wets::test] [info] '2025-08-16T10:44:42.180.142: Transition: Transit_Lane.south - Start_transfer -> Transit_Lane.south: Assess_Adjustment_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:42.180.161: Transition: Transit_Lane.south - Move_vessel -> Transit_Lane_Gate.g5_south: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g5_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.260.087: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g5_south: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g5_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.302.213: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g5_south: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g5_south Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.344.409: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g5_south: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g5_south Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.387.921: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g5_south: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g5_south Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.430.316: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g5_south: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g5_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.472.952: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g5_south: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:42.473.072: Transition: Transit_Lane_Gate.g5_south - Move_completed -> Transit_Lane_Gate.g5_south: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:42.473.097: Transition: Transit_Lane_Gate.g5_south - Move_complete -> Transit_Lane.south: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:42.473.140: Transition: Transit_Lane.south - Continue_transfer -> Transit_Lane.south: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:42.473.164: Transition: Transit_Lane.south - Move_vessel -> Transit_Lane_Gate.g4_south: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g4_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.521.071: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g4_south: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g4_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.564.140: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g4_south: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g4_south Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.606.192: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g4_south: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g4_south Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.650.212: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g4_south: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g4_south Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.692.765: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g4_south: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g4_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.735.428: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g4_south: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:42.735.577: Transition: Transit_Lane_Gate.g4_south - Move_completed -> Transit_Lane_Gate.g4_south: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:42.735.603: Transition: Transit_Lane_Gate.g4_south - Move_complete -> Transit_Lane.south: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:42.735.657: Transition: Transit_Lane.south - Continue_transfer -> Transit_Lane.south: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:42.735.706: Transition: Transit_Lane.south - Move_vessel -> Transit_Lane_Gate.g3_south: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g3_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.782.014: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g3_south: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g3_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.823.986: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g3_south: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g3_south Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.867.810: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g3_south: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g3_south Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.913.224: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g3_south: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g3_south Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.956.028: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g3_south: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g3_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:42.999.959: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g3_south: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:43.000.101: Transition: Transit_Lane_Gate.g3_south - Move_completed -> Transit_Lane_Gate.g3_south: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:43.000.136: Transition: Transit_Lane_Gate.g3_south - Move_complete -> Transit_Lane.south: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:43.000.197: Transition: Transit_Lane.south - Continue_transfer -> Transit_Lane.south: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:43.000.253: Transition: Transit_Lane.south - Move_vessel -> Transit_Lane_Gate.g2_south: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g2_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.049.378: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g2_south: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g2_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.091.877: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g2_south: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g2_south Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.135.874: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g2_south: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g2_south Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.179.954: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g2_south: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g2_south Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.222.793: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g2_south: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g2_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.266.619: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g2_south: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:43.266.746: Transition: Transit_Lane_Gate.g2_south - Move_completed -> Transit_Lane_Gate.g2_south: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:43.266.773: Transition: Transit_Lane_Gate.g2_south - Move_complete -> Transit_Lane.south: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:43.266.822: Transition: Transit_Lane.south - Continue_transfer -> Transit_Lane.south: Assess_Transfer_Complete ==> Request_Gate_Move'
+[wets::test] [info] '2025-08-16T10:44:43.266.893: Transition: Transit_Lane.south - Move_vessel -> Transit_Lane_Gate.g1_south: Secured_At_Rest ==> Open_Valve'
+signal wets Transit_Lane_Gate g1_south Valve_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.316.955: Transition: ?.? - Valve_opened -> Transit_Lane_Gate.g1_south: Open_Valve ==> Wait_For_Zero_Flow'
+signal wets Transit_Lane_Gate g1_south Flow_zero
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.359.976: Transition: ?.? - Flow_zero -> Transit_Lane_Gate.g1_south: Wait_For_Zero_Flow ==> Open_Gate'
+signal wets Transit_Lane_Gate g1_south Gate_opened
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.402.916: Transition: ?.? - Gate_opened -> Transit_Lane_Gate.g1_south: Open_Gate ==> Move_Vessel'
+signal wets Transit_Lane_Gate g1_south Vessel_moved
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.446.279: Transition: ?.? - Vessel_moved -> Transit_Lane_Gate.g1_south: Move_Vessel ==> Close_Gate'
+signal wets Transit_Lane_Gate g1_south Gate_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.490.366: Transition: ?.? - Gate_closed -> Transit_Lane_Gate.g1_south: Close_Gate ==> Close_Valve'
+signal wets Transit_Lane_Gate g1_south Valve_closed
+eloop toc nowait
+[wets::test] [info] '2025-08-16T10:44:43.534.608: Transition: ?.? - Valve_closed -> Transit_Lane_Gate.g1_south: Close_Valve ==> Complete_Move'
+[wets::test] [info] '2025-08-16T10:44:43.534.922: Transition: Transit_Lane_Gate.g1_south - Move_completed -> Transit_Lane_Gate.g1_south: Complete_Move ==> Secured_At_Rest'
+[wets::test] [info] '2025-08-16T10:44:43.534.983: Transition: Transit_Lane_Gate.g1_south - Move_complete -> Transit_Lane.south: Request_Gate_Move ==> Assess_Transfer_Complete'
+[wets::test] [info] '2025-08-16T10:44:43.535.072: Transition: Transit_Lane.south - Finished_transfer -> Transit_Lane.south: Assess_Transfer_Complete ==> Idle'
+[wets::test] [info] '2025-08-16T10:44:43.535.112: Transition: Transit_Lane.south - Transfer_completed -> Wets.toadscanal: Idle ==> Service_Transfer_Completed'
+[wets::test] [info] '2025-08-16T10:44:43.535.305: Transition: Wets.toadscanal - Continue -> Wets.toadscanal: Service_Transfer_Completed ==> Idle'
+[wets::test] [debug] '
++-----------------+--------------------------+-------------------+--------------------------+----------+
+|Model            |State                     |Event              |NewState                  |TransCount|
+|string           |string                    |string             |string                    |int       |
++-----------------+--------------------------+-------------------+--------------------------+----------+
+|Wets             |Idle                      |Transfer_request   |Service_Transfer_Request  |5         |
+|Wets             |Idle                      |Removal_request    |Service_Removal_Request   |0         |
+|Wets             |Idle                      |Transfer_completed |Service_Transfer_Completed|5         |
+|Wets             |Service_Transfer_Request  |Continue           |Idle                      |5         |
+|Wets             |Service_Removal_Request   |Continue           |Idle                      |0         |
+|Wets             |Service_Transfer_Completed|Continue           |Idle                      |5         |
+|Transit_Lane     |Idle                      |Vessel_assigned    |Assess_Water_Level        |5         |
+|Transit_Lane     |Assess_Water_Level        |Make_adjustments   |Request_Gate_Adjustment   |2         |
+|Transit_Lane     |Assess_Water_Level        |Start_transfer     |Request_Gate_Move         |3         |
+|Transit_Lane     |Request_Gate_Move         |Move_complete      |Assess_Transfer_Complete  |25        |
+|Transit_Lane     |Request_Gate_Adjustment   |Adjust_complete    |Assess_Adjustment_Complete|20        |
+|Transit_Lane     |Assess_Adjustment_Complete|Continue_adjustment|Request_Gate_Adjustment   |18        |
+|Transit_Lane     |Assess_Adjustment_Complete|Start_transfer     |Request_Gate_Move         |2         |
+|Transit_Lane     |Assess_Transfer_Complete  |Continue_transfer  |Request_Gate_Move         |20        |
+|Transit_Lane     |Assess_Transfer_Complete  |Finished_transfer  |Idle                      |5         |
+|Transit_Lane_Gate|Secured_At_Rest           |Move_vessel        |Open_Valve                |25        |
+|Transit_Lane_Gate|Secured_At_Rest           |Adjust_level       |Open_Valve_Adjust         |20        |
+|Transit_Lane_Gate|Open_Valve                |Valve_opened       |Wait_For_Zero_Flow        |25        |
+|Transit_Lane_Gate|Open_Valve_Adjust         |Valve_opened       |Wait_For_Zero_Flow_Adjust |20        |
+|Transit_Lane_Gate|Wait_For_Zero_Flow        |Flow_zero          |Open_Gate                 |25        |
+|Transit_Lane_Gate|Wait_For_Zero_Flow_Adjust |Flow_zero          |Close_Valve_Adjust        |20        |
+|Transit_Lane_Gate|Open_Gate                 |Gate_opened        |Move_Vessel               |25        |
+|Transit_Lane_Gate|Move_Vessel               |Vessel_moved       |Close_Gate                |25        |
+|Transit_Lane_Gate|Close_Gate                |Gate_closed        |Close_Valve               |25        |
+|Transit_Lane_Gate|Close_Valve               |Valve_closed       |Complete_Move             |25        |
+|Transit_Lane_Gate|Close_Valve_Adjust        |Valve_closed       |Complete_Adjust           |20        |
+|Transit_Lane_Gate|Complete_Move             |Move_completed     |Secured_At_Rest           |25        |
+|Transit_Lane_Gate|Complete_Adjust           |Adjust_completed   |Secured_At_Rest           |20        |
++-----------------+--------------------------+-------------------+--------------------------+----------+
+Active Transitions
+------------------'
+[mecate] [info] 'disconnecting from test harness'
+goodbye
+wets_test.test:	Total	0	Passed	0	Skipped	0	Failed	0
+gcovr --print-summary --html-details --html-title "WETS Coverage"\
+	--output ./coverage/wets.html
+(INFO) Reading coverage data...
+(INFO) Writing coverage report...
+lines: 87.1% (515 out of 591)
+functions: 94.3% (33 out of 35)
+branches: 65.8% (79 out of 120)
