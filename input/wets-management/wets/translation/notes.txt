@@ -1,3 +1,43 @@
+0.10 Notes
+1. In Wets.Service_Transfer_Completed activity:
+
+Scall:
+
+#         // Migrate the Waiting Vessel to an Assigned Vessel.
+#         earliest waiting vessel >> Assigned Vessel(Status: _moving) &R4 ^free transit lane
+#         // Create the associative object Active Gate Move
+#         *Active Gate Move &R10 ^free transit lane/R4/Assigned Vessel, first gate
+
+When relating the new instance of Active Gate Move to an instance of Assigned Vessel,
+I'm assuming that the desired instance is the one that was created by the subclass
+migration from the previous step. I'm also assuming that Scall has no way to return the
+newly created/migrated instance and thus it is necessary to traverse R4 to obtain the
+migrated instance of Assigned Vessel.
+
+I translated this in micca as:
+
+<%      R2 reclassify earliest_waiting_vessel Assigned_Vessel av \
+            Status ms_moving R4 free_transit_lane %>
+<%      Active_Gate_Move create agm R10 {Transit_Lane_Gate first_gate Assigned_Vessel av}           %>
+
+since micca does return a reclassified instance.
+Do you see anything wrong with this logic or my assumptions?
+
+2. Transit Lane.Assess Adjustment Complete activity
+
+//3A - We have a next step create a new Active Step and go do it
+{
+    *Active Step &R12 me, next step
+    Make adjustments -> me
+} :
+
+should be
+    Continue adjustment -> me
+
+
+-----------------------
+0.8 Notes
+
 1. In Wets.Service Transfer Request
 
 This statement look vaguely wrong to me:

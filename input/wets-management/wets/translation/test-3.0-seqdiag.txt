@@ -1,0 +1,120 @@
+@startuml
+!pragma teoz true
+boundary "BOUNDARY"
+participant "Transit_Lane_Gate.g1_south"
+participant "Transit_Lane.south"
+participant "Transit_Lane_Gate.g2_south"
+participant "Transit_Lane_Gate.g3_south"
+participant "Transit_Lane_Gate.g4_south"
+participant "Transit_Lane_Gate.g5_south"
+participant "Wets.toadscanal"
+ rnote over "Transit_Lane_Gate.g1_south" : Open_Valve
+& rnote over "Transit_Lane.south" : Request_Gate_Move
+& rnote over "Transit_Lane_Gate.g2_south" : Secured_At_Rest
+& rnote over "Transit_Lane_Gate.g3_south" : Secured_At_Rest
+& rnote over "Transit_Lane_Gate.g4_south" : Secured_At_Rest
+& rnote over "Transit_Lane_Gate.g5_south" : Secured_At_Rest
+& rnote over "Wets.toadscanal" : Idle
+"BOUNDARY" --> "Transit_Lane_Gate.g1_south" : Valve_opened
+rnote over "Transit_Lane_Gate.g1_south" : Wait_For_Zero_Flow
+"BOUNDARY" --> "Transit_Lane_Gate.g1_south" : Flow_zero
+rnote over "Transit_Lane_Gate.g1_south" : Open_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g1_south" : Gate_opened
+rnote over "Transit_Lane_Gate.g1_south" : Move_Vessel
+"BOUNDARY" --> "Transit_Lane_Gate.g1_south" : Vessel_moved
+rnote over "Transit_Lane_Gate.g1_south" : Close_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g1_south" : Gate_closed
+rnote over "Transit_Lane_Gate.g1_south" : Close_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g1_south" : Valve_closed
+rnote over "Transit_Lane_Gate.g1_south" : Complete_Move
+"Transit_Lane_Gate.g1_south" --> "Transit_Lane_Gate.g1_south" : Move_completed
+rnote over "Transit_Lane_Gate.g1_south" : Secured_At_Rest
+"Transit_Lane_Gate.g1_south" --> "Transit_Lane.south" : Move_complete
+rnote over "Transit_Lane.south" : Assess_Transfer_Complete
+"Transit_Lane.south" --> "Transit_Lane.south" : Continue_transfer
+rnote over "Transit_Lane.south" : Request_Gate_Move
+"Transit_Lane.south" --> "Transit_Lane_Gate.g2_south" : Move_vessel
+rnote over "Transit_Lane_Gate.g2_south" : Open_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g2_south" : Valve_opened
+rnote over "Transit_Lane_Gate.g2_south" : Wait_For_Zero_Flow
+"BOUNDARY" --> "Transit_Lane_Gate.g2_south" : Flow_zero
+rnote over "Transit_Lane_Gate.g2_south" : Open_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g2_south" : Gate_opened
+rnote over "Transit_Lane_Gate.g2_south" : Move_Vessel
+"BOUNDARY" --> "Transit_Lane_Gate.g2_south" : Vessel_moved
+rnote over "Transit_Lane_Gate.g2_south" : Close_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g2_south" : Gate_closed
+rnote over "Transit_Lane_Gate.g2_south" : Close_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g2_south" : Valve_closed
+rnote over "Transit_Lane_Gate.g2_south" : Complete_Move
+"Transit_Lane_Gate.g2_south" --> "Transit_Lane_Gate.g2_south" : Move_completed
+rnote over "Transit_Lane_Gate.g2_south" : Secured_At_Rest
+"Transit_Lane_Gate.g2_south" --> "Transit_Lane.south" : Move_complete
+rnote over "Transit_Lane.south" : Assess_Transfer_Complete
+"Transit_Lane.south" --> "Transit_Lane.south" : Continue_transfer
+rnote over "Transit_Lane.south" : Request_Gate_Move
+"Transit_Lane.south" --> "Transit_Lane_Gate.g3_south" : Move_vessel
+rnote over "Transit_Lane_Gate.g3_south" : Open_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g3_south" : Valve_opened
+rnote over "Transit_Lane_Gate.g3_south" : Wait_For_Zero_Flow
+"BOUNDARY" --> "Transit_Lane_Gate.g3_south" : Flow_zero
+rnote over "Transit_Lane_Gate.g3_south" : Open_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g3_south" : Gate_opened
+rnote over "Transit_Lane_Gate.g3_south" : Move_Vessel
+"BOUNDARY" --> "Transit_Lane_Gate.g3_south" : Vessel_moved
+rnote over "Transit_Lane_Gate.g3_south" : Close_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g3_south" : Gate_closed
+rnote over "Transit_Lane_Gate.g3_south" : Close_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g3_south" : Valve_closed
+rnote over "Transit_Lane_Gate.g3_south" : Complete_Move
+"Transit_Lane_Gate.g3_south" --> "Transit_Lane_Gate.g3_south" : Move_completed
+rnote over "Transit_Lane_Gate.g3_south" : Secured_At_Rest
+"Transit_Lane_Gate.g3_south" --> "Transit_Lane.south" : Move_complete
+rnote over "Transit_Lane.south" : Assess_Transfer_Complete
+"Transit_Lane.south" --> "Transit_Lane.south" : Continue_transfer
+rnote over "Transit_Lane.south" : Request_Gate_Move
+"Transit_Lane.south" --> "Transit_Lane_Gate.g4_south" : Move_vessel
+rnote over "Transit_Lane_Gate.g4_south" : Open_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g4_south" : Valve_opened
+rnote over "Transit_Lane_Gate.g4_south" : Wait_For_Zero_Flow
+"BOUNDARY" --> "Transit_Lane_Gate.g4_south" : Flow_zero
+rnote over "Transit_Lane_Gate.g4_south" : Open_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g4_south" : Gate_opened
+rnote over "Transit_Lane_Gate.g4_south" : Move_Vessel
+"BOUNDARY" --> "Transit_Lane_Gate.g4_south" : Vessel_moved
+rnote over "Transit_Lane_Gate.g4_south" : Close_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g4_south" : Gate_closed
+rnote over "Transit_Lane_Gate.g4_south" : Close_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g4_south" : Valve_closed
+rnote over "Transit_Lane_Gate.g4_south" : Complete_Move
+"Transit_Lane_Gate.g4_south" --> "Transit_Lane_Gate.g4_south" : Move_completed
+rnote over "Transit_Lane_Gate.g4_south" : Secured_At_Rest
+"Transit_Lane_Gate.g4_south" --> "Transit_Lane.south" : Move_complete
+rnote over "Transit_Lane.south" : Assess_Transfer_Complete
+"Transit_Lane.south" --> "Transit_Lane.south" : Continue_transfer
+rnote over "Transit_Lane.south" : Request_Gate_Move
+"Transit_Lane.south" --> "Transit_Lane_Gate.g5_south" : Move_vessel
+rnote over "Transit_Lane_Gate.g5_south" : Open_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g5_south" : Valve_opened
+rnote over "Transit_Lane_Gate.g5_south" : Wait_For_Zero_Flow
+"BOUNDARY" --> "Transit_Lane_Gate.g5_south" : Flow_zero
+rnote over "Transit_Lane_Gate.g5_south" : Open_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g5_south" : Gate_opened
+rnote over "Transit_Lane_Gate.g5_south" : Move_Vessel
+"BOUNDARY" --> "Transit_Lane_Gate.g5_south" : Vessel_moved
+rnote over "Transit_Lane_Gate.g5_south" : Close_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g5_south" : Gate_closed
+rnote over "Transit_Lane_Gate.g5_south" : Close_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g5_south" : Valve_closed
+rnote over "Transit_Lane_Gate.g5_south" : Complete_Move
+"Transit_Lane_Gate.g5_south" --> "Transit_Lane_Gate.g5_south" : Move_completed
+rnote over "Transit_Lane_Gate.g5_south" : Secured_At_Rest
+"Transit_Lane_Gate.g5_south" --> "Transit_Lane.south" : Move_complete
+rnote over "Transit_Lane.south" : Assess_Transfer_Complete
+"Transit_Lane.south" --> "Transit_Lane.south" : Finished_transfer
+rnote over "Transit_Lane.south" : Idle
+"Transit_Lane.south" --> "Wets.toadscanal" : Transfer_completed
+rnote over "Wets.toadscanal" : Service_Transfer_Completed
+"Wets.toadscanal" --> "Wets.toadscanal" : Continue
+rnote over "Wets.toadscanal" : Idle
+@enduml

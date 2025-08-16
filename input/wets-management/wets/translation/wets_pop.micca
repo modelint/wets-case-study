@@ -18,20 +18,20 @@ population wets {
         table   {Name           Available_transfer_direction    R1}\
         north   {{"North"}      dir_up                          toadscanal}\
         middle  {{"Middle"}     dir_down                        toadscanal}\
-        south   {{"South"}      dir_up                          toadscanal}\
+        south   {{"South"}      dir_down                        toadscanal}\
     }
     class Transit_Lane_Gate {
-        table       {Transit_position       R5}\
+        table       {Position               R5}\
         g1_north    {1                      {Transit_Lane north Gate g1}}\
         g2_north    {2                      {Transit_Lane north Gate g2}}\
         g3_north    {3                      {Transit_Lane north Gate g3}}\
         g4_north    {4                      {Transit_Lane north Gate g4}}\
         g5_north    {5                      {Transit_Lane north Gate g5}}\
-        g11_middle  {1                      {Transit_Lane middle Gate g11}}\
-        g12_middle  {2                      {Transit_Lane middle Gate g12}}\
-        g13_middle  {3                      {Transit_Lane middle Gate g13}}\
-        g14_middle  {4                      {Transit_Lane middle Gate g14}}\
-        g15_middle  {5                      {Transit_Lane middle Gate g15}}\
+        g1_middle   {1                      {Transit_Lane middle Gate g11}}\
+        g2_middle   {2                      {Transit_Lane middle Gate g12}}\
+        g3_middle   {3                      {Transit_Lane middle Gate g13}}\
+        g4_middle   {4                      {Transit_Lane middle Gate g14}}\
+        g5_middle   {5                      {Transit_Lane middle Gate g15}}\
         g1_south    {1                      {Transit_Lane south Gate g6}}\
         g2_south    {2                      {Transit_Lane south Gate g7}}\
         g3_south    {3                      {Transit_Lane south Gate g8}}\
@@ -91,5 +91,70 @@ population wets {
         v13         {{"V13"}        vl_closed}\
         v14         {{"V14"}        vl_closed}\
         v15         {{"V15"}        vl_closed}\
+    }
+    class Active_Step {allocate 3} ; # one per Transit Lane
+    class Active_Gate_Move {allocate 3} ; # one per Transit Lane
+    class Adjustment_Step {
+        table           {Adjustment_direction   Step_number     R11     R14}\
+        north_up_1      {dir_up                 1               north   g5_north}\
+        north_up_2      {dir_up                 2               north   g4_north}\
+        north_up_3      {dir_up                 3               north   g3_north}\
+        north_up_4      {dir_up                 4               north   g2_north}\
+        north_up_5      {dir_up                 5               north   g5_north}\
+        north_up_6      {dir_up                 6               north   g4_north}\
+        north_up_7      {dir_up                 7               north   g3_north}\
+        north_up_8      {dir_up                 8               north   g5_north}\
+        north_up_9      {dir_up                 9               north   g4_north}\
+        north_up_10     {dir_up                 10              north   g5_north}\
+        north_dn_1      {dir_down               1               north   g1_north}\
+        north_dn_2      {dir_down               2               north   g2_north}\
+        north_dn_3      {dir_down               3               north   g1_north}\
+        north_dn_4      {dir_down               4               north   g3_north}\
+        north_dn_5      {dir_down               5               north   g2_north}\
+        north_dn_6      {dir_down               6               north   g1_north}\
+        north_dn_7      {dir_down               7               north   g4_north}\
+        north_dn_8      {dir_down               8               north   g3_north}\
+        north_dn_9      {dir_down               9               north   g2_north}\
+        north_dn_10     {dir_down               10              north   g1_north}\
+        middle_up_1     {dir_up                 1               middle   g5_middle}\
+        middle_up_2     {dir_up                 2               middle   g4_middle}\
+        middle_up_3     {dir_up                 3               middle   g3_middle}\
+        middle_up_4     {dir_up                 4               middle   g2_middle}\
+        middle_up_5     {dir_up                 5               middle   g5_middle}\
+        middle_up_6     {dir_up                 6               middle   g4_middle}\
+        middle_up_7     {dir_up                 7               middle   g3_middle}\
+        middle_up_8     {dir_up                 8               middle   g5_middle}\
+        middle_up_9     {dir_up                 9               middle   g4_middle}\
+        middle_up_10    {dir_up                 10              middle   g5_middle}\
+        middle_dn_1     {dir_down               1               middle   g1_middle}\
+        middle_dn_2     {dir_down               2               middle   g2_middle}\
+        middle_dn_3     {dir_down               3               middle   g1_middle}\
+        middle_dn_4     {dir_down               4               middle   g3_middle}\
+        middle_dn_5     {dir_down               5               middle   g2_middle}\
+        middle_dn_6     {dir_down               6               middle   g1_middle}\
+        middle_dn_7     {dir_down               7               middle   g4_middle}\
+        middle_dn_8     {dir_down               8               middle   g3_middle}\
+        middle_dn_9     {dir_down               9               middle   g2_middle}\
+        middle_dn_10    {dir_down               10              middle   g1_middle}\
+        south_up_1      {dir_up                 1               south   g5_south}\
+        south_up_2      {dir_up                 2               south   g4_south}\
+        south_up_3      {dir_up                 3               south   g3_south}\
+        south_up_4      {dir_up                 4               south   g2_south}\
+        south_up_5      {dir_up                 5               south   g5_south}\
+        south_up_6      {dir_up                 6               south   g4_south}\
+        south_up_7      {dir_up                 7               south   g3_south}\
+        south_up_8      {dir_up                 8               south   g5_south}\
+        south_up_9      {dir_up                 9               south   g4_south}\
+        south_up_10     {dir_up                 10              south   g5_south}\
+        south_dn_1      {dir_down               1               south   g1_south}\
+        south_dn_2      {dir_down               2               south   g2_south}\
+        south_dn_3      {dir_down               3               south   g1_south}\
+        south_dn_4      {dir_down               4               south   g3_south}\
+        south_dn_5      {dir_down               5               south   g2_south}\
+        south_dn_6      {dir_down               6               south   g1_south}\
+        south_dn_7      {dir_down               7               south   g4_south}\
+        south_dn_8      {dir_down               8               south   g3_south}\
+        south_dn_9      {dir_down               9               south   g2_south}\
+        south_dn_10     {dir_down               10              south   g1_south}\
     }
 }

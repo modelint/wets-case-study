@@ -78,11 +78,10 @@ namespace eval ::wets::test {
     
         log::debug \n[relformat $active "Active Transitions"]
     
-        format_missing_states_report $active "Unexecuted state activities"\
-                missing_states_report.txt
-        format_missing_trans_report $active "Missing transitions" missing_trans_report.txt
+        format_missing_states_report $active missing_states_report.csv
+        format_missing_trans_report $active missing_trans_report.csv
     }
-    proc format_missing_states_report {active_trans title report_file} {
+    proc format_missing_states_report {active_trans report_file} {
         set missing_states [pipe {
             relation summarizeby $active_trans {Model NewState} ms_rel\
                 Executed int {rsum($ms_rel, "TransCount")} |
@@ -96,12 +95,8 @@ namespace eval ::wets::test {
         relation foreach missing $missing_states -ascending Model {
             relation assign $missing
             append report\
-                    ".$title for the *$Model* state model\n"\
-                    {[format="csv",options="header,unbreakable,compact",width="75%",cols="4,1"]}\
-                    \n|===============\n\
                     State,Executed\n\
                     [::ral csv $Missing State 1]\
-                    |===============\n\n
         }
     
         if {$report eq {}} {
@@ -112,7 +107,7 @@ namespace eval ::wets::test {
     
         return
     }
-    proc format_missing_trans_report {active_trans title report_file} {
+    proc format_missing_trans_report {active_trans report_file} {
         set missing_trans [pipe {
             relation restrictwith $active_trans {$TransCount == 0} |
             relation group ~ Transitions State Event NewState TransCount
@@ -123,12 +118,8 @@ namespace eval ::wets::test {
         relation foreach missing $missing_trans -ascending Model {
             relation assign $missing
             append report\
-                    ".$title for the *$Model* state model\n"\
-                    {[format="csv",options="header,unbreakable,compact",cols="3,2,3,1"]}\
-                    \n|===============\n\
                     State,Event,NewState,Count\n\
                     [::ral csv $Transitions State 1]\
-                    |===============\n\n
         }
     
         if {$report eq {}} {
@@ -138,6 +129,65 @@ namespace eval ::wets::test {
         ::fileutil::writeFile $report_file $report
     
         return
+    }
+
+    proc transit_gate {gate} {
+        # A Transit Lane has been assigned and V1 has been requested to open.
+        # Move things along with a Valve opened event.
+        wetstest signal wets Transit_Lane_Gate $gate Valve_opened
+        wetstest eloop toc nowait
+
+        # Indicate that water flow has stopped
+        wetstest signal wets Transit_Lane_Gate $gate Flow_zero
+        wetstest eloop toc nowait
+
+        # Open the gate
+        wetstest signal wets Transit_Lane_Gate $gate Gate_opened
+        wetstest eloop toc nowait
+
+        # Move the vessel through the gate
+        wetstest signal wets Transit_Lane_Gate $gate Vessel_moved
+        wetstest eloop toc nowait
+
+        # Close the gate
+        wetstest signal wets Transit_Lane_Gate $gate Gate_closed
+        wetstest eloop toc nowait
+
+        # Close the valve
+        wetstest signal wets Transit_Lane_Gate $gate Valve_closed
+        wetstest eloop toc nowait
+    }
+
+    proc transfer_vessel_up {lane} {
+        for {set gate 1} {$gate < 6} {incr gate} {
+            transit_gate g${gate}_${lane}
+        }
+    }
+
+    proc transfer_vessel_down {lane} {
+        for {set gate 5} {$gate > 0} {incr gate -1} {
+            transit_gate g${gate}_${lane}
+        }
+    }
+
+    # Determine which transit lane was assigned by trapping the "Vessel_assigned" event
+    proc adjust_gate {gate} {
+        # Move things along with a Valve opened event.
+        wetstest signal wets Transit_Lane_Gate $gate Valve_opened
+        wetstest eloop toc nowait
+
+        # Indicate that water flow has stopped
+        wetstest signal wets Transit_Lane_Gate $gate Flow_zero
+        wetstest eloop toc nowait
+
+        # Close the valve
+        wetstest signal wets Transit_Lane_Gate $gate Valve_closed
+        wetstest eloop toc nowait
+    }
+
+    proc get_assigned_transit_lane {} {
+        set trace [wetstest waitForEventTrace type transition source Wets.toadscanal event Vessel_assigned]
+        return [lindex [split [dict get $trace target] .] 1]
     }
 
     # The test script starts by creating an object of the "rein" class
@@ -159,7 +209,7 @@ namespace eval ::wets::test {
     wetstest connect
 
     wetstest traceNotify [namespace code {logTrace info}]
-    wetstest instrNotify [namespace code {logInstr info}]
+    # wetstest instrNotify [namespace code {logInstr info}]
 
     try {
         wetstest trace on
@@ -174,37 +224,115 @@ namespace eval ::wets::test {
         # Transfer request going up
         wetstest signal wets Wets toadscanal Transfer_request "VS-9300" 0
         wetstest eloop toc nowait
-
         # A Transit Lane has been assigned and V1 has been requested to open.
-        # Move things along with a Valve opened event.
-        wetstest signal wets Transit_Lane_Gate g1_north Valve_opened
-        wetstest eloop toc nowait
+        set transit_lane [get_assigned_transit_lane]
+        log::info "First up request assigned to $transit_lane"
 
-        # Indicate that water flow has stopped
-        wetstest signal wets Transit_Lane_Gate g1_north Flow_zero
-        wetstest eloop toc nowait
+        # Move things along to transit the gate
+        transfer_vessel_up $transit_lane
+        wetstest seqDiagToFile test-1.0-seqdiag.txt
+        deleteTraces
 
-        # Open the gate
-        wetstest signal wets Transit_Lane_Gate g1_north Gate_opened
-        wetstest eloop toc nowait
+        log::info "**** Begin Test Set 2 ****"
+        setupForTestCase
 
-        # Move the vessel through the gate
-        wetstest signal wets Transit_Lane_Gate g1_north Vessel_moved
+        # At this point, we still have one Transit Lane available for up and two for down.
+        # Transfer request going up
+        wetstest signal wets Wets toadscanal Transfer_request "VS-9301" 0
         wetstest eloop toc nowait
+        set transit_lane [get_assigned_transit_lane]
+        log::info "Second up request assigned to $transit_lane"
 
-        # Close the gate
-        wetstest signal wets Transit_Lane_Gate g1_north Gate_closed
+        # Request another up transit
+        # This should cause water levels to be adjusted since middle and south
+        # are available as "down"
+        wetstest signal wets Wets toadscanal Transfer_request "VS-9305" 0
         wetstest eloop toc nowait
+        set transit_lane_up2 [get_assigned_transit_lane]
+        log::info "Third up request assigned to $transit_lane_up2"
 
-        # Close the valve
-        wetstest signal wets Transit_Lane_Gate g1_north Valve_closed
+        # Move things along for the first vessel
+        transfer_vessel_up $transit_lane
+        wetstest seqDiagToFile test-2.0-seqdiag.txt
+        deleteTraces
+
+        # Adjust water levels for the second vessel so that it is
+        # available as up
+        adjust_gate g5_${transit_lane_up2}
+        adjust_gate g4_${transit_lane_up2}
+        adjust_gate g3_${transit_lane_up2}
+        adjust_gate g2_${transit_lane_up2}
+        adjust_gate g5_${transit_lane_up2}
+        adjust_gate g4_${transit_lane_up2}
+        adjust_gate g3_${transit_lane_up2}
+        adjust_gate g5_${transit_lane_up2}
+        adjust_gate g4_${transit_lane_up2}
+        adjust_gate g5_${transit_lane_up2}
+        wetstest seqDiagToFile test-2.1-seqdiag.txt
+        deleteTraces
+
+        log::info "**** Begin Test Set 3 ****"
+        setupForTestCase
+
+        # With water levels adjusted, the vessel can be transferred up
+        transfer_vessel_up ${transit_lane_up2}
+        wetstest seqDiagToFile test-3.0-seqdiag.txt
+        deleteTraces
+
+        log::info "**** Begin Test Set 4 ****"
+        setupForTestCase
+
+        # Transfer a vessel down
+        # At this time, only middle remains available for a down transfer
+        wetstest signal wets Wets toadscanal Transfer_request "VS-9302" 1
         wetstest eloop toc nowait
+        set transit_lane [get_assigned_transit_lane]
+        log::info "First down request assigned to $transit_lane"
+
+        # Request another down transit
+        # This should cause water levels to be adjusted since middle and south
+        # are available as "up"
+        log::info "[wetstest read wets Transit_Lane north]"
+        log::info "[wetstest read wets Transit_Lane middle]"
+        log::info "[wetstest read wets Transit_Lane south]"
+
+        wetstest signal wets Wets toadscanal Transfer_request "VS-9307" 1
+        wetstest eloop toc nowait
+        set transit_lane_down2 [get_assigned_transit_lane]
+        log::info "Second down request assigned to $transit_lane_down2"
+
+        transfer_vessel_down $transit_lane
+
+        wetstest seqDiagToFile test-4.0-seqdiag.txt
+        deleteTraces
+
+        log::info "**** Begin Test Set 5 ****"
+        setupForTestCase
+
+        # Adjust water levels to make the transit lane available for down
+        adjust_gate g1_${transit_lane_down2}
+        adjust_gate g2_${transit_lane_down2}
+        adjust_gate g1_${transit_lane_down2}
+        adjust_gate g3_${transit_lane_down2}
+        adjust_gate g2_${transit_lane_down2}
+        adjust_gate g1_${transit_lane_down2}
+        adjust_gate g4_${transit_lane_down2}
+        adjust_gate g3_${transit_lane_down2}
+        adjust_gate g2_${transit_lane_down2}
+        adjust_gate g1_${transit_lane_down2}
+
+        wetstest seqDiagToFile test-5.0-seqdiag.txt
+        deleteTraces
+
+        transfer_vessel_down $transit_lane_down2
+
+        wetstest seqDiagToFile test-5.1-seqdiag.txt
+        deleteTraces
 
         wets_model stopMecateTransitionCount wetstest
 
         format_missing_report wets_model
 
-        wetstest seqDiagToFile test1_toc.txt
         deleteTraces
     } finally {
         wetstest destroy

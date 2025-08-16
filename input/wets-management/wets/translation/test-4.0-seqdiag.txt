@@ -1,0 +1,144 @@
+@startuml
+!pragma teoz true
+boundary "BOUNDARY"
+participant "Wets.toadscanal"
+participant "Transit_Lane.middle"
+participant "Transit_Lane_Gate.g5_middle"
+participant "Transit_Lane.south"
+participant "Transit_Lane_Gate.g1_south"
+participant "Transit_Lane_Gate.g4_middle"
+participant "Transit_Lane_Gate.g3_middle"
+participant "Transit_Lane_Gate.g2_middle"
+participant "Transit_Lane_Gate.g1_middle"
+ rnote over "Wets.toadscanal" : Idle
+& rnote over "Transit_Lane.middle" : Idle
+& rnote over "Transit_Lane_Gate.g5_middle" : Secured_At_Rest
+& rnote over "Transit_Lane.south" : Idle
+& rnote over "Transit_Lane_Gate.g1_south" : Secured_At_Rest
+& rnote over "Transit_Lane_Gate.g4_middle" : Secured_At_Rest
+& rnote over "Transit_Lane_Gate.g3_middle" : Secured_At_Rest
+& rnote over "Transit_Lane_Gate.g2_middle" : Secured_At_Rest
+& rnote over "Transit_Lane_Gate.g1_middle" : Secured_At_Rest
+"BOUNDARY" --> "Wets.toadscanal" : Transfer_request
+rnote over "Wets.toadscanal" : Service_Transfer_Request
+"Wets.toadscanal" --> "Wets.toadscanal" : Continue
+rnote over "Wets.toadscanal" : Idle
+"Wets.toadscanal" --> "Transit_Lane.middle" : Vessel_assigned
+rnote over "Transit_Lane.middle" : Assess_Water_Level
+"Transit_Lane.middle" --> "Transit_Lane.middle" : Start_transfer
+rnote over "Transit_Lane.middle" : Request_Gate_Move
+"Transit_Lane.middle" --> "Transit_Lane_Gate.g5_middle" : Move_vessel
+rnote over "Transit_Lane_Gate.g5_middle" : Open_Valve
+"BOUNDARY" --> "Wets.toadscanal" : Transfer_request
+rnote over "Wets.toadscanal" : Service_Transfer_Request
+"Wets.toadscanal" --> "Wets.toadscanal" : Continue
+rnote over "Wets.toadscanal" : Idle
+"Wets.toadscanal" --> "Transit_Lane.south" : Vessel_assigned
+rnote over "Transit_Lane.south" : Assess_Water_Level
+"Transit_Lane.south" --> "Transit_Lane.south" : Make_adjustments
+rnote over "Transit_Lane.south" : Request_Gate_Adjustment
+"Transit_Lane.south" --> "Transit_Lane_Gate.g1_south" : Adjust_level
+rnote over "Transit_Lane_Gate.g1_south" : Open_Valve_Adjust
+"BOUNDARY" --> "Transit_Lane_Gate.g5_middle" : Valve_opened
+rnote over "Transit_Lane_Gate.g5_middle" : Wait_For_Zero_Flow
+"BOUNDARY" --> "Transit_Lane_Gate.g5_middle" : Flow_zero
+rnote over "Transit_Lane_Gate.g5_middle" : Open_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g5_middle" : Gate_opened
+rnote over "Transit_Lane_Gate.g5_middle" : Move_Vessel
+"BOUNDARY" --> "Transit_Lane_Gate.g5_middle" : Vessel_moved
+rnote over "Transit_Lane_Gate.g5_middle" : Close_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g5_middle" : Gate_closed
+rnote over "Transit_Lane_Gate.g5_middle" : Close_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g5_middle" : Valve_closed
+rnote over "Transit_Lane_Gate.g5_middle" : Complete_Move
+"Transit_Lane_Gate.g5_middle" --> "Transit_Lane_Gate.g5_middle" : Move_completed
+rnote over "Transit_Lane_Gate.g5_middle" : Secured_At_Rest
+"Transit_Lane_Gate.g5_middle" --> "Transit_Lane.middle" : Move_complete
+rnote over "Transit_Lane.middle" : Assess_Transfer_Complete
+"Transit_Lane.middle" --> "Transit_Lane.middle" : Continue_transfer
+rnote over "Transit_Lane.middle" : Request_Gate_Move
+"Transit_Lane.middle" --> "Transit_Lane_Gate.g4_middle" : Move_vessel
+rnote over "Transit_Lane_Gate.g4_middle" : Open_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g4_middle" : Valve_opened
+rnote over "Transit_Lane_Gate.g4_middle" : Wait_For_Zero_Flow
+"BOUNDARY" --> "Transit_Lane_Gate.g4_middle" : Flow_zero
+rnote over "Transit_Lane_Gate.g4_middle" : Open_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g4_middle" : Gate_opened
+rnote over "Transit_Lane_Gate.g4_middle" : Move_Vessel
+"BOUNDARY" --> "Transit_Lane_Gate.g4_middle" : Vessel_moved
+rnote over "Transit_Lane_Gate.g4_middle" : Close_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g4_middle" : Gate_closed
+rnote over "Transit_Lane_Gate.g4_middle" : Close_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g4_middle" : Valve_closed
+rnote over "Transit_Lane_Gate.g4_middle" : Complete_Move
+"Transit_Lane_Gate.g4_middle" --> "Transit_Lane_Gate.g4_middle" : Move_completed
+rnote over "Transit_Lane_Gate.g4_middle" : Secured_At_Rest
+"Transit_Lane_Gate.g4_middle" --> "Transit_Lane.middle" : Move_complete
+rnote over "Transit_Lane.middle" : Assess_Transfer_Complete
+"Transit_Lane.middle" --> "Transit_Lane.middle" : Continue_transfer
+rnote over "Transit_Lane.middle" : Request_Gate_Move
+"Transit_Lane.middle" --> "Transit_Lane_Gate.g3_middle" : Move_vessel
+rnote over "Transit_Lane_Gate.g3_middle" : Open_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g3_middle" : Valve_opened
+rnote over "Transit_Lane_Gate.g3_middle" : Wait_For_Zero_Flow
+"BOUNDARY" --> "Transit_Lane_Gate.g3_middle" : Flow_zero
+rnote over "Transit_Lane_Gate.g3_middle" : Open_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g3_middle" : Gate_opened
+rnote over "Transit_Lane_Gate.g3_middle" : Move_Vessel
+"BOUNDARY" --> "Transit_Lane_Gate.g3_middle" : Vessel_moved
+rnote over "Transit_Lane_Gate.g3_middle" : Close_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g3_middle" : Gate_closed
+rnote over "Transit_Lane_Gate.g3_middle" : Close_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g3_middle" : Valve_closed
+rnote over "Transit_Lane_Gate.g3_middle" : Complete_Move
+"Transit_Lane_Gate.g3_middle" --> "Transit_Lane_Gate.g3_middle" : Move_completed
+rnote over "Transit_Lane_Gate.g3_middle" : Secured_At_Rest
+"Transit_Lane_Gate.g3_middle" --> "Transit_Lane.middle" : Move_complete
+rnote over "Transit_Lane.middle" : Assess_Transfer_Complete
+"Transit_Lane.middle" --> "Transit_Lane.middle" : Continue_transfer
+rnote over "Transit_Lane.middle" : Request_Gate_Move
+"Transit_Lane.middle" --> "Transit_Lane_Gate.g2_middle" : Move_vessel
+rnote over "Transit_Lane_Gate.g2_middle" : Open_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g2_middle" : Valve_opened
+rnote over "Transit_Lane_Gate.g2_middle" : Wait_For_Zero_Flow
+"BOUNDARY" --> "Transit_Lane_Gate.g2_middle" : Flow_zero
+rnote over "Transit_Lane_Gate.g2_middle" : Open_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g2_middle" : Gate_opened
+rnote over "Transit_Lane_Gate.g2_middle" : Move_Vessel
+"BOUNDARY" --> "Transit_Lane_Gate.g2_middle" : Vessel_moved
+rnote over "Transit_Lane_Gate.g2_middle" : Close_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g2_middle" : Gate_closed
+rnote over "Transit_Lane_Gate.g2_middle" : Close_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g2_middle" : Valve_closed
+rnote over "Transit_Lane_Gate.g2_middle" : Complete_Move
+"Transit_Lane_Gate.g2_middle" --> "Transit_Lane_Gate.g2_middle" : Move_completed
+rnote over "Transit_Lane_Gate.g2_middle" : Secured_At_Rest
+"Transit_Lane_Gate.g2_middle" --> "Transit_Lane.middle" : Move_complete
+rnote over "Transit_Lane.middle" : Assess_Transfer_Complete
+"Transit_Lane.middle" --> "Transit_Lane.middle" : Continue_transfer
+rnote over "Transit_Lane.middle" : Request_Gate_Move
+"Transit_Lane.middle" --> "Transit_Lane_Gate.g1_middle" : Move_vessel
+rnote over "Transit_Lane_Gate.g1_middle" : Open_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g1_middle" : Valve_opened
+rnote over "Transit_Lane_Gate.g1_middle" : Wait_For_Zero_Flow
+"BOUNDARY" --> "Transit_Lane_Gate.g1_middle" : Flow_zero
+rnote over "Transit_Lane_Gate.g1_middle" : Open_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g1_middle" : Gate_opened
+rnote over "Transit_Lane_Gate.g1_middle" : Move_Vessel
+"BOUNDARY" --> "Transit_Lane_Gate.g1_middle" : Vessel_moved
+rnote over "Transit_Lane_Gate.g1_middle" : Close_Gate
+"BOUNDARY" --> "Transit_Lane_Gate.g1_middle" : Gate_closed
+rnote over "Transit_Lane_Gate.g1_middle" : Close_Valve
+"BOUNDARY" --> "Transit_Lane_Gate.g1_middle" : Valve_closed
+rnote over "Transit_Lane_Gate.g1_middle" : Complete_Move
+"Transit_Lane_Gate.g1_middle" --> "Transit_Lane_Gate.g1_middle" : Move_completed
+rnote over "Transit_Lane_Gate.g1_middle" : Secured_At_Rest
+"Transit_Lane_Gate.g1_middle" --> "Transit_Lane.middle" : Move_complete
+rnote over "Transit_Lane.middle" : Assess_Transfer_Complete
+"Transit_Lane.middle" --> "Transit_Lane.middle" : Finished_transfer
+rnote over "Transit_Lane.middle" : Idle
+"Transit_Lane.middle" --> "Wets.toadscanal" : Transfer_completed
+rnote over "Wets.toadscanal" : Service_Transfer_Completed
+"Wets.toadscanal" --> "Wets.toadscanal" : Continue
+rnote over "Wets.toadscanal" : Idle
+@enduml

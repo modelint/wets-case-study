@@ -1,0 +1,3 @@
+State,Event,NewState,Count
+Idle,Removal_request,Service_Removal_Request,0
+Service_Removal_Request,Continue,Idle,0
