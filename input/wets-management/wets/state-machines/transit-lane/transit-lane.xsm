@@ -83,7 +83,7 @@ activity
     //3A - We have a next step create a new Active Step and go do it
     {
         *Active Step &R12 me, next step
-        Make adjustments -> me
+        Continue adjustment -> me
     } :
     //3B - We don't have a next step, start the transfer
     {   Start transfer -> me}
