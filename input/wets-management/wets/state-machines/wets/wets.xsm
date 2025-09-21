@@ -2,8 +2,8 @@ metadata
     Title : Wets State Machine Diagram
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
-    Modification date : August 9, 2025
-    Version : 0.10
+    Modification date : September 20, 2025
+    Version : 0.11
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -65,6 +65,10 @@ activity
                     // Create the associative class Active Gate Move 
 
                     *Active Gate Move &R10 new vessel/R2/Assigned Vessel, first gate
+
+                    // Send an event to the transit lane to let it know it has a vessel to move
+
+                    Vessel assigned -> chosen transit lane
                 } :
 
                // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
@@ -74,11 +78,8 @@ activity
             // Send an event to the requesting vessel to let it know that its request has been granted
 
             Request granted(vessel license: ^new license) -> VESSEL
-
-            // Send an event to the transit lane to let it know it has a vessel to move
-
-            Vessel assigned -> chosen transit lane
         }
+    
     //  Go back to the Idle state and wait for more work
 
     Continue -> me
