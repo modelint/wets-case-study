@@ -45,6 +45,191 @@ namespace eval ::wets::test {
     namespace import ::ral::*
     namespace import ::ralutil::*
 
+    variable wets_config
+    variable transit_lane_gate
+
+    proc run {} {
+        # The test script starts by creating an object of the "rein" class
+        # to interact with the test harness.
+        mecate rein create ::wetstest -timeout $::options(timeout)
+        wetstest seqDiagConfig -showstates $::options(showstates)
+
+        if {!$::options(nostart)} {
+            wetstest start ./wets_test_harness
+        }
+
+        # Load up the domain information
+        miccautil model create wets_model wets.ral
+
+        # Fatal errors can come at any time, so be prepared.
+        wetstest fatalNotify [namespace code {logFatal error}]
+
+        # Form a connection to the test harness.
+        wetstest connect
+
+        wetstest traceNotify [namespace code eventTrace]
+        wetstest instrNotify [namespace code instrTrace]
+
+        variable wets_config
+        variable transit_lane_gate
+
+        try {
+            wetstest trace on
+            wetstest instr on
+
+            # Patch in the transition counting
+            wets_model startMecateTransitionCount wetstest
+
+            log::info "**** Begin Test Set 1 ****"
+            setupForTestCase
+
+            # Transfer request going up
+            set wets_config wets_1
+            wetstest signal wets Wets $wets_config Transfer_request "VS-9300" 0
+            # wetstest eloop toc nowait
+            # A Transit Lane has been assigned and V1 has been requested to open.
+            variable transit_lane_gate
+            log::info "First up request assigned to $transit_lane_gate"
+
+            # Move things along to transit the gate
+            transfer_vessel_up $transit_lane
+            wetstest seqDiagToFile test-1.0-seqdiag.txt
+            deleteTraces
+
+            log::info "**** Begin Test Set 2 ****"
+            setupForTestCase
+
+            # At this point, we still have one Transit Lane available for up and two for down.
+            # Transfer request going up
+            wetstest signal wets Wets wets_1 Transfer_request "VS-9301" 0
+            wetstest eloop toc nowait
+            set transit_lane [get_assigned_transit_lane wets_1]
+            log::info "Second up request assigned to $transit_lane"
+
+            # Request another up transit
+            # This should cause water levels to be adjusted since middle and south
+            # are available as "down"
+            wetstest signal wets Wets wets_1 Transfer_request "VS-9305" 0
+            wetstest eloop toc nowait
+            set transit_lane_up2 [get_assigned_transit_lane wets_1]
+            log::info "Third up request assigned to $transit_lane_up2"
+
+            # Move things along for the first vessel
+            transfer_vessel_up $transit_lane
+            wetstest seqDiagToFile test-2.0-seqdiag.txt
+            deleteTraces
+
+            # Adjust water levels for the second vessel so that it is
+            # available as up
+            adjust_gate g5_${transit_lane_up2}
+            adjust_gate g4_${transit_lane_up2}
+            adjust_gate g3_${transit_lane_up2}
+            adjust_gate g2_${transit_lane_up2}
+            adjust_gate g5_${transit_lane_up2}
+            adjust_gate g4_${transit_lane_up2}
+            adjust_gate g3_${transit_lane_up2}
+            adjust_gate g5_${transit_lane_up2}
+            adjust_gate g4_${transit_lane_up2}
+            adjust_gate g5_${transit_lane_up2}
+            wetstest seqDiagToFile test-2.1-seqdiag.txt
+            deleteTraces
+
+            log::info "**** Begin Test Set 3 ****"
+            setupForTestCase
+
+            # With water levels adjusted, the vessel can be transferred up
+            transfer_vessel_up ${transit_lane_up2}
+            wetstest seqDiagToFile test-3.0-seqdiag.txt
+            deleteTraces
+
+            log::info "**** Begin Test Set 4 ****"
+            setupForTestCase
+
+            # Transfer a vessel down
+            # At this time, only middle remains available for a down transfer
+            wetstest signal wets Wets wets_1 Transfer_request "VS-9302" 1
+            wetstest eloop toc nowait
+            set transit_lane [get_assigned_transit_lane wets_1]
+            log::info "First down request assigned to $transit_lane"
+
+            # Request another down transit
+            # This should cause water levels to be adjusted since middle and south
+            # are available as "up"
+            log::info "[wetstest read wets Transit_Lane north]"
+            log::info "[wetstest read wets Transit_Lane middle]"
+            log::info "[wetstest read wets Transit_Lane south]"
+
+            wetstest signal wets Wets wets_1 Transfer_request "VS-9307" 1
+            wetstest eloop toc nowait
+            set transit_lane_down2 [get_assigned_transit_lane wets_1]
+            log::info "Second down request assigned to $transit_lane_down2"
+
+            transfer_vessel_down $transit_lane
+
+            wetstest seqDiagToFile test-4.0-seqdiag.txt
+            deleteTraces
+
+            log::info "**** Begin Test Set 5 ****"
+            setupForTestCase
+
+            # Adjust water levels to make the transit lane available for down
+            adjust_gate g1_${transit_lane_down2}
+            adjust_gate g2_${transit_lane_down2}
+            adjust_gate g1_${transit_lane_down2}
+            adjust_gate g3_${transit_lane_down2}
+            adjust_gate g2_${transit_lane_down2}
+            adjust_gate g1_${transit_lane_down2}
+            adjust_gate g4_${transit_lane_down2}
+            adjust_gate g3_${transit_lane_down2}
+            adjust_gate g2_${transit_lane_down2}
+            adjust_gate g1_${transit_lane_down2}
+
+            wetstest seqDiagToFile test-5.0-seqdiag.txt
+            deleteTraces
+
+            transfer_vessel_down $transit_lane_down2
+
+            wetstest seqDiagToFile test-5.1-seqdiag.txt
+            deleteTraces
+
+            wets_model stopMecateTransitionCount wetstest
+
+            format_missing_report wets_model
+
+            deleteTraces
+        } finally {
+            wetstest destroy
+            wets_model destroy
+        }
+    }
+
+    # Procedures to react to gate, valve, and culvert external entities.
+    proc eventTrace {trace} {
+        variable transit_lane_gate
+
+        #puts "trace = $trace"
+        dict with trace {
+            if {$type eq "transition" && $event eq "Vessel_assigned" && [regexp {Wets\..*} $source]} {
+                set transit_lane_gate [lindex [split $target .] 1]
+                puts "transit_lane_gate = $transit_lane_gate"
+            }
+        }
+
+        logTrace info $trace
+    }
+
+    proc instrTrace {trace} {
+        puts "trace = $trace"
+        dict with trace {
+            if {[string match {*Open valve*} $message]} {
+                variable transit_lane_gate
+                wetstest signal wets Transit_Lane_Gate $transit_lane_gate Valve_opened
+            }
+        }
+
+        logInstr info $trace
+    }
+
     # Utility proc log a formated event trace
     proc logTrace {level trace} {
         log::$level [::mecate eventTraceFormat $trace]
@@ -158,15 +343,20 @@ namespace eval ::wets::test {
         wetstest eloop toc nowait
     }
 
+    proc gate_from_transit_lane {gate lane} {
+        regexp {(left|right|center)_(.*)} $lane - pos loc
+        return [string cat gate_ $gate _ [string index $pos 0] $loc]
+    }
+
     proc transfer_vessel_up {lane} {
         for {set gate 1} {$gate < 6} {incr gate} {
-            transit_gate g${gate}_${lane}
+            transit_gate [gate_from_transit_lane $gate $lane]
         }
     }
 
     proc transfer_vessel_down {lane} {
         for {set gate 5} {$gate > 0} {incr gate -1} {
-            transit_gate g${gate}_${lane}
+            transit_gate gate_${gate}_${lane}
         }
     }
 
@@ -185,159 +375,11 @@ namespace eval ::wets::test {
         wetstest eloop toc nowait
     }
 
-    proc get_assigned_transit_lane {} {
-        set trace [wetstest waitForEventTrace type transition source Wets.toadscanal event Vessel_assigned]
+    proc get_assigned_transit_lane {wets_class} {
+        set trace [wetstest waitForEventTrace type transition source Wets.$wets_class event Vessel_assigned]
         return [lindex [split [dict get $trace target] .] 1]
     }
-
-    # The test script starts by creating an object of the "rein" class
-    # to interact with the test harness.
-    mecate rein create ::wetstest -timeout $::options(timeout)
-    wetstest seqDiagConfig -showstates $::options(showstates)
-
-    if {!$::options(nostart)} {
-        wetstest start ./wets_test_harness
-    }
-
-    # Load up the domain information
-    miccautil model create wets_model wets.ral
-
-    # Fatal errors can come at any time, so be prepared.
-    wetstest fatalNotify [namespace code {logFatal error}]
-
-    # Form a connection to the test harness.
-    wetstest connect
-
-    wetstest traceNotify [namespace code {logTrace info}]
-    # wetstest instrNotify [namespace code {logInstr info}]
-
-    try {
-        wetstest trace on
-        wetstest instr on
-
-        # Patch in the transition counting
-        wets_model startMecateTransitionCount wetstest
-
-        log::info "**** Begin Test Set 1 ****"
-        setupForTestCase
-
-        # Transfer request going up
-        wetstest signal wets Wets toadscanal Transfer_request "VS-9300" 0
-        wetstest eloop toc nowait
-        # A Transit Lane has been assigned and V1 has been requested to open.
-        set transit_lane [get_assigned_transit_lane]
-        log::info "First up request assigned to $transit_lane"
-
-        # Move things along to transit the gate
-        transfer_vessel_up $transit_lane
-        wetstest seqDiagToFile test-1.0-seqdiag.txt
-        deleteTraces
-
-        log::info "**** Begin Test Set 2 ****"
-        setupForTestCase
-
-        # At this point, we still have one Transit Lane available for up and two for down.
-        # Transfer request going up
-        wetstest signal wets Wets toadscanal Transfer_request "VS-9301" 0
-        wetstest eloop toc nowait
-        set transit_lane [get_assigned_transit_lane]
-        log::info "Second up request assigned to $transit_lane"
-
-        # Request another up transit
-        # This should cause water levels to be adjusted since middle and south
-        # are available as "down"
-        wetstest signal wets Wets toadscanal Transfer_request "VS-9305" 0
-        wetstest eloop toc nowait
-        set transit_lane_up2 [get_assigned_transit_lane]
-        log::info "Third up request assigned to $transit_lane_up2"
-
-        # Move things along for the first vessel
-        transfer_vessel_up $transit_lane
-        wetstest seqDiagToFile test-2.0-seqdiag.txt
-        deleteTraces
-
-        # Adjust water levels for the second vessel so that it is
-        # available as up
-        adjust_gate g5_${transit_lane_up2}
-        adjust_gate g4_${transit_lane_up2}
-        adjust_gate g3_${transit_lane_up2}
-        adjust_gate g2_${transit_lane_up2}
-        adjust_gate g5_${transit_lane_up2}
-        adjust_gate g4_${transit_lane_up2}
-        adjust_gate g3_${transit_lane_up2}
-        adjust_gate g5_${transit_lane_up2}
-        adjust_gate g4_${transit_lane_up2}
-        adjust_gate g5_${transit_lane_up2}
-        wetstest seqDiagToFile test-2.1-seqdiag.txt
-        deleteTraces
-
-        log::info "**** Begin Test Set 3 ****"
-        setupForTestCase
-
-        # With water levels adjusted, the vessel can be transferred up
-        transfer_vessel_up ${transit_lane_up2}
-        wetstest seqDiagToFile test-3.0-seqdiag.txt
-        deleteTraces
-
-        log::info "**** Begin Test Set 4 ****"
-        setupForTestCase
-
-        # Transfer a vessel down
-        # At this time, only middle remains available for a down transfer
-        wetstest signal wets Wets toadscanal Transfer_request "VS-9302" 1
-        wetstest eloop toc nowait
-        set transit_lane [get_assigned_transit_lane]
-        log::info "First down request assigned to $transit_lane"
-
-        # Request another down transit
-        # This should cause water levels to be adjusted since middle and south
-        # are available as "up"
-        log::info "[wetstest read wets Transit_Lane north]"
-        log::info "[wetstest read wets Transit_Lane middle]"
-        log::info "[wetstest read wets Transit_Lane south]"
-
-        wetstest signal wets Wets toadscanal Transfer_request "VS-9307" 1
-        wetstest eloop toc nowait
-        set transit_lane_down2 [get_assigned_transit_lane]
-        log::info "Second down request assigned to $transit_lane_down2"
-
-        transfer_vessel_down $transit_lane
-
-        wetstest seqDiagToFile test-4.0-seqdiag.txt
-        deleteTraces
-
-        log::info "**** Begin Test Set 5 ****"
-        setupForTestCase
-
-        # Adjust water levels to make the transit lane available for down
-        adjust_gate g1_${transit_lane_down2}
-        adjust_gate g2_${transit_lane_down2}
-        adjust_gate g1_${transit_lane_down2}
-        adjust_gate g3_${transit_lane_down2}
-        adjust_gate g2_${transit_lane_down2}
-        adjust_gate g1_${transit_lane_down2}
-        adjust_gate g4_${transit_lane_down2}
-        adjust_gate g3_${transit_lane_down2}
-        adjust_gate g2_${transit_lane_down2}
-        adjust_gate g1_${transit_lane_down2}
-
-        wetstest seqDiagToFile test-5.0-seqdiag.txt
-        deleteTraces
-
-        transfer_vessel_down $transit_lane_down2
-
-        wetstest seqDiagToFile test-5.1-seqdiag.txt
-        deleteTraces
-
-        wets_model stopMecateTransitionCount wetstest
-
-        format_missing_report wets_model
-
-        deleteTraces
-    } finally {
-        wetstest destroy
-        wets_model destroy
-    }
-
-    cleanupTests
 }
+
+::wets::test::run
+cleanupTests

@@ -52,7 +52,7 @@ domain wets {
         #   Author : Michael M. Lee
         #   Document ID : mint.wets.td.4
         #   Modification date : August 9, 2025
-        #   Version : 0.10
+        #   Version : 0.10.1 -- correction to Service Transfer Request activity
         #   Organization : Model Integration, LLC
         #   Copyright notice > MIT
         #   Organization logo > mint
@@ -95,14 +95,15 @@ domain wets {
 #                   &R2 *Assigned Vessel( Status: _moving) &R4 chosen transit lane
 #                 // Create the associative class Active Gate Move 
 #                 *Active Gate Move &R10 new vessel/R2/Assigned Vessel, first gate
-#             } :
-#            // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
-#             *Vessel(License: ^new license, Transfer direction: ^direction)
-#               &R2 *Waiting Vessel(Waiting position: me.Last waiting position) &R3 me
+#                 // Send an event to the transit lane to let it know it has a vessel to move
+#                 Vessel assigned -> chosen transit lane
+#             } : {
+#               // No Transit Lanes are available, so create a Waiting Vessel and establish relationships
+#               *Vessel(License: ^new license, Transfer direction: ^direction)
+#                   &R2 *Waiting Vessel(Waiting position: me.Last waiting position) &R3 me
+#             }
 #         // Send an event to the requesting vessel to let it know that its request has been granted
 #         Request granted(vessel license: ^new license) -> VESSEL
-#         // Send an event to the transit lane to let it know it has a vessel to move
-#         Vessel assigned -> chosen transit lane
 #     }
 # //  Go back to the Idle state and wait for more work
 # Continue -> me
@@ -158,14 +159,14 @@ domain wets {
                             first_gate =
                                 <% Transit_Lane_Gate operation Downstream_head transit_lane chosen_transit_lane %>;
                         }
-            <%          Assigned_Vessel create av Status ms_moving R2 v R4 chosen_transit_lane %>
+            <%          Assigned_Vessel create av Status ms_moving R2 v R4 chosen_transit_lane              %>
             <%          Active_Gate_Move create agm R10 {Assigned_Vessel av Transit_Lane_Gate first_gate}   %>
+            <%          instance chosen_transit_lane signal Vessel_assigned                                 %>
                     } else {
-            <%          Waiting_Vessel create wv Waiting_position Last_waiting_position R2 v R3 self     %>
+            <%          Waiting_Vessel create wv Waiting_position Last_waiting_position R2 v R3 self        %>
                     }
-
             <%      VESSEL Request_granted vessel_license new_license %>;
-            <%      instance chosen_transit_lane signal Vessel_assigned                                 %>
+
                 }
             <%  instance self signal Continue                                                           %>
             }
@@ -302,7 +303,7 @@ domain wets {
         #    Author : Michael M. Lee
         #    Document ID : mint.wets.td.4
         #    Creation date : May 23, 2025
-        #    Version : 0.8
+        #    Version : 0.8.1 -- Minor change to Assess Adjustment Complete activity
         #    Organization : Model Integration, LLC
         #    Copyright notice > MIT
         #    Organization logo > mint
@@ -394,7 +395,7 @@ domain wets {
 # //3A - We have a next step create a new Active Step and go do it
 # {
 #     *Active Step &R12 me, next step
-#     Make adjustments -> me
+#     Continue adjustments -> me
 # } :
 # //3B - We don't have a next step, start the transfer
 # {   Start transfer -> me}
@@ -578,7 +579,8 @@ domain wets {
             state Open_Gate {} {
             <%  instance self findOneRelated my_gate ~R5            %>
             <%  instance my_gate assign {Name my_gate_name}         %>
-            <%  GATE Open gate_name my_gate_name %>;
+                MRT_InstId me = <% my instid %>;
+            <%  GATE Open gate_name my_gate_name return_id me %>;
             }
             transition Open_Gate - Gate_opened -> Move_Vessel
 
@@ -595,9 +597,10 @@ domain wets {
             <%  instance my_vessel assign {License My_vessel_license}   %>
             <%  instance self findOneRelated my_gate ~R5                %>
             <%  instance my_gate assign {Name My_gate_name}             %>
-            <%  VESSEL Move_past_gate vessel_license My_vessel_license transit_lane_gate_name My_gate_name %>;
+                MRT_InstId me = <% my instid %>;
+            <%  VESSEL Move_past_gate vessel_license My_vessel_license return_id me %>;
             }
-            transition Move_Vessel - Vessel_moved -> Close_Gate
+            transition Move_Vessel - Moved_past_gate -> Close_Gate
 
 ##############
 # // Change my vessel status to "secured" and direct this gate to close.
@@ -609,7 +612,8 @@ domain wets {
             <%  instance awaiting_vessel update Status ms_secured   %>
             <%  instance self findOneRelated my_gate ~R5            %>
             <%  instance my_gate assign {Name My_gate_name}         %>
-            <%  GATE Close gate_name My_gate_name %>;
+                MRT_InstId me = <% my instid %>;
+            <%  GATE Close gate_name My_gate_name return_id me %>;
             }
             transition Close_Gate - Gate_closed -> Close_Valve
 
@@ -700,19 +704,22 @@ domain wets {
         instop void Open_valve {} {
         <%  my findOneRelated my_valve ~R5 R6 R8                %>
         <%  instance my_valve assign {Name My_valve_name}       %>
-        <%  VALVE Open valve_name My_valve_name %>;
+            MRT_InstId me = <% my instid %>;
+        <%  VALVE Open valve_name My_valve_name return_id me %>;
         }
 
         instop void Close_valve {} {
         <%  my findOneRelated my_valve ~R5 R6 R8                %>
         <%  instance my_valve assign {Name My_valve_name}       %>
-        <%  VALVE Close valve_name My_valve_name %>;
+            MRT_InstId me = <% my instid %>;
+        <%  VALVE Close valve_name My_valve_name return_id me %>;
         }
 
         instop void Wait_for_zero_flow {} {
         <%  my findOneRelated my_culvert ~R5 R6                 %>
         <%  instance my_culvert assign {Name My_culvert_name}   %>
-        <%  CULVERT Indicate_no_flow culvert_name My_culvert_name %>;
+            MRT_InstId me = <% my instid %>;
+        <%  CULVERT Indicate_no_flow culvert_name My_culvert_name return_id me %>;
         }
     }
 
@@ -806,62 +813,70 @@ domain wets {
         operation void Request_granted {
             vessel_license {const char *}
         } {
-            MRT_DEBUG("Transfer request granted: %s\n", vessel_license);
+            MRT_DEBUG("ee VESSEL op Request_granted name %s\n", vessel_license);
         }
 
         operation void Request_denied {
             vessel_license {const char *}
         } {
-            MRT_DEBUG("Transfer request denied: %s\n", vessel_license);
+            MRT_DEBUG("ee VESSEL op Request_denied name %s\n", vessel_license);
         }
 
         operation void Transfer_completed {
             vessel_license {const char *}
         } {
-            MRT_DEBUG("Transfer completed: %s\n", vessel_license);
+            MRT_DEBUG("ee VESSEL op Transfer_completed name %s\n", vessel_license);
         }
 
         operation void Move_past_gate {
             vessel_license {const char *}
-            transit_lane_gate_name GateName_t
+            return_id MRT_InstId
         } {
-            MRT_DEBUG("Move vessel '%s' past gate '%s'\n", vessel_license, transit_lane_gate_name);
+            MRT_DEBUG("ee VESSEL op Move_past_gate name %s return %u\n", vessel_license, return_id);
         }
     }
 
+    # VALVE interactions
     eentity VALVE {
         operation void Open {
             valve_name {const char *}
+            return_id MRT_InstId
         } {
-            MRT_DEBUG("Open valve: %s\n", valve_name);
+            MRT_DEBUG("ee VALVE op Open name %s return %u\n", valve_name, return_id);
         }
 
         operation void Close {
             valve_name {const char *}
+            return_id MRT_InstId
         } {
-            MRT_DEBUG("Close valve: %s\n", valve_name);
+            MRT_DEBUG("ee VALVE op Close name %s return %u\n", valve_name, return_id);
         }
     }
 
     eentity CULVERT {
         operation void Indicate_no_flow {
             culvert_name {const char *}
+            return_id MRT_InstId
         } {
             MRT_DEBUG("Indicate no flow: %s\n", culvert_name);
+            MRT_DEBUG("ee CULVERT op Indicate_no_flow name %s return %u\n", culvert_name, return_id);
         }
     }
 
+    # GATE interactions
     eentity GATE {
         operation void Open {
             gate_name {const char *}
+            return_id MRT_InstId
         } {
-            MRT_DEBUG("Open gate: %s\n", gate_name);
+            MRT_DEBUG("ee GATE op Open name %s return %u\n", gate_name, return_id);
         }
 
         operation void Close {
             gate_name {const char *}
+            return_id MRT_InstId
         } {
-            MRT_DEBUG("Close gate: %s\n", gate_name);
+            MRT_DEBUG("ee GATE op Close name %s return %u\n", gate_name, return_id);
         }
     }
 }

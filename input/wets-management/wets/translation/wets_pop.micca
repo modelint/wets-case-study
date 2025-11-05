@@ -1,43 +1,120 @@
-# This file contains an initial instance population for the WETS Case Study
-# Scenario 1: Empty WETS
-# ======================
-# No vessels
-# 3 Transit Lanes
-# 5 Gates per Transit Lane
-# 1 Culvert per Gate
-# 1 Valve per Culvert
+# This file contains an initial instance population for testing the WETS Case Study.
+# The population was derived from the Testing Considerations document at:
+# https://github.com/modelint/wets-case-study/wiki/Testing-Considerations
+# This file corresponds to mint.wets.tn.4, Version 0.6, dated Sept 22, 2025.
+#
+# There are 9 configuration to be used in testing.
+# The configurations are realized using 9 instances of the Wets class along
+# with the required instances of other classes that are associated with
+# a Wets instance.
+# The configurations are 1 to 3 Transit Lanes with 2 to 4 Transit Lane Gates
+# per Transit Lane.
 
 population wets {
-    class Wets {
-        instance toadscanal Name {"ToadsCanal"}
-    }
     class Vessel {
         allocate 32
     }
-    class Transit_Lane {
-        table   {Name           Available_transfer_direction    R1}\
-        north   {{"North"}      dir_up                          toadscanal}\
-        middle  {{"Middle"}     dir_down                        toadscanal}\
-        south   {{"South"}      dir_down                        toadscanal}\
+
+    # The naming convention here is simple numbering of the different Wets configurations.
+    class Wets {
+        instance wets_1 Name {"Wets_1"}
+        instance wets_2 Name {"Wets_2"}
+        instance wets_3 Name {"Wets_3"}
+        instance wets_4 Name {"Wets_4"}
+        instance wets_5 Name {"Wets_5"}
+        instance wets_6 Name {"Wets_6"}
+        instance wets_7 Name {"Wets_7"}
+        instance wets_8 Name {"Wets_8"}
+        instance wets_9 Name {"Wets_9"}
     }
+
+    # Transit Lanes names are dependent upon how many there are for a given Wets
+    # For 1 transit lane => center
+    # For 2 transit lanes => left, right
+    # For 3 transit lanes => left, center, right
+    # Transit Lane instance names are: <transit lane position>_<# transit lanes>_<# transit lane gates>
+    class Transit_Lane {
+        table       {Name                   Available_transfer_direction    R1}\
+        center_1_2  {{"Center_Wets_1_2"}    dir_up                          wets_1}\
+        center_1_3  {{"Center_Wets_1_3"}    dir_up                          wets_2}\
+        center_1_4  {{"Center_Wets_1_4"}    dir_up                          wets_3}\
+        left_2_2    {{"Left_Wets_2_2"}      dir_up                          wets_4}\
+        right_2_2   {{"Right_Wets_2_2"}     dir_up                          wets_4}\
+        left_2_3    {{"Left_Wets_2_3"}      dir_up                          wets_5}\
+        right_2_3   {{"Right_Wets_2_3"}     dir_up                          wets_5}\
+        left_2_4    {{"Left_Wets_2_4"}      dir_up                          wets_6}\
+        right_2_4   {{"Right_Wets_2_4"}     dir_up                          wets_6}\
+        left_3_2    {{"Left_Wets_3_2"}      dir_up                          wets_7}\
+        center_3_2  {{"Center_Wets_3_2"}    dir_up                          wets_7}\
+        right_3_2   {{"Right_Wets_3_2"}     dir_up                          wets_7}\
+        left_3_3    {{"Left_Wets_3_3"}      dir_up                          wets_8}\
+        center_3_3  {{"Center_Wets_3_3"}    dir_up                          wets_8}\
+        right_3_3   {{"Right_Wets_3_3"}     dir_up                          wets_8}\
+        left_3_4    {{"Left_Wets_3_4"}      dir_up                          wets_9}\
+        center_3_4  {{"Center_Wets_3_4"}    dir_up                          wets_9}\
+        right_3_4   {{"Right_Wets_3_4"}     dir_up                          wets_9}\
+    }
+
+    # Transit Lane Gates instance names are: gate_<position>_<# transit lanes>_<# transit lane gates>
     class Transit_Lane_Gate {
         table       {Position               R5}\
-        g1_north    {1                      {Transit_Lane north Gate g1}}\
-        g2_north    {2                      {Transit_Lane north Gate g2}}\
-        g3_north    {3                      {Transit_Lane north Gate g3}}\
-        g4_north    {4                      {Transit_Lane north Gate g4}}\
-        g5_north    {5                      {Transit_Lane north Gate g5}}\
-        g1_middle   {1                      {Transit_Lane middle Gate g11}}\
-        g2_middle   {2                      {Transit_Lane middle Gate g12}}\
-        g3_middle   {3                      {Transit_Lane middle Gate g13}}\
-        g4_middle   {4                      {Transit_Lane middle Gate g14}}\
-        g5_middle   {5                      {Transit_Lane middle Gate g15}}\
-        g1_south    {1                      {Transit_Lane south Gate g6}}\
-        g2_south    {2                      {Transit_Lane south Gate g7}}\
-        g3_south    {3                      {Transit_Lane south Gate g8}}\
-        g4_south    {4                      {Transit_Lane south Gate g9}}\
-        g5_south    {5                      {Transit_Lane south Gate g10}}\
+        gate_1_c1_2 {1                      {Transit_Lane center_1_2 Gate g1}}\
+        gate_2_c1_2 {2                      {Transit_Lane center_1_2 Gate g2}}\
+        gate_1_c1_3 {1                      {Transit_Lane center_1_3 Gate g3}}\
+        gate_2_c1_3 {2                      {Transit_Lane center_1_3 Gate g4}}\
+        gate_3_c1_3 {3                      {Transit_Lane center_1_3 Gate g5}}\
+        gate_1_c1_4 {1                      {Transit_Lane center_1_4 Gate g6}}\
+        gate_2_c1_4 {2                      {Transit_Lane center_1_4 Gate g7}}\
+        gate_3_c1_4 {3                      {Transit_Lane center_1_4 Gate g8}}\
+        gate_4_c1_4 {4                      {Transit_Lane center_1_4 Gate g9}}\
+        gate_1_l2_2 {1                      {Transit_Lane left_2_2 Gate g10}}\
+        gate_2_l2_2 {2                      {Transit_Lane left_2_2 Gate g11}}\
+        gate_1_r2_2 {1                      {Transit_Lane right_2_2 Gate g12}}\
+        gate_2_r2_2 {2                      {Transit_Lane right_2_2 Gate g13}}\
+        gate_1_l2_3 {1                      {Transit_Lane left_2_3 Gate g14}}\
+        gate_2_l2_3 {2                      {Transit_Lane left_2_3 Gate g15}}\
+        gate_3_l2_3 {3                      {Transit_Lane left_2_3 Gate g16}}\
+        gate_1_r2_3 {1                      {Transit_Lane right_2_3 Gate g17}}\
+        gate_2_r2_3 {2                      {Transit_Lane right_2_3 Gate g18}}\
+        gate_3_r2_3 {3                      {Transit_Lane right_2_3 Gate g19}}\
+        gate_1_l2_4 {1                      {Transit_Lane left_2_4 Gate g20}}\
+        gate_2_l2_4 {2                      {Transit_Lane left_2_4 Gate g21}}\
+        gate_3_l2_4 {3                      {Transit_Lane left_2_4 Gate g22}}\
+        gate_4_l2_4 {4                      {Transit_Lane left_2_4 Gate g23}}\
+        gate_1_r2_4 {1                      {Transit_Lane right_2_4 Gate g24}}\
+        gate_2_r2_4 {2                      {Transit_Lane right_2_4 Gate g25}}\
+        gate_3_r2_4 {3                      {Transit_Lane right_2_4 Gate g26}}\
+        gate_4_r2_4 {4                      {Transit_Lane right_2_4 Gate g27}}\
+        gate_1_l3_2 {1                      {Transit_Lane left_3_2 Gate g28}}\
+        gate_2_l3_2 {2                      {Transit_Lane left_3_2 Gate g29}}\
+        gate_1_c3_2 {1                      {Transit_Lane center_3_2 Gate g30}}\
+        gate_2_c3_2 {2                      {Transit_Lane center_3_2 Gate g31}}\
+        gate_1_r3_2 {1                      {Transit_Lane right_3_2 Gate g32}}\
+        gate_2_r3_2 {2                      {Transit_Lane right_3_2 Gate g33}}\
+        gate_1_l3_3 {1                      {Transit_Lane left_3_3 Gate g34}}\
+        gate_2_l3_3 {2                      {Transit_Lane left_3_3 Gate g35}}\
+        gate_3_l3_3 {3                      {Transit_Lane left_3_3 Gate g36}}\
+        gate_1_c3_3 {1                      {Transit_Lane center_3_3 Gate g37}}\
+        gate_2_c3_3 {2                      {Transit_Lane center_3_3 Gate g38}}\
+        gate_3_c3_3 {3                      {Transit_Lane center_3_3 Gate g39}}\
+        gate_1_r3_3 {1                      {Transit_Lane right_3_3 Gate g40}}\
+        gate_2_r3_3 {2                      {Transit_Lane right_3_3 Gate g41}}\
+        gate_3_r3_3 {3                      {Transit_Lane right_3_3 Gate g42}}\
+        gate_1_l3_4 {1                      {Transit_Lane left_3_4 Gate g43}}\
+        gate_2_l3_4 {2                      {Transit_Lane left_3_4 Gate g44}}\
+        gate_3_l3_4 {3                      {Transit_Lane left_3_4 Gate g45}}\
+        gate_4_l3_4 {4                      {Transit_Lane left_3_4 Gate g46}}\
+        gate_1_c3_4 {1                      {Transit_Lane center_3_4 Gate g47}}\
+        gate_2_c3_4 {2                      {Transit_Lane center_3_4 Gate g48}}\
+        gate_3_c3_4 {3                      {Transit_Lane center_3_4 Gate g49}}\
+        gate_4_c3_4 {4                      {Transit_Lane center_3_4 Gate g50}}\
+        gate_1_r3_4 {1                      {Transit_Lane right_3_4 Gate g51}}\
+        gate_2_r3_4 {2                      {Transit_Lane right_3_4 Gate g52}}\
+        gate_3_r3_4 {3                      {Transit_Lane right_3_4 Gate g53}}\
+        gate_4_r3_4 {4                      {Transit_Lane right_3_4 Gate g54}}\
     }
+
+# There are 54 gates, culverts and valves
     class Gate {
         table       {Name           Status              R6}\
         g1          {{"G1"}         gt_closed           c1}\
@@ -55,6 +132,45 @@ population wets {
         g13         {{"G13"}        gt_closed           c13}\
         g14         {{"G14"}        gt_closed           c14}\
         g15         {{"G15"}        gt_closed           c15}\
+        g16         {{"G16"}        gt_closed           c16}\
+        g17         {{"G17"}        gt_closed           c17}\
+        g18         {{"G18"}        gt_closed           c18}\
+        g19         {{"G19"}        gt_closed           c19}\
+        g20         {{"G20"}        gt_closed           c20}\
+        g21         {{"G21"}        gt_closed           c21}\
+        g22         {{"G22"}        gt_closed           c22}\
+        g23         {{"G23"}        gt_closed           c23}\
+        g24         {{"G24"}        gt_closed           c24}\
+        g25         {{"G25"}        gt_closed           c25}\
+        g26         {{"G26"}        gt_closed           c26}\
+        g27         {{"G27"}        gt_closed           c27}\
+        g28         {{"G28"}        gt_closed           c28}\
+        g29         {{"G29"}        gt_closed           c29}\
+        g30         {{"G30"}        gt_closed           c30}\
+        g31         {{"G31"}        gt_closed           c31}\
+        g32         {{"G32"}        gt_closed           c32}\
+        g33         {{"G33"}        gt_closed           c33}\
+        g34         {{"G34"}        gt_closed           c34}\
+        g35         {{"G35"}        gt_closed           c35}\
+        g36         {{"G36"}        gt_closed           c36}\
+        g37         {{"G37"}        gt_closed           c37}\
+        g38         {{"G38"}        gt_closed           c38}\
+        g39         {{"G39"}        gt_closed           c39}\
+        g40         {{"G40"}        gt_closed           c40}\
+        g41         {{"G41"}        gt_closed           c41}\
+        g42         {{"G42"}        gt_closed           c42}\
+        g43         {{"G43"}        gt_closed           c43}\
+        g44         {{"G44"}        gt_closed           c44}\
+        g45         {{"G45"}        gt_closed           c45}\
+        g46         {{"G46"}        gt_closed           c46}\
+        g47         {{"G47"}        gt_closed           c47}\
+        g48         {{"G48"}        gt_closed           c48}\
+        g49         {{"G49"}        gt_closed           c49}\
+        g50         {{"G50"}        gt_closed           c50}\
+        g51         {{"G51"}        gt_closed           c51}\
+        g52         {{"G52"}        gt_closed           c52}\
+        g53         {{"G53"}        gt_closed           c53}\
+        g54         {{"G54"}        gt_closed           c54}\
     }
     class Culvert {
         table       {Name           R8}\
@@ -73,6 +189,45 @@ population wets {
         c13         {{"C13"}        v13}\
         c14         {{"C14"}        v14}\
         c15         {{"C15"}        v15}\
+        c16         {{"C16"}        v16}\
+        c17         {{"C17"}        v17}\
+        c18         {{"C18"}        v18}\
+        c19         {{"C19"}        v19}\
+        c20         {{"C20"}        v20}\
+        c21         {{"C21"}        v21}\
+        c22         {{"C22"}        v22}\
+        c23         {{"C23"}        v23}\
+        c24         {{"C24"}        v24}\
+        c25         {{"C25"}        v25}\
+        c26         {{"C26"}        v26}\
+        c27         {{"C27"}        v27}\
+        c28         {{"C28"}        v28}\
+        c29         {{"C29"}        v29}\
+        c30         {{"C30"}        v30}\
+        c31         {{"C31"}        v31}\
+        c32         {{"C32"}        v32}\
+        c33         {{"C33"}        v33}\
+        c34         {{"C34"}        v34}\
+        c35         {{"C35"}        v35}\
+        c36         {{"C36"}        v36}\
+        c37         {{"C37"}        v37}\
+        c38         {{"C38"}        v38}\
+        c39         {{"C39"}        v39}\
+        c40         {{"C40"}        v40}\
+        c41         {{"C41"}        v41}\
+        c42         {{"C42"}        v42}\
+        c43         {{"C43"}        v43}\
+        c44         {{"C44"}        v44}\
+        c45         {{"C45"}        v45}\
+        c46         {{"C46"}        v46}\
+        c47         {{"C47"}        v47}\
+        c48         {{"C48"}        v48}\
+        c49         {{"C49"}        v49}\
+        c50         {{"C50"}        v50}\
+        c51         {{"C51"}        v51}\
+        c52         {{"C52"}        v52}\
+        c53         {{"C53"}        v53}\
+        c54         {{"C54"}        v54}\
     }
     class Valve {
         table       {Name           Status}\
@@ -91,70 +246,169 @@ population wets {
         v13         {{"V13"}        vl_closed}\
         v14         {{"V14"}        vl_closed}\
         v15         {{"V15"}        vl_closed}\
+        v16         {{"V16"}        vl_closed}\
+        v17         {{"V17"}        vl_closed}\
+        v18         {{"V18"}        vl_closed}\
+        v19         {{"V19"}        vl_closed}\
+        v20         {{"V20"}        vl_closed}\
+        v21         {{"V21"}        vl_closed}\
+        v22         {{"V22"}        vl_closed}\
+        v23         {{"V23"}        vl_closed}\
+        v24         {{"V24"}        vl_closed}\
+        v25         {{"V25"}        vl_closed}\
+        v26         {{"V26"}        vl_closed}\
+        v27         {{"V27"}        vl_closed}\
+        v28         {{"V28"}        vl_closed}\
+        v29         {{"V29"}        vl_closed}\
+        v30         {{"V30"}        vl_closed}\
+        v31         {{"V31"}        vl_closed}\
+        v32         {{"V32"}        vl_closed}\
+        v33         {{"V33"}        vl_closed}\
+        v34         {{"V34"}        vl_closed}\
+        v35         {{"V35"}        vl_closed}\
+        v36         {{"V36"}        vl_closed}\
+        v37         {{"V37"}        vl_closed}\
+        v38         {{"V38"}        vl_closed}\
+        v39         {{"V39"}        vl_closed}\
+        v40         {{"V40"}        vl_closed}\
+        v41         {{"V41"}        vl_closed}\
+        v42         {{"V42"}        vl_closed}\
+        v43         {{"V43"}        vl_closed}\
+        v44         {{"V44"}        vl_closed}\
+        v45         {{"V45"}        vl_closed}\
+        v46         {{"V46"}        vl_closed}\
+        v47         {{"V47"}        vl_closed}\
+        v48         {{"V48"}        vl_closed}\
+        v49         {{"V49"}        vl_closed}\
+        v50         {{"V50"}        vl_closed}\
+        v51         {{"V51"}        vl_closed}\
+        v52         {{"V52"}        vl_closed}\
+        v53         {{"V53"}        vl_closed}\
+        v54         {{"V54"}        vl_closed}\
     }
-    class Active_Step {allocate 3} ; # one per Transit Lane
-    class Active_Gate_Move {allocate 3} ; # one per Transit Lane
+    class Active_Step {allocate 18} ; # one per Transit Lane
+    class Active_Gate_Move {allocate 18} ; # one per Transit Lane
     class Adjustment_Step {
-        table           {Adjustment_direction   Step_number     R11     R14}\
-        north_up_1      {dir_up                 1               north   g5_north}\
-        north_up_2      {dir_up                 2               north   g4_north}\
-        north_up_3      {dir_up                 3               north   g3_north}\
-        north_up_4      {dir_up                 4               north   g2_north}\
-        north_up_5      {dir_up                 5               north   g5_north}\
-        north_up_6      {dir_up                 6               north   g4_north}\
-        north_up_7      {dir_up                 7               north   g3_north}\
-        north_up_8      {dir_up                 8               north   g5_north}\
-        north_up_9      {dir_up                 9               north   g4_north}\
-        north_up_10     {dir_up                 10              north   g5_north}\
-        north_dn_1      {dir_down               1               north   g1_north}\
-        north_dn_2      {dir_down               2               north   g2_north}\
-        north_dn_3      {dir_down               3               north   g1_north}\
-        north_dn_4      {dir_down               4               north   g3_north}\
-        north_dn_5      {dir_down               5               north   g2_north}\
-        north_dn_6      {dir_down               6               north   g1_north}\
-        north_dn_7      {dir_down               7               north   g4_north}\
-        north_dn_8      {dir_down               8               north   g3_north}\
-        north_dn_9      {dir_down               9               north   g2_north}\
-        north_dn_10     {dir_down               10              north   g1_north}\
-        middle_up_1     {dir_up                 1               middle   g5_middle}\
-        middle_up_2     {dir_up                 2               middle   g4_middle}\
-        middle_up_3     {dir_up                 3               middle   g3_middle}\
-        middle_up_4     {dir_up                 4               middle   g2_middle}\
-        middle_up_5     {dir_up                 5               middle   g5_middle}\
-        middle_up_6     {dir_up                 6               middle   g4_middle}\
-        middle_up_7     {dir_up                 7               middle   g3_middle}\
-        middle_up_8     {dir_up                 8               middle   g5_middle}\
-        middle_up_9     {dir_up                 9               middle   g4_middle}\
-        middle_up_10    {dir_up                 10              middle   g5_middle}\
-        middle_dn_1     {dir_down               1               middle   g1_middle}\
-        middle_dn_2     {dir_down               2               middle   g2_middle}\
-        middle_dn_3     {dir_down               3               middle   g1_middle}\
-        middle_dn_4     {dir_down               4               middle   g3_middle}\
-        middle_dn_5     {dir_down               5               middle   g2_middle}\
-        middle_dn_6     {dir_down               6               middle   g1_middle}\
-        middle_dn_7     {dir_down               7               middle   g4_middle}\
-        middle_dn_8     {dir_down               8               middle   g3_middle}\
-        middle_dn_9     {dir_down               9               middle   g2_middle}\
-        middle_dn_10    {dir_down               10              middle   g1_middle}\
-        south_up_1      {dir_up                 1               south   g5_south}\
-        south_up_2      {dir_up                 2               south   g4_south}\
-        south_up_3      {dir_up                 3               south   g3_south}\
-        south_up_4      {dir_up                 4               south   g2_south}\
-        south_up_5      {dir_up                 5               south   g5_south}\
-        south_up_6      {dir_up                 6               south   g4_south}\
-        south_up_7      {dir_up                 7               south   g3_south}\
-        south_up_8      {dir_up                 8               south   g5_south}\
-        south_up_9      {dir_up                 9               south   g4_south}\
-        south_up_10     {dir_up                 10              south   g5_south}\
-        south_dn_1      {dir_down               1               south   g1_south}\
-        south_dn_2      {dir_down               2               south   g2_south}\
-        south_dn_3      {dir_down               3               south   g1_south}\
-        south_dn_4      {dir_down               4               south   g3_south}\
-        south_dn_5      {dir_down               5               south   g2_south}\
-        south_dn_6      {dir_down               6               south   g1_south}\
-        south_dn_7      {dir_down               7               south   g4_south}\
-        south_dn_8      {dir_down               8               south   g3_south}\
-        south_dn_9      {dir_down               9               south   g2_south}\
-        south_dn_10     {dir_down               10              south   g1_south}\
+        table               {Adjustment_direction   Step_number     R11         R14}\
+        center_1_2_up_1     {dir_up                 1               center_1_2  gate_2_c1_2}\
+        center_1_2_dn_1     {dir_down               1               center_1_2  gate_1_c1_2}\
+        center_1_3_up_1     {dir_up                 1               center_1_3  gate_3_c1_3}\
+        center_1_3_up_2     {dir_up                 2               center_1_3  gate_2_c1_3}\
+        center_1_3_up_3     {dir_up                 3               center_1_3  gate_3_c1_3}\
+        center_1_3_dn_1     {dir_down               1               center_1_3  gate_1_c1_3}\
+        center_1_3_dn_2     {dir_down               2               center_1_3  gate_2_c1_3}\
+        center_1_3_dn_3     {dir_down               3               center_1_3  gate_1_c1_3}\
+        center_1_4_up_1     {dir_up                 1               center_1_4  gate_4_c1_4}\
+        center_1_4_up_2     {dir_up                 2               center_1_4  gate_3_c1_4}\
+        center_1_4_up_3     {dir_up                 3               center_1_4  gate_2_c1_4}\
+        center_1_4_up_4     {dir_up                 4               center_1_4  gate_4_c1_4}\
+        center_1_4_up_5     {dir_up                 5               center_1_4  gate_3_c1_4}\
+        center_1_4_up_6     {dir_up                 6               center_1_4  gate_4_c1_4}\
+        center_1_4_dn_1     {dir_down               1               center_1_4  gate_1_c1_4}\
+        center_1_4_dn_2     {dir_down               2               center_1_4  gate_2_c1_4}\
+        center_1_4_dn_3     {dir_down               3               center_1_4  gate_1_c1_4}\
+        center_1_4_dn_4     {dir_down               4               center_1_4  gate_3_c1_4}\
+        center_1_4_dn_5     {dir_down               5               center_1_4  gate_2_c1_4}\
+        center_1_4_dn_6     {dir_down               6               center_1_4  gate_1_c1_4}\
+        left_2_2_up_1       {dir_up                 1               left_2_2  gate_2_l2_2}\
+        left_2_2_dn_1       {dir_down               1               left_2_2  gate_1_l2_2}\
+        right_2_2_up_1      {dir_up                 1               right_2_2  gate_2_r2_2}\
+        right_2_2_dn_1      {dir_down               1               right_2_2  gate_1_r2_2}\
+        left_2_3_up_1       {dir_up                 1               left_2_3  gate_3_l2_3}\
+        left_2_3_up_2       {dir_up                 2               left_2_3  gate_2_l2_3}\
+        left_2_3_up_3       {dir_up                 3               left_2_3  gate_3_l2_3}\
+        left_2_3_dn_1       {dir_down               1               left_2_3  gate_1_l2_3}\
+        left_2_3_dn_2       {dir_down               2               left_2_3  gate_2_l2_3}\
+        left_2_3_dn_3       {dir_down               3               left_2_3  gate_1_l2_3}\
+        right_2_3_up_1      {dir_up                 1               right_2_3  gate_3_r2_3}\
+        right_2_3_up_2      {dir_up                 2               right_2_3  gate_2_r2_3}\
+        right_2_3_up_3      {dir_up                 3               right_2_3  gate_3_r2_3}\
+        right_2_3_dn_1      {dir_down               1               right_2_3  gate_1_r2_3}\
+        right_2_3_dn_2      {dir_down               2               right_2_3  gate_2_r2_3}\
+        right_2_3_dn_3      {dir_down               3               right_2_3  gate_1_r2_3}\
+        left_2_4_up_1       {dir_up                 1               left_2_4  gate_4_l2_4}\
+        left_2_4_up_2       {dir_up                 2               left_2_4  gate_3_l2_4}\
+        left_2_4_up_3       {dir_up                 3               left_2_4  gate_2_l2_4}\
+        left_2_4_up_4       {dir_up                 4               left_2_4  gate_4_l2_4}\
+        left_2_4_up_5       {dir_up                 5               left_2_4  gate_3_l2_4}\
+        left_2_4_up_6       {dir_up                 6               left_2_4  gate_4_l2_4}\
+        left_2_4_dn_1       {dir_down               1               left_2_4  gate_1_l2_4}\
+        left_2_4_dn_2       {dir_down               2               left_2_4  gate_2_l2_4}\
+        left_2_4_dn_3       {dir_down               3               left_2_4  gate_1_l2_4}\
+        left_2_4_dn_4       {dir_down               4               left_2_4  gate_3_l2_4}\
+        left_2_4_dn_5       {dir_down               5               left_2_4  gate_2_l2_4}\
+        left_2_4_dn_6       {dir_down               6               left_2_4  gate_1_l2_4}\
+        right_2_4_up_1      {dir_up                 1               right_2_4  gate_4_r2_4}\
+        right_2_4_up_2      {dir_up                 2               right_2_4  gate_3_r2_4}\
+        right_2_4_up_3      {dir_up                 3               right_2_4  gate_2_r2_4}\
+        right_2_4_up_4      {dir_up                 4               right_2_4  gate_4_r2_4}\
+        right_2_4_up_5      {dir_up                 5               right_2_4  gate_3_r2_4}\
+        right_2_4_up_6      {dir_up                 6               right_2_4  gate_4_r2_4}\
+        right_2_4_dn_1      {dir_down               1               right_2_4  gate_1_r2_4}\
+        right_2_4_dn_2      {dir_down               2               right_2_4  gate_2_r2_4}\
+        right_2_4_dn_3      {dir_down               3               right_2_4  gate_1_r2_4}\
+        right_2_4_dn_4      {dir_down               4               right_2_4  gate_3_r2_4}\
+        right_2_4_dn_5      {dir_down               5               right_2_4  gate_2_r2_4}\
+        right_2_4_dn_6      {dir_down               6               right_2_4  gate_1_r2_4}\
+        left_3_2_up_1       {dir_up                 1               left_3_2  gate_2_l3_2}\
+        left_3_2_dn_1       {dir_down               1               left_3_2  gate_1_l3_2}\
+        center_3_2_up_1     {dir_up                 1               center_3_2  gate_2_c3_2}\
+        center_3_2_dn_1     {dir_down               1               center_3_2  gate_1_c3_2}\
+        right_3_2_up_1      {dir_up                 1               right_3_2  gate_2_r3_2}\
+        right_3_2_dn_1      {dir_down               1               right_3_2  gate_1_r3_2}\
+        left_3_3_up_1       {dir_up                 1               left_3_3  gate_3_l3_3}\
+        left_3_3_up_2       {dir_up                 2               left_3_3  gate_2_l3_3}\
+        left_3_3_up_3       {dir_up                 3               left_3_3  gate_3_l3_3}\
+        left_3_3_dn_1       {dir_down               1               left_3_3  gate_1_l3_3}\
+        left_3_3_dn_2       {dir_down               2               left_3_3  gate_2_l3_3}\
+        left_3_3_dn_3       {dir_down               3               left_3_3  gate_1_l3_3}\
+        center_3_3_up_1     {dir_up                 1               center_3_3  gate_3_c3_3}\
+        center_3_3_up_2     {dir_up                 2               center_3_3  gate_2_c3_3}\
+        center_3_3_up_3     {dir_up                 3               center_3_3  gate_3_c3_3}\
+        center_3_3_dn_1     {dir_down               1               center_3_3  gate_1_c3_3}\
+        center_3_3_dn_2     {dir_down               2               center_3_3  gate_2_c3_3}\
+        center_3_3_dn_3     {dir_down               3               center_3_3  gate_1_c3_3}\
+        right_3_3_up_1      {dir_up                 1               right_3_3  gate_3_r3_3}\
+        right_3_3_up_2      {dir_up                 2               right_3_3  gate_2_r3_3}\
+        right_3_3_up_3      {dir_up                 3               right_3_3  gate_3_r3_3}\
+        right_3_3_dn_1      {dir_down               1               right_3_3  gate_1_r3_3}\
+        right_3_3_dn_2      {dir_down               2               right_3_3  gate_2_r3_3}\
+        right_3_3_dn_3      {dir_down               3               right_3_3  gate_1_r3_3}\
+        left_3_4_up_1       {dir_up                 1               left_3_4  gate_4_l3_4}\
+        left_3_4_up_2       {dir_up                 2               left_3_4  gate_3_l3_4}\
+        left_3_4_up_3       {dir_up                 3               left_3_4  gate_2_l3_4}\
+        left_3_4_up_4       {dir_up                 4               left_3_4  gate_4_l3_4}\
+        left_3_4_up_5       {dir_up                 5               left_3_4  gate_3_l3_4}\
+        left_3_4_up_6       {dir_up                 6               left_3_4  gate_4_l3_4}\
+        left_3_4_dn_1       {dir_down               1               left_3_4  gate_1_l3_4}\
+        left_3_4_dn_2       {dir_down               2               left_3_4  gate_2_l3_4}\
+        left_3_4_dn_3       {dir_down               3               left_3_4  gate_1_l3_4}\
+        left_3_4_dn_4       {dir_down               4               left_3_4  gate_3_l3_4}\
+        left_3_4_dn_5       {dir_down               5               left_3_4  gate_2_l3_4}\
+        left_3_4_dn_6       {dir_down               6               left_3_4  gate_1_l3_4}\
+        center_3_4_up_1     {dir_up                 1               center_3_4  gate_4_c3_4}\
+        center_3_4_up_2     {dir_up                 2               center_3_4  gate_3_c3_4}\
+        center_3_4_up_3     {dir_up                 3               center_3_4  gate_2_c3_4}\
+        center_3_4_up_4     {dir_up                 4               center_3_4  gate_4_c3_4}\
+        center_3_4_up_5     {dir_up                 5               center_3_4  gate_3_c3_4}\
+        center_3_4_up_6     {dir_up                 6               center_3_4  gate_4_c3_4}\
+        center_3_4_dn_1     {dir_down               1               center_3_4  gate_1_c3_4}\
+        center_3_4_dn_2     {dir_down               2               center_3_4  gate_2_c3_4}\
+        center_3_4_dn_3     {dir_down               3               center_3_4  gate_1_c3_4}\
+        center_3_4_dn_4     {dir_down               4               center_3_4  gate_3_c3_4}\
+        center_3_4_dn_5     {dir_down               5               center_3_4  gate_2_c3_4}\
+        center_3_4_dn_6     {dir_down               6               center_3_4  gate_1_c3_4}\
+        right_3_4_up_1      {dir_up                 1               right_3_4  gate_4_r3_4}\
+        right_3_4_up_2      {dir_up                 2               right_3_4  gate_3_r3_4}\
+        right_3_4_up_3      {dir_up                 3               right_3_4  gate_2_r3_4}\
+        right_3_4_up_4      {dir_up                 4               right_3_4  gate_4_r3_4}\
+        right_3_4_up_5      {dir_up                 5               right_3_4  gate_3_r3_4}\
+        right_3_4_up_6      {dir_up                 6               right_3_4  gate_4_r3_4}\
+        right_3_4_dn_1      {dir_down               1               right_3_4  gate_1_r3_4}\
+        right_3_4_dn_2      {dir_down               2               right_3_4  gate_2_r3_4}\
+        right_3_4_dn_3      {dir_down               3               right_3_4  gate_1_r3_4}\
+        right_3_4_dn_4      {dir_down               4               right_3_4  gate_3_r3_4}\
+        right_3_4_dn_5      {dir_down               5               right_3_4  gate_2_r3_4}\
+        right_3_4_dn_6      {dir_down               6               right_3_4  gate_1_r3_4}\
     }
 }
