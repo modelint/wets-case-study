@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <help_text>// Uncomment the following line to change the fontsize and font:
+// fontsize=14
+// fontfamily=SansSerif //possible: SansSerif,Serif,Monospaced
+fontfamily=Monospaced
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Welcome to UMLet!
+//
+// Double-click on elements to add them to the diagram, or to copy them
+// Edit elements by modifying the text in this panel
+// Hold Ctrl to select multiple elements
+// Use Ctrl+mouse to select via lasso
+//
+// Use +/- or Ctrl+mouse wheel to zoom
+// Drag a whole relation at its central square icon
+//
+// Press Ctrl+C to copy the whole diagram to the system clipboard (then just paste it to, eg, Word)
+// Edit the files in the "palettes" directory to create your own element palettes
+//
+// Select "Custom Elements &gt; New..." to create new element types
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// This text will be stored with each diagram;  use it for notes.</help_text>
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1230</x>
+      <y>800</y>
+      <w>170</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Test Case
+--
+Name: string   {I}
+Summary: string</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>390</x>
+      <y>370</y>
+      <w>250</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Section Trace
+--
+Test_case: string     {I,R6}
+Configuration: string {I,R6}
+Test_phase: string    {I,R6}
+Trace_number: int     {I}</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>750</x>
+      <y>340</y>
+      <w>150</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>lt=-
+R1
+m1=+
+r1=is expected\nto produce
+m2=1
+r2=is an expected\nproduction of</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;190.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1210</x>
+      <y>410</y>
+      <w>200</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Wets Configuration
+--
+Name: string       {I}
+Lane_count: int
+Gate_count: int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1290</x>
+      <y>490</y>
+      <w>150</w>
+      <h>330</h>
+    </coordinates>
+    <panel_attributes>lt=-
+R3
+m1=+
+r1=is run against
+m2=*
+r2=is applied to</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;310.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>550</x>
+      <y>230</y>
+      <w>280</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Expected Capture
+--
+Test_case: string     {I,R1,OR4}
+Configuration: string {I,R1,OR4}
+Capture_order: int    {I,OR4}
+Result: dict
+Trace_spec: int    {R12}</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>490</x>
+      <y>460</y>
+      <w>150</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>lt=-
+R6
+m1=1
+r1=notifies about\nclass execution
+m2=*
+r2=monitors class\nexecution using  </panel_attributes>
+    <additional_attributes>10.0;190.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>720</x>
+      <y>530</y>
+      <w>250</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Tested Configuration
+--
+Test_case: string     {I,R3}
+Configuration: string {I,R3}</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>960</x>
+      <y>570</y>
+      <w>360</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;340.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>460</x>
+      <y>170</y>
+      <w>200</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>lt=-
+OR4
+m1=precedes
+m2=succeeds</panel_attributes>
+    <additional_attributes>110.0;60.0;110.0;10.0;10.0;10.0;10.0;120.0;90.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>720</x>
+      <y>800</y>
+      <w>240</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Test Phase
+--
+Name: string       {I}
+Phase_order: int   {I2,OR2}</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>830</x>
+      <y>590</y>
+      <w>110</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>lt=-
+R5
+m1=*
+r1=is part of
+m2=+
+r2=contains</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;210.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>370</x>
+      <y>650</y>
+      <w>250</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Test Section
+--
+Test_case: string     {I,R5}
+Configuration: string {I,R5}
+Test_phase: string    {I,R5}
+Test_process: string</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>610</x>
+      <y>700</y>
+      <w>250</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;230.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>630</x>
+      <y>840</y>
+      <w>200</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=-
+OR2
+m1=precedes
+m2=succeeds</panel_attributes>
+    <additional_attributes>110.0;30.0;110.0;80.0;30.0;80.0;30.0;10.0;90.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>880</x>
+      <y>230</y>
+      <w>290</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Actual Capture
+--
+Test_case: string     {I,R9,OR10}
+Configuration: string {I,R1,OR10}
+Capture_order: int    {I,OR10}
+Result: dict
+Trace_spec: int        {R11}</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>890</x>
+      <y>340</y>
+      <w>170</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>lt=-
+R9
+m1=1
+r1=is an actual\nproduction of
+m2=*
+r2=actually produces</panel_attributes>
+    <additional_attributes>10.0;190.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1130</x>
+      <y>160</y>
+      <w>170</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>lt=-
+OR10
+m1=precedes
+m2=succeeds</panel_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0;120.0;10.0;120.0;110.0;40.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>10</x>
+      <y>170</y>
+      <w>190</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Trace Spec
+--
+Spec_id: int      {I}
+Domain: string
+Class: string
+Operation: string
+Filters: list</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>90</x>
+      <y>280</y>
+      <w>320</w>
+      <h>170</h>
+    </coordinates>
+    <panel_attributes>lt=-
+R7
+m1=+
+r1=specifies the\ntrigger conditions\nof
+m2=+
+r2=has its trigger\nconditions\nspecified by</panel_attributes>
+    <additional_attributes>300.0;140.0;10.0;140.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>90</x>
+      <y>510</y>
+      <w>250</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Trace Composition
+--
+Test_case: string     {I,R7}
+Configuration: string {I,R7}
+Test_phase: string    {I,R7}
+Trace_number: int     {I,R7}
+Trace_spec: int       {I,R7}</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>180</x>
+      <y>410</y>
+      <w>30</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>180</x>
+      <y>100</y>
+      <w>670</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>lt=-
+R12
+m1=1
+r1=is described by
+m2=+
+r2=is a description of</panel_attributes>
+    <additional_attributes>10.0;70.0;10.0;20.0;490.0;20.0;490.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>20</x>
+      <y>40</y>
+      <w>1100</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>lt=-
+R11
+m1=1
+r1=is described by
+m2=*
+r2=is a description of</panel_attributes>
+    <additional_attributes>10.0;130.0;10.0;20.0;920.0;20.0;920.0;190.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>170</x>
+      <y>860</y>
+      <w>220</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+bg=yellow
+Model State Transition
+--
+Domain: string       {I}
+Class: string        {I}
+Source_state: string {I}
+Target_state: string {I}
+Event: string        {I}
+Transition_count: int</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

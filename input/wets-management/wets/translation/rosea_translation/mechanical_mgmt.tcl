@@ -5,7 +5,7 @@
 set ::mechanical_mgmt {
     class Motor {
         attribute name string -id 1
-        attribute run_time int -default 1500 ; # milliseconds
+        attribute run_time int -default 100 ; # milliseconds
         attribute transfer_vector list -default [list]
 
         statemodel {
@@ -41,7 +41,7 @@ set ::mechanical_mgmt {
 
     class Flow_Sensor {
         attribute name string -id 1
-        attribute delay_time int -default 1500 ; # milliseconds
+        attribute delay_time int -default 100 ; # milliseconds
         attribute transfer_vector list -default [list]
 
         statemodel {

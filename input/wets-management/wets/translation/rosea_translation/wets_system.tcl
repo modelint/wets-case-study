@@ -8,9 +8,10 @@ package require logger::utils
 package require logger::appender
 
 set optlist {
-    {level.arg warn {Log debug level}}
+    {level.arg notice {Log debug level}}
     {trace {Trace state machine transitions}}
     {rash {Use rash package as dashboard}}
+    {timeout.arg {20000} {Synchronization timeout in ms}}
 }
 
 try {
@@ -75,12 +76,12 @@ if {$::options(rash)} {
     package require rash
     wm withdraw .
     rash init
-    tkwait window .rash
-} else {
-    if {$::options(trace)} {
-        rosea trace control loglevel $::options(level)
-        rosea trace control logon
-    }
-    source ./test_mgmt.tcl
-    ::test_mgmt::run_test_cases
+#    tkwait window .rash
 }
+if {$::options(trace)} {
+    rosea trace control loglevel $::options(level)
+    rosea trace control logon
+}
+source ./test_mgmt.tcl
+::test_mgmt runTestCases
+exit

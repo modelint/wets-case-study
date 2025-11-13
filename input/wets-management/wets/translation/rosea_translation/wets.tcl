@@ -64,10 +64,6 @@ set ::wets {
                     # W1/Response Wormhole/Request-denied($new_license)
                     wormhole W1_request_denied $denied_tv
                 } else {
-                    withAttribute $self Last_waiting_position {
-                        incr Last_waiting_position
-                    }
-
                     set transit_lanes [findRelated $self ~R1]
                     set assigned_transit_lanes [findRelated [Assigned_Vessel findAll] R4]
                     set available_transit_lanes [refMinus $transit_lanes $assigned_transit_lanes]
@@ -104,10 +100,13 @@ set ::wets {
                             License $new_license\
                             Transfer_direction $direction\
                             Completed_transfer_vector $completed_tv
-                        Waiting_Vessel create\
-                            License $new_license\
-                            Wets [readAttribute $self Name]\
-                            Waiting_position [readAttribute $self Last_waiting_position]
+                        withAttribute $self Last_waiting_position {
+                            Waiting_Vessel create\
+                                License $new_license\
+                                Wets [readAttribute $self Name]\
+                                Waiting_position $Last_waiting_position
+                            incr Last_waiting_position
+                        }
                     }
                     # W2/Response Wormhole/Request-granted($new_license)
                     wormhole W2_request_granted $granted_tv

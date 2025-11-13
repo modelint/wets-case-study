@@ -8,7 +8,7 @@ set ::vessel_mgmt {
         attribute Status string -default ready -check {
             $Status eq "ready" || $Status eq "waiting" || $Status eq "moving"
         }
-        attribute Move_duration int -default 2500; # time to move through gate in ms
+        attribute Move_duration int -default 100; # time to move through gate in ms
         attribute Transfer_vector list -default [list]
 
         statemodel {
