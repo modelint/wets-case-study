@@ -79,7 +79,7 @@ if {$::options(rash)} {
 #    tkwait window .rash
 }
 if {$::options(trace)} {
-    rosea trace control loglevel $::options(level)
+    rosea trace control loglevel info
     rosea trace control logon
 }
 source ./test_mgmt.tcl
