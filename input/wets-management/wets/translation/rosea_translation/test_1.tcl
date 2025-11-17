@@ -77,5 +77,14 @@ namespace eval test_1 {
 
     proc finalize {test_case configuration test_phase} {
         log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
+
+        # Wait for Vessel VS-99 to be deleted in the vessel_mgmt domain after the transfer has happened.
+        set deleted [waitForSync]
+        set license [dict get $deleted License]
+        if {$license eq "VS-99"} {
+            log::debug "reset: $license transfer is completed"
+        } else {
+            error "expected VS-99 to be deleted, got '$license'"
+        }
     }
 }

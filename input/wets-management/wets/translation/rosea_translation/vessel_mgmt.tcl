@@ -9,6 +9,9 @@ set ::vessel_mgmt {
             $Status eq "ready" || $Status eq "waiting" || $Status eq "moving"
         }
         attribute Move_duration int -default 100; # time to move through gate in ms
+        attribute Randomize_timing boolean -default false
+        attribute Min_move_duration int -default 2000
+        attribute Max_move_duration int -default 5000
         attribute Transfer_vector list -default [list]
 
         statemodel {
@@ -33,6 +36,11 @@ set ::vessel_mgmt {
                 updateAttribute $self\
                     Status moving\
                     Transfer_vector $transfer_vector
+                if {[readAttribute $self Randomize_timing]} {
+                    withAttribute $self Move_duration Min_move_duration Max_move_duration {
+                        set Move_duration [randomInRange $Min_move_duration $Max_move_duration]
+                    }
+                }
                 delaysignal [readAttribute $self Move_duration] $self Passed_gate
             }
 
@@ -70,6 +78,11 @@ set ::vessel_mgmt {
 
     # async receiver for creation events
     operation asyncCreationReceiver {class_name attributes event_name args} {
-        $class_name createasync $event_name $args {*}$attributes
+        set existing [$class_name findById License [dict get $attributes License]]
+        if {[isEmptyRef $existing]} {
+            $class_name createasync $event_name $args {*}$attributes
+        } else {
+            log::notice "attempt to create duplicate $class_name with $attributes"
+        }
     }
 }

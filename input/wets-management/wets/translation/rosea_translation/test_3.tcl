@@ -45,7 +45,7 @@ namespace eval test_3 {
     proc reset {test_case configuration test_phase} {
         log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
 
-        # wait until the VS-00 is deleted
+        # wait until the VS-00 is deleted by the wets domain
         set deleted [waitForSync]
         set license [dict get $deleted License]
         if {$license eq "VS-00"} {
@@ -57,6 +57,16 @@ namespace eval test_3 {
 
     proc finalize {test_case configuration test_phase} {
         log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
+
+        # Wait for Vessel VS-00 to be deleted in the vessel_mgmt domain after the transfer has happened.
+        set deleted [waitForSync]
+        set license [dict get $deleted License]
+        if {$license eq "VS-00"} {
+            log::debug "reset: $license transfer is completed"
+        } else {
+            error "expected VS-00 to be deleted, got '$license'"
+        }
+
         # Return the Transit Lane instances to their default "up" available transfer direction
         relvar update ::wets::Transit_Lane tl {[tuple extract $tl Wets] eq $configuration} {
             tuple update $tl Available_transfer_direction up

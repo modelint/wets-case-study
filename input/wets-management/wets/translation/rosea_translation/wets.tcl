@@ -60,14 +60,12 @@ set ::wets {
             state Service_Transfer_Request {new_license direction granted_tv denied_tv completed_tv} {
                 set identical_vessel [Vessel findById License $new_license]
                 if {[isNotEmptyRef $identical_vessel]} {
-                    log::info "request from existing vessel: $new_license"
                     # W1/Response Wormhole/Request-denied($new_license)
                     wormhole W1_request_denied $denied_tv
                 } else {
                     set transit_lanes [findRelated $self ~R1]
                     set assigned_transit_lanes [findRelated [Assigned_Vessel findAll] R4]
                     set available_transit_lanes [refMinus $transit_lanes $assigned_transit_lanes]
-                    log::debug \n[relformat [deRef $available_transit_lanes] "available transit lanes"]
 
                     if {[isNotEmptyRef $available_transit_lanes]} {
                         set right_dir [Transit_Lane findWhere {$Available_transfer_direction eq $direction}]
@@ -187,13 +185,12 @@ set ::wets {
 ##############
 
             state Service_Transfer_Completed {free_transit_lane completed_license} {
-                set assigned_vessel [findRelated $self ~R1 ~R4]
+                set assigned_vessel [Assigned_Vessel findById License $completed_license]
                 set vessel [findRelated $assigned_vessel R2]
-                set gate_move [findRelated $assigned_vessel {R10 Active_Gate_Move}]
-
                 # W3/Response Wormhole/Transfer-completed($completed_license)
                 wormhole W3_transfer_completed [readAttribute $vessel Completed_transfer_vector]
 
+                set gate_move [findRelated $assigned_vessel {R10 Active_Gate_Move}]
                 delete $gate_move
                 delete $assigned_vessel
                 delete $vessel
@@ -232,20 +229,17 @@ set ::wets {
 
         instop earliest_waiting {} {
             set waiting_vessels [findRelated $self ~R3]
-            set earliest_pos [pipe {
+            if {[isEmptyRef $waiting_vessels]} {
+                return [Waiting_Vessel emptyRef]
+            }
+            set earliest_license [pipe {
                 deRef $waiting_vessels |
                 relation rank ~ -ascending Waiting_position Pos_Rank |
                 relation restrictwith ~ {$Pos_Rank <= 1} |
-                relation project ~ License
+                relation project ~ License |
+                relation extract ~ License
             }]
-
-
-            if {[relation isempty $earliest_pos]} {
-                return [Waiting_Vessel emptyRef]
-            } else {
-                set license [relation extract $earliest_pos License]
-                return [Waiting_Vessel findById License $license]
-            }
+            return [Waiting_Vessel findById License $earliest_license]
         }
     }
 
@@ -597,6 +591,8 @@ set ::wets {
 # Close (gate name : me.Gate) -> GATE
 ##############
             state Close_Gate {} {
+                set assigned_vessel [findRelated $self ~R10]
+                updateAttribute $assigned_vessel Status secured
                 # W8/Request Wormhole/Close gate(self/R5/Gate.Name, self.Gate(Gate closed))
                 set gate_to_close [findRelated $self ~R5]
                 wormhole W8_close_gate\
@@ -723,7 +719,7 @@ set ::wets {
 
     class Waiting_Vessel {
         attribute License string -id 1
-        attribute Wets string
+        attribute Wets string -id 2 ; # N.B. class model missing this as a secondary identifier attribute
         attribute Waiting_position int -id 2
 
         reference R2 Vessel -link License

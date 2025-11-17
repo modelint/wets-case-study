@@ -29,7 +29,20 @@ namespace eval test_2 {
     proc reset {test_case configuration test_phase} {
         log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
 
-        # Wait for VS-00 to be deleted after the transfer has happened.
+        # Wait for Vessel VS-00 to be deleted in the wets domain after the transfer has happened.
+        set deleted [waitForSync]
+        set license [dict get $deleted License]
+        if {$license eq "VS-00"} {
+            log::debug "reset: $license transfer is completed"
+        } else {
+            error "expected VS-00 to be deleted, got '$license'"
+        }
+    }
+
+    proc finalize {test_case configuration test_phase} {
+        log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
+
+        # Wait for Vessel VS-00 to be deleted in the vessel_mgmt domain after the transfer has happened.
         set deleted [waitForSync]
         set license [dict get $deleted License]
         if {$license eq "VS-00"} {
