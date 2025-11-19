@@ -195,6 +195,18 @@ namespace eval ::vessel_mgmt::wormhole {
                 $granted_transfer_vector $denied_transfer_vector $completed_transfer_vector
     }
 
+    namespace export VM03_request_removal
+    proc VM03_request_removal {
+        wets_id vessel_id granted_event denied_event
+    } {
+        set granted_transfer_vector [list $vessel_id $granted_event]
+        set denied_transfer_vector [list $vessel_id $denied_event]
+        set license [lindex $vessel_id 1]
+        ::wets asyncControlReceiver\
+            Wets [list Name $wets_id] Removal_request $license\
+                $granted_transfer_vector $denied_transfer_vector
+    }
+
     # Response wormholes
     namespace export VM02_move_completed
     proc VM02_move_completed {vessel_id transfer_vector} {

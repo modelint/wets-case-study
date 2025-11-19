@@ -27,9 +27,9 @@ namespace eval test_1 {
         }]
         for {set lane 0} {$lane < $lane_count} {incr lane} {
             set license [format {VS-%02d} $lane]
+            ::vessel_mgmt asyncCreationReceiver Vessel [list License $license]\
+                Start_transfer $configuration up
         }
-        ::vessel_mgmt asyncCreationReceiver Vessel [list License $license]\
-            Start_transfer $configuration up
 
         # Wait for each vessel to be assigned a transit lane
         for {set lane 0} {$lane < $lane_count} {incr lane} {

@@ -31,6 +31,7 @@ set ::vessel_mgmt {
                 updateAttribute $self Status waiting
             }
             transition Waiting_To_Move - Move_through_gate -> Moving
+            transition Waiting_To_Move - Cancel_transfer -> Canceling
 
             state Moving {gate transfer_vector} {
                 updateAttribute $self\
@@ -43,8 +44,8 @@ set ::vessel_mgmt {
                 }
                 delaysignal [readAttribute $self Move_duration] $self Passed_gate
             }
-
             transition Moving - Passed_gate -> Move_Completed
+            transition Moving - Cancel_transfer -> IG
 
             state Move_Completed {} {
                 updateAttribute $self Status waiting
@@ -54,6 +55,7 @@ set ::vessel_mgmt {
             }
             transition Move_Completed - Move_through_gate -> Moving
             transition Move_Completed - Transfer_complete -> Transfer_Completed
+            transition Move_Completed - Cancel_transfer -> IG
 
             state Transfer_Completed {} {}
 
@@ -61,7 +63,18 @@ set ::vessel_mgmt {
                 log::error "transfer request for [readAttribute $self License] denied"
             }
 
-            terminal Transfer_Aborted Transfer_Completed
+            state Canceling {wets_id} {
+                wormhole VM03_request_removal\
+                    $wets_id [identifier $self] Request_granted Request_denied
+            }
+            transition Canceling - Request_granted -> Transfer_Removed
+            transition Canceling - Request_denied -> Waiting_To_Move
+
+            state Transfer_Removed {} {
+                log::info "transfer removal for [readAttribute $self License] granted"
+            }
+
+            terminal Transfer_Aborted Transfer_Completed Transfer_Removed
         }
     }
 

@@ -98,7 +98,9 @@ namespace eval ::test_mgmt {
         {Name test_2 Summary {Vessel proceeds up with the available transit lane as up}}\
         {Name test_3 Summary {Vessel requests up transfer when only down is available}}\
         {Name test_4 Summary {Vessel requests down transfer when only up is available}}\
-        {Name test_5 Summary {Vessel requests down transfer when only down is available}}
+        {Name test_5 Summary {Vessel requests down transfer when only down is available}}\
+        {Name test_7 Summary {Attempt a remove transfer request and no Waiting Vessel matches}}\
+        {Name test_8 Summary {Attempt a remove transfer request with a matching Waiting Vessel}}
 
     relvar insert Wets_Configuration\
         {Name Wets_1 Lane_count 1 Gate_count 2}\
@@ -119,7 +121,9 @@ namespace eval ::test_mgmt {
         {Test_case test_3 Configuration Wets_1}\
         {Test_case test_3 Configuration Wets_9}\
         {Test_case test_4 Configuration Wets_1}\
-        {Test_case test_5 Configuration Wets_1}
+        {Test_case test_5 Configuration Wets_1}\
+        {Test_case test_7 Configuration Wets_1}\
+        {Test_case test_8 Configuration Wets_1}
 
     relvar insert Test_Phase\
         {Name Setup Phase_order 0}\
@@ -164,7 +168,17 @@ namespace eval ::test_mgmt {
         {Test_case test_5 Configuration Wets_1 Test_phase Setup Test_process setup}\
         {Test_case test_5 Configuration Wets_1 Test_phase Trigger Test_process trigger}\
         {Test_case test_5 Configuration Wets_1 Test_phase Reset Test_process reset}\
-        {Test_case test_5 Configuration Wets_1 Test_phase Finalize Test_process finalize}
+        {Test_case test_5 Configuration Wets_1 Test_phase Finalize Test_process finalize}\
+        \
+        {Test_case test_7 Configuration Wets_1 Test_phase Setup Test_process setup}\
+        {Test_case test_7 Configuration Wets_1 Test_phase Trigger Test_process trigger}\
+        {Test_case test_7 Configuration Wets_1 Test_phase Reset Test_process reset}\
+        {Test_case test_7 Configuration Wets_1 Test_phase Finalize Test_process finalize}\
+        \
+        {Test_case test_8 Configuration Wets_1 Test_phase Setup Test_process setup}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Trigger Test_process trigger}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Reset Test_process reset}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Finalize Test_process reset}
 
     relvar insert Section_Trace\
         {Test_case test_1 Configuration Wets_1 Test_phase Setup Trace_number 0}\
@@ -201,7 +215,18 @@ namespace eval ::test_mgmt {
         \
         {Test_case test_5 Configuration Wets_1 Test_phase Trigger Trace_number 0}\
         {Test_case test_5 Configuration Wets_1 Test_phase Reset Trace_number 0}\
-        {Test_case test_5 Configuration Wets_1 Test_phase Finalize Trace_number 0}
+        {Test_case test_5 Configuration Wets_1 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_7 Configuration Wets_1 Test_phase Setup Trace_number 0}\
+        {Test_case test_7 Configuration Wets_1 Test_phase Trigger Trace_number 0}\
+        {Test_case test_7 Configuration Wets_1 Test_phase Reset Trace_number 0}\
+        {Test_case test_7 Configuration Wets_1 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_8 Configuration Wets_1 Test_phase Setup Trace_number 0}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Setup Trace_number 1}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Trigger Trace_number 0}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Reset Trace_number 0}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Finalize Trace_number 0}
 
     relvar insert Trace_Composition\
         {Test_case test_1 Configuration Wets_1 Test_phase Setup Trace_number 0 Trace_spec 0}\
@@ -238,13 +263,25 @@ namespace eval ::test_mgmt {
         \
         {Test_case test_5 Configuration Wets_1 Test_phase Trigger Trace_number 0 Trace_spec 0}\
         {Test_case test_5 Configuration Wets_1 Test_phase Reset Trace_number 0 Trace_spec 2}\
-        {Test_case test_5 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}
+        {Test_case test_5 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_7 Configuration Wets_1 Test_phase Setup Trace_number 0 Trace_spec 4}\
+        {Test_case test_7 Configuration Wets_1 Test_phase Trigger Trace_number 0 Trace_spec 4}\
+        {Test_case test_7 Configuration Wets_1 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_7 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_8 Configuration Wets_1 Test_phase Setup Trace_number 0 Trace_spec 0}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Setup Trace_number 1 Trace_spec 1}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Trigger Trace_number 0 Trace_spec 4}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_8 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}
 
     relvar insert Trace_Spec\
         {Spec_id 0 Domain wets Class Assigned_Vessel Operation insert Filters License}\
         {Spec_id 1 Domain wets Class Waiting_Vessel Operation insert Filters License}\
         {Spec_id 2 Domain wets Class Vessel Operation delete Filters License}\
-        {Spec_id 3 Domain vessel_mgmt Class Vessel Operation delete Filters License}
+        {Spec_id 3 Domain vessel_mgmt Class Vessel Operation delete Filters License}\
+        {Spec_id 4 Domain vessel_mgmt Class Vessel__STATEINST Operation update Filters {License __State}}
 
     relvar insert Expected_Capture\
         {Test_case test_1 Configuration Wets_1 Capture_order 1 Result {License VS-00} Trace_spec 0}\
@@ -283,7 +320,26 @@ namespace eval ::test_mgmt {
         \
         {Test_case test_5 Configuration Wets_1 Capture_order 1 Result {License VS-00} Trace_spec 0}\
         {Test_case test_5 Configuration Wets_1 Capture_order 2 Result {License VS-00} Trace_spec 2}\
-        {Test_case test_5 Configuration Wets_1 Capture_order 3 Result {License VS-00} Trace_spec 3}
+        {Test_case test_5 Configuration Wets_1 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_7 Configuration Wets_1 Capture_order 1 Result {License VS-00 __State Requesting_Transfer}\
+                Trace_spec 4}\
+        {Test_case test_7 Configuration Wets_1 Capture_order 2 Result {License VS-00 __State Waiting_To_Move}\
+                Trace_spec 4}\
+        {Test_case test_7 Configuration Wets_1 Capture_order 3 Result {License VS-00 __State Canceling} Trace_spec 4}\
+        {Test_case test_7 Configuration Wets_1 Capture_order 4 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_7 Configuration Wets_1 Capture_order 5 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_8 Configuration Wets_1 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_8 Configuration Wets_1 Capture_order 2 Result {License VS-99} Trace_spec 1}\
+        {Test_case test_8 Configuration Wets_1 Capture_order 3 Result {License VS-99 __State Waiting_To_Move}\
+                Trace_spec 4}\
+        {Test_case test_8 Configuration Wets_1 Capture_order 4 Result {License VS-99 __State Canceling}\
+                Trace_spec 4}\
+        {Test_case test_8 Configuration Wets_1 Capture_order 5 Result {License VS-99 __State Transfer_Removed}\
+                Trace_spec 4}\
+        {Test_case test_8 Configuration Wets_1 Capture_order 6 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_8 Configuration Wets_1 Capture_order 7 Result {License VS-00} Trace_spec 3}
 
 
     # Associations
@@ -366,11 +422,14 @@ namespace eval ::test_mgmt {
                 }]
                 log::debug \n[relformat $actual {Actual Capture}]
 
+                set test_inst [relvar restrictone Test_Case Name $test_case]
+                set summary [relation extract $test_inst Summary]
+
                 if {[relation is $expected == $actual]} {
-                    log::notice "PASSED: $test_case / $configuration"
+                    log::notice "PASSED: $test_case / $configuration ($summary)"
                     incr passed_tests
                 } else {
-                    log::warn "FAILED: $test_case / $configuration"
+                    log::warn "FAILED: $test_case / $configuration ($summary)"
                     log::warn \n[relformat $expected {Expected Capture}]
                     log::warn \n[relformat $actual {Actual Capture}]
                     incr failed_tests
@@ -405,7 +464,7 @@ namespace eval ::test_mgmt {
         relation foreach trace $traces -ascending Trace_number {
             relation assign $trace Domain Class Operation Filters Trace_spec
             relvar trace $trace_op variable ::${Domain}::${Class} $Operation\
-                [namespace code "sync $test_case $configuration $Trace_spec $Filters"]
+                [namespace code "sync $test_case $configuration $Trace_spec [list $Filters]"]
         }
     }
 
@@ -494,7 +553,6 @@ namespace eval ::test_mgmt {
 
     proc sync {test_case configuration trace_spec filters ops relvar args} {
         log::debug [info level 0]
-        lassign $args tuple
         set operation [lindex $ops 0]
         set trace_op [pipe {
             relvar restrictone Trace_Spec Spec_id $trace_spec |
@@ -505,14 +563,17 @@ namespace eval ::test_mgmt {
             log::error $msg
             throw UNEXPECTED_OPERATION $msg
         }
-        set attr_values [tuple get $tuple]
+
+        set tuple_index [expr {$operation eq "update" ? 1 : 0}]
+        set tuple [lindex $args $tuple_index]
+        set attr_values [dict filter [tuple get $tuple] key {*}$filters]
         postResult\
             $test_case\
             $configuration\
             $trace_spec\
-            [dict filter $attr_values key {*}$filters]
-        set ::done $attr_values
-        return [expr {$operation eq "insert" ? $tuple : {}}]
+            $attr_values
+        set ::done [concat [list Spec_id $trace_spec] $attr_values]
+        return [expr {($operation eq "insert" || $operation eq "update") ? $tuple : {}}]
     }
 
     proc waitForSync {} {
@@ -536,4 +597,6 @@ namespace eval ::test_mgmt {
     source ./test_3.tcl
     source ./test_4.tcl
     source ./test_5.tcl
+    source ./test_7.tcl
+    source ./test_8.tcl
 }

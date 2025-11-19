@@ -1,7 +1,7 @@
 # 2.    Transfer request for a Vessel going "up. There are no other Vessels competing.
 #       Expect an instance of Assigned Vessel to be created
 namespace eval test_2 {
-    set service [string trimleft [namespace parent] :]::test_1
+    set service [string trimleft [namespace parent] :]::test_2
     set logger [::logger::init $service]
     set appenderType [expr {[dict exist [fconfigure stdout] -mode] ?\
             "colorConsole" : "console"}]

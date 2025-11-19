@@ -1,0 +1,96 @@
+# 7.    Remove request when there is no Waiting Vessel with the proper License value.
+#       Expect the request is denied.
+namespace eval test_7 {
+    set service [string trimleft [namespace parent] :]::test_7
+    set logger [::logger::init $service]
+    set appenderType [expr {[dict exist [fconfigure stdout] -mode] ?\
+            "colorConsole" : "console"}]
+    ::logger::utils::applyAppender -appender $appenderType -serviceCmd $logger\
+            -appenderArgs {-conversionPattern {\[%c\] \[%p\] '%m'}}
+    ::logger::import -all -namespace log $service
+    log::setlevel $::options(level)
+
+    namespace import ::ral::*
+    namespace import ::ralutil::*
+    namespace path [linsert [namespace path] 0 [namespace parent]]
+
+    proc setup {test_case configuration test_phase} {
+        log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
+
+        # The strategy is to create a transfer request, wait until it is assigned.
+        ::vessel_mgmt asyncCreationReceiver Vessel [list License VS-00]\
+            Start_transfer $configuration up
+
+        # Wait until VS-00 transitions to the Waiting To Move state
+        for {set done false} {!$done} {} {
+            set waiting [waitForSync]
+            set license [dict get $waiting License]
+            if {[dict get $waiting License] eq "VS-00"} {
+                log::debug "$test_phase: $license transitioned state"
+            } else {
+                log::error "expected assigned vessel to be VS-00, got: $license"
+            }
+            switch -exact -- [dict get $waiting __State] {
+                Requesting_Transfer {
+                    log::debug "changed state to Requesting_Transfer"
+                }
+                Waiting_To_Move {
+                    log::debug "changed state to Waiting_To_Move"
+                    set done true
+                }
+                default {
+                    log::error "unexpected state transition: [dict get $waiting __State]"
+                }
+            }
+        }
+    }
+
+    proc trigger {test_case configuration test_phase} {
+        log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
+
+        # Attempt to remove VS-00. This will fail because VS-00 is not waiting.
+        ::vessel_mgmt asyncControlReceiver Vessel [list License VS-00]\
+            Cancel_transfer $configuration
+
+        # Wait until VS-00 transitions to the canceling state
+        set waiting [waitForSync]
+        set license [dict get $waiting License]
+        if {[dict get $waiting License] eq "VS-00"} {
+            log::debug "$test_phase: $license transitioned state"
+        } else {
+            log::error "expected assigned vessel to be VS-00, got: $license"
+        }
+        if {[dict get $waiting __State] eq "Canceling"} {
+            log::debug "$test_phase: $license transitioned to Canceling"
+        } else {
+            log::error "expected $license to transition to Canceling: got [dict get $waiting __State]"
+        }
+    }
+
+    proc reset {test_case configuration test_phase} {
+        log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
+
+        # When the remove request is denied, VS-00 continues on to complete the transfer.
+        # Wait until the VS-00 is deleted in the wets domain
+        set deleted [waitForSync]
+        set license [dict get $deleted License]
+        if {$license eq "VS-00"} {
+            log::debug "reset: $license transfer is completed"
+        } else {
+            error "expected VS-00 to be deleted, got '$license'"
+        }
+    }
+
+    proc finalize {test_case configuration test_phase} {
+        log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
+
+        # Wait for Vessel VS-00 to be deleted in the vessel_mgmt domain after the transfer has happened.
+        set deleted [waitForSync]
+        set license [dict get $deleted License]
+        if {$license eq "VS-00"} {
+            log::debug "reset: $license transfer is completed"
+        } else {
+            error "expected VS-00 to be deleted, got '$license'"
+        }
+    }
+}

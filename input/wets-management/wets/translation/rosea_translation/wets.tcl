@@ -135,12 +135,11 @@ set ::wets {
 
             state Service_Removal_Request {old_license granted_tv denied_tv} {
                 set waiting_vessel [Waiting_Vessel findById License $old_license]
-                set vessel [findRelated $waiting_vessel R2]
-                if {[isNotEmptyRef $waiting_vessel]} {
+                if {[isEmptyRef $waiting_vessel]} {
                     # W1/Response Wormhole/Request-denied($old_license)
                     wormhole W1_request_denied $denied_tv
                 } else {
-                    delete $vessel
+                    delete [findRelated $waiting_vessel R2]
                     delete $waiting_vessel
                     # W2/Response Wormhole/Request-granted($old_license)
                     wormhole W2_request_granted $granted_tv

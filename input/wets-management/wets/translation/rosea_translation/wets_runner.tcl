@@ -64,21 +64,33 @@ namespace eval ::vessel_mgmt {
 }
 
 proc genRandomVesselRequest {} {
-    set license [format "VS-%03d" [randomInRange 0 999]]
-    set configuration [format "Wets_%d" [randomInRange 1 9]]
-    set direction [expr {[randomInRange 0 1] == 0 ? "up" : "down"}]
-    log::debug "vessel request, $license, on $configuration, going $direction"
-
-    ::vessel_mgmt asyncCreationReceiver Vessel [list\
-        License $license\
-        Randomize_timing [expr {$::options(randomize) ? "true" : "false"}]\
-    ] Start_transfer $configuration $direction
+    set configurations [shuffle [list 1 2 3 4 5 6 7 8 9]]
+    foreach config $configurations {
+        set license [format "VS-%03d" [randomInRange 0 999]]
+        set direction [expr {[randomInRange 0 1] == 0 ? "up" : "down"}]
+        set configuration [format "Wets_%d" $config]
+        ::vessel_mgmt asyncCreationReceiver Vessel [list\
+            License $license\
+            Randomize_timing [expr {$::options(randomize) ? "true" : "false"}]\
+        ] Start_transfer $configuration $direction
+    }
 
     after [randomInRange $::options(mintime) $::options(maxtime)] genRandomVesselRequest
 }
 
 proc randomInRange {min max} {
     return [expr {int(rand() * ($max - $min + 1)) + $min}]
+}
+
+proc shuffle {list} {
+    set n [llength $list]
+    for {set i 1} {$i < $n} {incr i} {
+        set j [expr {int(rand() * $n)}]
+        set temp [lindex $list $i]
+        lset list $i [lindex $list $j]
+        lset list $j $temp
+    }
+    return $list
 }
 
 source ./wets.tcl

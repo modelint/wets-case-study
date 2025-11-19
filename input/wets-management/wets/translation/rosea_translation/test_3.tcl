@@ -3,7 +3,7 @@
 #       make a transit lane be available for an up transfer. The transfer completes
 #       after the water adjustments are made.
 namespace eval test_3 {
-    set service [string trimleft [namespace parent] :]::test_1
+    set service [string trimleft [namespace parent] :]::test_3
     set logger [::logger::init $service]
     set appenderType [expr {[dict exist [fconfigure stdout] -mode] ?\
             "colorConsole" : "console"}]
