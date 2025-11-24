@@ -95,35 +95,52 @@ namespace eval ::test_mgmt {
     # Population
     relvar insert Test_Case\
         {Name test_1 Summary {Vessel waits when no transit lane is available}}\
-        {Name test_2 Summary {Vessel proceeds up with the available transit lane as up}}\
+        {Name test_2 Summary {Vessel requests up transfer and an up transit lane is available}}\
         {Name test_3 Summary {Vessel requests up transfer when only down is available}}\
         {Name test_4 Summary {Vessel requests down transfer when only up is available}}\
         {Name test_5 Summary {Vessel requests down transfer when only down is available}}\
+        {Name test_6 Summary {Duplicate transfer request is denied}}\
         {Name test_7 Summary {Attempt a remove transfer request and no Waiting Vessel matches}}\
-        {Name test_8 Summary {Attempt a remove transfer request with a matching Waiting Vessel}}
+        {Name test_8 Summary {Attempt a remove transfer request with a matching Waiting Vessel}}\
+        {Name test_9 Summary {Vessel must wait when requesting an up transfer}}\
+        {Name test_10 Summary {Vessel must wait when requesting a down transfer}}
 
     relvar insert Wets_Configuration\
         {Name Wets_1 Lane_count 1 Gate_count 2}\
         {Name Wets_2 Lane_count 1 Gate_count 3}\
         {Name Wets_3 Lane_count 1 Gate_count 4}\
-        {Name Wets_4 Lane_count 1 Gate_count 2}\
-        {Name Wets_5 Lane_count 1 Gate_count 3}\
-        {Name Wets_6 Lane_count 1 Gate_count 4}\
-        {Name Wets_7 Lane_count 1 Gate_count 2}\
-        {Name Wets_8 Lane_count 1 Gate_count 3}\
-        {Name Wets_9 Lane_count 1 Gate_count 4}
+        {Name Wets_4 Lane_count 2 Gate_count 2}\
+        {Name Wets_5 Lane_count 2 Gate_count 3}\
+        {Name Wets_6 Lane_count 2 Gate_count 4}\
+        {Name Wets_7 Lane_count 3 Gate_count 2}\
+        {Name Wets_8 Lane_count 3 Gate_count 3}\
+        {Name Wets_9 Lane_count 3 Gate_count 4}
 
     relvar insert Tested_Configuration\
         {Test_case test_1 Configuration Wets_1}\
         {Test_case test_1 Configuration Wets_3}\
+        {Test_case test_1 Configuration Wets_4}\
         {Test_case test_2 Configuration Wets_1}\
+        {Test_case test_2 Configuration Wets_2}\
+        {Test_case test_2 Configuration Wets_3}\
         {Test_case test_2 Configuration Wets_4}\
+        {Test_case test_2 Configuration Wets_5}\
+        {Test_case test_2 Configuration Wets_6}\
+        {Test_case test_2 Configuration Wets_7}\
+        {Test_case test_2 Configuration Wets_8}\
+        {Test_case test_2 Configuration Wets_9}\
         {Test_case test_3 Configuration Wets_1}\
+        {Test_case test_3 Configuration Wets_4}\
         {Test_case test_3 Configuration Wets_9}\
         {Test_case test_4 Configuration Wets_1}\
+        {Test_case test_4 Configuration Wets_4}\
         {Test_case test_5 Configuration Wets_1}\
+        {Test_case test_5 Configuration Wets_4}\
+        {Test_case test_6 Configuration Wets_1}\
         {Test_case test_7 Configuration Wets_1}\
-        {Test_case test_8 Configuration Wets_1}
+        {Test_case test_8 Configuration Wets_1}\
+        {Test_case test_9 Configuration Wets_8}\
+        {Test_case test_10 Configuration Wets_6}
 
     relvar insert Test_Phase\
         {Name Setup Phase_order 0}\
@@ -142,18 +159,56 @@ namespace eval ::test_mgmt {
         {Test_case test_1 Configuration Wets_3 Test_phase Reset Test_process reset}\
         {Test_case test_1 Configuration Wets_3 Test_phase Finalize Test_process finalize}\
         \
+        {Test_case test_1 Configuration Wets_4 Test_phase Setup Test_process setup}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Trigger Test_process trigger}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Reset Test_process reset}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Finalize Test_process finalize}\
+        \
         {Test_case test_2 Configuration Wets_1 Test_phase Trigger Test_process trigger}\
         {Test_case test_2 Configuration Wets_1 Test_phase Reset Test_process reset}\
         {Test_case test_2 Configuration Wets_1 Test_phase Finalize Test_process reset}\
+        \
+        {Test_case test_2 Configuration Wets_2 Test_phase Trigger Test_process trigger}\
+        {Test_case test_2 Configuration Wets_2 Test_phase Reset Test_process reset}\
+        {Test_case test_2 Configuration Wets_2 Test_phase Finalize Test_process reset}\
+        \
+        {Test_case test_2 Configuration Wets_3 Test_phase Trigger Test_process trigger}\
+        {Test_case test_2 Configuration Wets_3 Test_phase Reset Test_process reset}\
+        {Test_case test_2 Configuration Wets_3 Test_phase Finalize Test_process reset}\
         \
         {Test_case test_2 Configuration Wets_4 Test_phase Trigger Test_process trigger}\
         {Test_case test_2 Configuration Wets_4 Test_phase Reset Test_process reset}\
         {Test_case test_2 Configuration Wets_4 Test_phase Finalize Test_process reset}\
         \
+        {Test_case test_2 Configuration Wets_5 Test_phase Trigger Test_process trigger}\
+        {Test_case test_2 Configuration Wets_5 Test_phase Reset Test_process reset}\
+        {Test_case test_2 Configuration Wets_5 Test_phase Finalize Test_process reset}\
+        \
+        {Test_case test_2 Configuration Wets_6 Test_phase Trigger Test_process trigger}\
+        {Test_case test_2 Configuration Wets_6 Test_phase Reset Test_process reset}\
+        {Test_case test_2 Configuration Wets_6 Test_phase Finalize Test_process reset}\
+        \
+        {Test_case test_2 Configuration Wets_7 Test_phase Trigger Test_process trigger}\
+        {Test_case test_2 Configuration Wets_7 Test_phase Reset Test_process reset}\
+        {Test_case test_2 Configuration Wets_7 Test_phase Finalize Test_process reset}\
+        \
+        {Test_case test_2 Configuration Wets_8 Test_phase Trigger Test_process trigger}\
+        {Test_case test_2 Configuration Wets_8 Test_phase Reset Test_process reset}\
+        {Test_case test_2 Configuration Wets_8 Test_phase Finalize Test_process reset}\
+        \
+        {Test_case test_2 Configuration Wets_9 Test_phase Trigger Test_process trigger}\
+        {Test_case test_2 Configuration Wets_9 Test_phase Reset Test_process reset}\
+        {Test_case test_2 Configuration Wets_9 Test_phase Finalize Test_process reset}\
+        \
         {Test_case test_3 Configuration Wets_1 Test_phase Setup Test_process setup}\
         {Test_case test_3 Configuration Wets_1 Test_phase Trigger Test_process trigger}\
         {Test_case test_3 Configuration Wets_1 Test_phase Reset Test_process reset}\
         {Test_case test_3 Configuration Wets_1 Test_phase Finalize Test_process finalize}\
+        \
+        {Test_case test_3 Configuration Wets_4 Test_phase Setup Test_process setup}\
+        {Test_case test_3 Configuration Wets_4 Test_phase Trigger Test_process trigger}\
+        {Test_case test_3 Configuration Wets_4 Test_phase Reset Test_process reset}\
+        {Test_case test_3 Configuration Wets_4 Test_phase Finalize Test_process finalize}\
         \
         {Test_case test_3 Configuration Wets_9 Test_phase Setup Test_process setup}\
         {Test_case test_3 Configuration Wets_9 Test_phase Trigger Test_process trigger}\
@@ -165,10 +220,25 @@ namespace eval ::test_mgmt {
         {Test_case test_4 Configuration Wets_1 Test_phase Reset Test_process reset}\
         {Test_case test_4 Configuration Wets_1 Test_phase Finalize Test_process finalize}\
         \
+        {Test_case test_4 Configuration Wets_4 Test_phase Setup Test_process setup}\
+        {Test_case test_4 Configuration Wets_4 Test_phase Trigger Test_process trigger}\
+        {Test_case test_4 Configuration Wets_4 Test_phase Reset Test_process reset}\
+        {Test_case test_4 Configuration Wets_4 Test_phase Finalize Test_process finalize}\
+        \
         {Test_case test_5 Configuration Wets_1 Test_phase Setup Test_process setup}\
         {Test_case test_5 Configuration Wets_1 Test_phase Trigger Test_process trigger}\
         {Test_case test_5 Configuration Wets_1 Test_phase Reset Test_process reset}\
         {Test_case test_5 Configuration Wets_1 Test_phase Finalize Test_process finalize}\
+        \
+        {Test_case test_5 Configuration Wets_4 Test_phase Setup Test_process setup}\
+        {Test_case test_5 Configuration Wets_4 Test_phase Trigger Test_process trigger}\
+        {Test_case test_5 Configuration Wets_4 Test_phase Reset Test_process reset}\
+        {Test_case test_5 Configuration Wets_4 Test_phase Finalize Test_process finalize}\
+        \
+        {Test_case test_6 Configuration Wets_1 Test_phase Setup Test_process setup}\
+        {Test_case test_6 Configuration Wets_1 Test_phase Trigger Test_process trigger}\
+        {Test_case test_6 Configuration Wets_1 Test_phase Reset Test_process reset}\
+        {Test_case test_6 Configuration Wets_1 Test_phase Finalize Test_process finalize}\
         \
         {Test_case test_7 Configuration Wets_1 Test_phase Setup Test_process setup}\
         {Test_case test_7 Configuration Wets_1 Test_phase Trigger Test_process trigger}\
@@ -178,7 +248,16 @@ namespace eval ::test_mgmt {
         {Test_case test_8 Configuration Wets_1 Test_phase Setup Test_process setup}\
         {Test_case test_8 Configuration Wets_1 Test_phase Trigger Test_process trigger}\
         {Test_case test_8 Configuration Wets_1 Test_phase Reset Test_process reset}\
-        {Test_case test_8 Configuration Wets_1 Test_phase Finalize Test_process reset}
+        {Test_case test_8 Configuration Wets_1 Test_phase Finalize Test_process reset}\
+        \
+        {Test_case test_9 Configuration Wets_8 Test_phase Setup Test_process setup}\
+        {Test_case test_9 Configuration Wets_8 Test_phase Trigger Test_process trigger}\
+        {Test_case test_9 Configuration Wets_8 Test_phase Reset Test_process reset}\
+        \
+        {Test_case test_10 Configuration Wets_6 Test_phase Setup Test_process setup}\
+        {Test_case test_10 Configuration Wets_6 Test_phase Trigger Test_process trigger}\
+        {Test_case test_10 Configuration Wets_6 Test_phase Reset Test_process reset}\
+        {Test_case test_10 Configuration Wets_6 Test_phase Finalize Test_process finalize}\
 
     relvar insert Section_Trace\
         {Test_case test_1 Configuration Wets_1 Test_phase Setup Trace_number 0}\
@@ -193,17 +272,55 @@ namespace eval ::test_mgmt {
         {Test_case test_1 Configuration Wets_3 Test_phase Reset Trace_number 1}\
         {Test_case test_1 Configuration Wets_3 Test_phase Finalize Trace_number 0}\
         \
+        {Test_case test_1 Configuration Wets_4 Test_phase Setup Trace_number 0}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Trigger Trace_number 0}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Reset Trace_number 0}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Reset Trace_number 1}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Finalize Trace_number 0}\
+        \
         {Test_case test_2 Configuration Wets_1 Test_phase Trigger Trace_number 0}\
         {Test_case test_2 Configuration Wets_1 Test_phase Reset Trace_number 0}\
         {Test_case test_2 Configuration Wets_1 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_2 Configuration Wets_2 Test_phase Trigger Trace_number 0}\
+        {Test_case test_2 Configuration Wets_2 Test_phase Reset Trace_number 0}\
+        {Test_case test_2 Configuration Wets_2 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_2 Configuration Wets_3 Test_phase Trigger Trace_number 0}\
+        {Test_case test_2 Configuration Wets_3 Test_phase Reset Trace_number 0}\
+        {Test_case test_2 Configuration Wets_3 Test_phase Finalize Trace_number 0}\
         \
         {Test_case test_2 Configuration Wets_4 Test_phase Trigger Trace_number 0}\
         {Test_case test_2 Configuration Wets_4 Test_phase Reset Trace_number 0}\
         {Test_case test_2 Configuration Wets_4 Test_phase Finalize Trace_number 0}\
         \
+        {Test_case test_2 Configuration Wets_5 Test_phase Trigger Trace_number 0}\
+        {Test_case test_2 Configuration Wets_5 Test_phase Reset Trace_number 0}\
+        {Test_case test_2 Configuration Wets_5 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_2 Configuration Wets_6 Test_phase Trigger Trace_number 0}\
+        {Test_case test_2 Configuration Wets_6 Test_phase Reset Trace_number 0}\
+        {Test_case test_2 Configuration Wets_6 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_2 Configuration Wets_7 Test_phase Trigger Trace_number 0}\
+        {Test_case test_2 Configuration Wets_7 Test_phase Reset Trace_number 0}\
+        {Test_case test_2 Configuration Wets_7 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_2 Configuration Wets_8 Test_phase Trigger Trace_number 0}\
+        {Test_case test_2 Configuration Wets_8 Test_phase Reset Trace_number 0}\
+        {Test_case test_2 Configuration Wets_8 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_2 Configuration Wets_9 Test_phase Trigger Trace_number 0}\
+        {Test_case test_2 Configuration Wets_9 Test_phase Reset Trace_number 0}\
+        {Test_case test_2 Configuration Wets_9 Test_phase Finalize Trace_number 0}\
+        \
         {Test_case test_3 Configuration Wets_1 Test_phase Trigger Trace_number 0}\
         {Test_case test_3 Configuration Wets_1 Test_phase Reset Trace_number 0}\
         {Test_case test_3 Configuration Wets_1 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_3 Configuration Wets_4 Test_phase Trigger Trace_number 0}\
+        {Test_case test_3 Configuration Wets_4 Test_phase Reset Trace_number 0}\
+        {Test_case test_3 Configuration Wets_4 Test_phase Finalize Trace_number 0}\
         \
         {Test_case test_3 Configuration Wets_9 Test_phase Trigger Trace_number 0}\
         {Test_case test_3 Configuration Wets_9 Test_phase Reset Trace_number 0}\
@@ -213,9 +330,22 @@ namespace eval ::test_mgmt {
         {Test_case test_4 Configuration Wets_1 Test_phase Reset Trace_number 0}\
         {Test_case test_4 Configuration Wets_1 Test_phase Finalize Trace_number 0}\
         \
+        {Test_case test_4 Configuration Wets_4 Test_phase Trigger Trace_number 0}\
+        {Test_case test_4 Configuration Wets_4 Test_phase Reset Trace_number 0}\
+        {Test_case test_4 Configuration Wets_4 Test_phase Finalize Trace_number 0}\
+        \
         {Test_case test_5 Configuration Wets_1 Test_phase Trigger Trace_number 0}\
         {Test_case test_5 Configuration Wets_1 Test_phase Reset Trace_number 0}\
         {Test_case test_5 Configuration Wets_1 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_5 Configuration Wets_4 Test_phase Trigger Trace_number 0}\
+        {Test_case test_5 Configuration Wets_4 Test_phase Reset Trace_number 0}\
+        {Test_case test_5 Configuration Wets_4 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_6 Configuration Wets_1 Test_phase Setup Trace_number 0}\
+        {Test_case test_6 Configuration Wets_1 Test_phase Trigger Trace_number 0}\
+        {Test_case test_6 Configuration Wets_1 Test_phase Reset Trace_number 0}\
+        {Test_case test_6 Configuration Wets_1 Test_phase Finalize Trace_number 0}\
         \
         {Test_case test_7 Configuration Wets_1 Test_phase Setup Trace_number 0}\
         {Test_case test_7 Configuration Wets_1 Test_phase Trigger Trace_number 0}\
@@ -226,7 +356,13 @@ namespace eval ::test_mgmt {
         {Test_case test_8 Configuration Wets_1 Test_phase Setup Trace_number 1}\
         {Test_case test_8 Configuration Wets_1 Test_phase Trigger Trace_number 0}\
         {Test_case test_8 Configuration Wets_1 Test_phase Reset Trace_number 0}\
-        {Test_case test_8 Configuration Wets_1 Test_phase Finalize Trace_number 0}
+        {Test_case test_8 Configuration Wets_1 Test_phase Finalize Trace_number 0}\
+        \
+        {Test_case test_9 Configuration Wets_8 Test_phase Setup Trace_number 0}\
+        {Test_case test_9 Configuration Wets_8 Test_phase Reset Trace_number 0}\
+        \
+        {Test_case test_10 Configuration Wets_6 Test_phase Setup Trace_number 0}\
+        {Test_case test_10 Configuration Wets_6 Test_phase Reset Trace_number 0}
 
     relvar insert Trace_Composition\
         {Test_case test_1 Configuration Wets_1 Test_phase Setup Trace_number 0 Trace_spec 0}\
@@ -241,17 +377,55 @@ namespace eval ::test_mgmt {
         {Test_case test_1 Configuration Wets_3 Test_phase Reset Trace_number 1 Trace_spec 2}\
         {Test_case test_1 Configuration Wets_3 Test_phase Finalize Trace_number 0 Trace_spec 3}\
         \
+        {Test_case test_1 Configuration Wets_4 Test_phase Setup Trace_number 0 Trace_spec 0}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Trigger Trace_number 0 Trace_spec 1}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Reset Trace_number 0 Trace_spec 0}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Reset Trace_number 1 Trace_spec 2}\
+        {Test_case test_1 Configuration Wets_4 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
         {Test_case test_2 Configuration Wets_1 Test_phase Trigger Trace_number 0 Trace_spec 0}\
         {Test_case test_2 Configuration Wets_1 Test_phase Reset Trace_number 0 Trace_spec 2}\
         {Test_case test_2 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_2 Test_phase Trigger Trace_number 0 Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_2 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_2 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_3 Test_phase Trigger Trace_number 0 Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_3 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_3 Test_phase Finalize Trace_number 0 Trace_spec 3}\
         \
         {Test_case test_2 Configuration Wets_4 Test_phase Trigger Trace_number 0 Trace_spec 0}\
         {Test_case test_2 Configuration Wets_4 Test_phase Reset Trace_number 0 Trace_spec 2}\
         {Test_case test_2 Configuration Wets_4 Test_phase Finalize Trace_number 0 Trace_spec 3}\
         \
+        {Test_case test_2 Configuration Wets_5 Test_phase Trigger Trace_number 0 Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_5 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_5 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_6 Test_phase Trigger Trace_number 0 Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_6 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_6 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_7 Test_phase Trigger Trace_number 0 Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_7 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_7 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_8 Test_phase Trigger Trace_number 0 Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_8 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_8 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_9 Test_phase Trigger Trace_number 0 Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_9 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_9 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
         {Test_case test_3 Configuration Wets_1 Test_phase Trigger Trace_number 0 Trace_spec 0}\
         {Test_case test_3 Configuration Wets_1 Test_phase Reset Trace_number 0 Trace_spec 2}\
         {Test_case test_3 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_3 Configuration Wets_4 Test_phase Trigger Trace_number 0 Trace_spec 0}\
+        {Test_case test_3 Configuration Wets_4 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_3 Configuration Wets_4 Test_phase Finalize Trace_number 0 Trace_spec 3}\
         \
         {Test_case test_3 Configuration Wets_9 Test_phase Trigger Trace_number 0 Trace_spec 0}\
         {Test_case test_3 Configuration Wets_9 Test_phase Reset Trace_number 0 Trace_spec 2}\
@@ -261,9 +435,22 @@ namespace eval ::test_mgmt {
         {Test_case test_4 Configuration Wets_1 Test_phase Reset Trace_number 0 Trace_spec 2}\
         {Test_case test_4 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}\
         \
+        {Test_case test_4 Configuration Wets_4 Test_phase Trigger Trace_number 0 Trace_spec 0}\
+        {Test_case test_4 Configuration Wets_4 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_4 Configuration Wets_4 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
         {Test_case test_5 Configuration Wets_1 Test_phase Trigger Trace_number 0 Trace_spec 0}\
         {Test_case test_5 Configuration Wets_1 Test_phase Reset Trace_number 0 Trace_spec 2}\
         {Test_case test_5 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_5 Configuration Wets_4 Test_phase Trigger Trace_number 0 Trace_spec 0}\
+        {Test_case test_5 Configuration Wets_4 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_5 Configuration Wets_4 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_6 Configuration Wets_1 Test_phase Setup Trace_number 0 Trace_spec 0}\
+        {Test_case test_6 Configuration Wets_1 Test_phase Trigger Trace_number 0 Trace_spec 4}\
+        {Test_case test_6 Configuration Wets_1 Test_phase Reset Trace_number 0 Trace_spec 2}\
+        {Test_case test_6 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}\
         \
         {Test_case test_7 Configuration Wets_1 Test_phase Setup Trace_number 0 Trace_spec 4}\
         {Test_case test_7 Configuration Wets_1 Test_phase Trigger Trace_number 0 Trace_spec 4}\
@@ -274,7 +461,13 @@ namespace eval ::test_mgmt {
         {Test_case test_8 Configuration Wets_1 Test_phase Setup Trace_number 1 Trace_spec 1}\
         {Test_case test_8 Configuration Wets_1 Test_phase Trigger Trace_number 0 Trace_spec 4}\
         {Test_case test_8 Configuration Wets_1 Test_phase Reset Trace_number 0 Trace_spec 2}\
-        {Test_case test_8 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}
+        {Test_case test_8 Configuration Wets_1 Test_phase Finalize Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_9 Configuration Wets_8 Test_phase Setup Trace_number 0 Trace_spec 0}\
+        {Test_case test_9 Configuration Wets_8 Test_phase Reset Trace_number 0 Trace_spec 3}\
+        \
+        {Test_case test_10 Configuration Wets_6 Test_phase Setup Trace_number 0 Trace_spec 0}\
+        {Test_case test_10 Configuration Wets_6 Test_phase Reset Trace_number 0 Trace_spec 3}
 
     relvar insert Trace_Spec\
         {Spec_id 0 Domain wets Class Assigned_Vessel Operation insert Filters License}\
@@ -298,17 +491,58 @@ namespace eval ::test_mgmt {
         {Test_case test_1 Configuration Wets_3 Capture_order 5 Result {License VS-99} Trace_spec 2}\
         {Test_case test_1 Configuration Wets_3 Capture_order 6 Result {License VS-99} Trace_spec 3}\
         \
+        {Test_case test_1 Configuration Wets_4 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_1 Configuration Wets_4 Capture_order 2 Result {License VS-01} Trace_spec 0}\
+        {Test_case test_1 Configuration Wets_4 Capture_order 3 Result {License VS-99} Trace_spec 1}\
+        {Test_case test_1 Configuration Wets_4 Capture_order 4 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_1 Configuration Wets_4 Capture_order 5 Result {License VS-99} Trace_spec 0}\
+        {Test_case test_1 Configuration Wets_4 Capture_order 6 Result {License VS-01} Trace_spec 2}\
+        {Test_case test_1 Configuration Wets_4 Capture_order 7 Result {License VS-99} Trace_spec 2}\
+        {Test_case test_1 Configuration Wets_4 Capture_order 8 Result {License VS-99} Trace_spec 3}\
+        \
         {Test_case test_2 Configuration Wets_1 Capture_order 1 Result {License VS-00} Trace_spec 0}\
         {Test_case test_2 Configuration Wets_1 Capture_order 2 Result {License VS-00} Trace_spec 2}\
         {Test_case test_2 Configuration Wets_1 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_2 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_2 Capture_order 2 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_2 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_3 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_3 Capture_order 2 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_3 Capture_order 3 Result {License VS-00} Trace_spec 3}\
         \
         {Test_case test_2 Configuration Wets_4 Capture_order 1 Result {License VS-00} Trace_spec 0}\
         {Test_case test_2 Configuration Wets_4 Capture_order 2 Result {License VS-00} Trace_spec 2}\
         {Test_case test_2 Configuration Wets_4 Capture_order 3 Result {License VS-00} Trace_spec 3}\
         \
+        {Test_case test_2 Configuration Wets_5 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_5 Capture_order 2 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_5 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_6 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_6 Capture_order 2 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_6 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_7 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_7 Capture_order 2 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_7 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_8 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_8 Capture_order 2 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_8 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_2 Configuration Wets_9 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_2 Configuration Wets_9 Capture_order 2 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_2 Configuration Wets_9 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
         {Test_case test_3 Configuration Wets_1 Capture_order 1 Result {License VS-00} Trace_spec 0}\
         {Test_case test_3 Configuration Wets_1 Capture_order 2 Result {License VS-00} Trace_spec 2}\
         {Test_case test_3 Configuration Wets_1 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_3 Configuration Wets_4 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_3 Configuration Wets_4 Capture_order 2 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_3 Configuration Wets_4 Capture_order 3 Result {License VS-00} Trace_spec 3}\
         \
         {Test_case test_3 Configuration Wets_9 Capture_order 1 Result {License VS-00} Trace_spec 0}\
         {Test_case test_3 Configuration Wets_9 Capture_order 2 Result {License VS-00} Trace_spec 2}\
@@ -318,9 +552,27 @@ namespace eval ::test_mgmt {
         {Test_case test_4 Configuration Wets_1 Capture_order 2 Result {License VS-00} Trace_spec 2}\
         {Test_case test_4 Configuration Wets_1 Capture_order 3 Result {License VS-00} Trace_spec 3}\
         \
+        {Test_case test_4 Configuration Wets_4 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_4 Configuration Wets_4 Capture_order 2 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_4 Configuration Wets_4 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
         {Test_case test_5 Configuration Wets_1 Capture_order 1 Result {License VS-00} Trace_spec 0}\
         {Test_case test_5 Configuration Wets_1 Capture_order 2 Result {License VS-00} Trace_spec 2}\
         {Test_case test_5 Configuration Wets_1 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_5 Configuration Wets_4 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_5 Configuration Wets_4 Capture_order 2 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_5 Configuration Wets_4 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_6 Configuration Wets_1 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_6 Configuration Wets_1 Capture_order 2 Result {License VS-00 __State Waiting_To_Move}\
+                Trace_spec 4}\
+        {Test_case test_6 Configuration Wets_1 Capture_order 3 Result {License VS-00 __State Duplicate_Request}\
+                Trace_spec 4}\
+        {Test_case test_6 Configuration Wets_1 Capture_order 4 Result {License VS-00 __State Waiting_To_Move}\
+                Trace_spec 4}\
+        {Test_case test_6 Configuration Wets_1 Capture_order 5 Result {License VS-00} Trace_spec 2}\
+        {Test_case test_6 Configuration Wets_1 Capture_order 6 Result {License VS-00} Trace_spec 3}\
         \
         {Test_case test_7 Configuration Wets_1 Capture_order 1 Result {License VS-00 __State Requesting_Transfer}\
                 Trace_spec 4}\
@@ -339,7 +591,21 @@ namespace eval ::test_mgmt {
         {Test_case test_8 Configuration Wets_1 Capture_order 5 Result {License VS-99 __State Transfer_Removed}\
                 Trace_spec 4}\
         {Test_case test_8 Configuration Wets_1 Capture_order 6 Result {License VS-00} Trace_spec 2}\
-        {Test_case test_8 Configuration Wets_1 Capture_order 7 Result {License VS-00} Trace_spec 3}
+        {Test_case test_8 Configuration Wets_1 Capture_order 7 Result {License VS-00} Trace_spec 3}\
+        \
+        {Test_case test_9 Configuration Wets_8 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_9 Configuration Wets_8 Capture_order 2 Result {License VS-01} Trace_spec 0}\
+        {Test_case test_9 Configuration Wets_8 Capture_order 3 Result {License VS-02} Trace_spec 0}\
+        {Test_case test_9 Configuration Wets_8 Capture_order 4 Result {License VS-00} Trace_spec 3}\
+        {Test_case test_9 Configuration Wets_8 Capture_order 5 Result {License VS-01} Trace_spec 3}\
+        {Test_case test_9 Configuration Wets_8 Capture_order 6 Result {License VS-02} Trace_spec 3}\
+        {Test_case test_9 Configuration Wets_8 Capture_order 7 Result {License VS-99} Trace_spec 3}\
+        \
+        {Test_case test_10 Configuration Wets_6 Capture_order 1 Result {License VS-00} Trace_spec 0}\
+        {Test_case test_10 Configuration Wets_6 Capture_order 2 Result {License VS-01} Trace_spec 0}\
+        {Test_case test_10 Configuration Wets_6 Capture_order 3 Result {License VS-00} Trace_spec 3}\
+        {Test_case test_10 Configuration Wets_6 Capture_order 4 Result {License VS-01} Trace_spec 3}\
+        {Test_case test_10 Configuration Wets_6 Capture_order 5 Result {License VS-99} Trace_spec 3}
 
 
     # Associations
@@ -368,15 +634,19 @@ namespace eval ::test_mgmt {
         Expected_Capture Trace_spec + Trace_Spec Spec_id 1
 
 
-    proc runTestCases {} {
+    proc runTestCases {tests} {
         set passed_tests 0
         set failed_tests 0
+        set ::done {}
 
         rosea trace control clear
         rosea trace control on
 
         # Loop over all test cases
         relation foreach test_case [relvar set Test_Case] {
+            if {![string match -nocase $tests [relation extract $test_case Name]]} {
+                continue
+            }
             # Loop over all the configurations for the test
             set configs [pipe {
                 relvar set Tested_Configuration |
@@ -441,9 +711,9 @@ namespace eval ::test_mgmt {
         rosea trace control off
 
         if {$failed_tests == 0} {
-            log::notice "PASSED: ALL"
+            log::notice "PASSED: ALL test cases"
         } else {
-            log::notice "FAILED: $failed_tests tests"
+            log::notice "FAILED: $failed_tests test cases"
         }
 
         reportModelCoverage
@@ -459,7 +729,7 @@ namespace eval ::test_mgmt {
                 $Test_phase eq $test_phase} |
             relation join ~ [relvar set Trace_Spec] -using {Trace_spec Spec_id}
         }]
-        log::debug "[info level 0]:\n[relformat $traces {traces to install}]"
+        log::debug "[info level 0]:\n[relformat $traces [string cat {traces to } $trace_op]]"
 
         relation foreach trace $traces -ascending Trace_number {
             relation assign $trace Domain Class Operation Filters Trace_spec
@@ -467,6 +737,14 @@ namespace eval ::test_mgmt {
                 [namespace code "sync $test_case $configuration $Trace_spec [list $Filters]"]
         }
     }
+
+    proc getLaneCount {configuration} {
+        return [pipe {
+            relvar restrictone Wets_Configuration Name $configuration |
+            relation extract ~ Lane_count
+        }]
+    }
+    namespace export getLaneCount
 
     variable capture_order 0
 
@@ -537,7 +815,6 @@ namespace eval ::test_mgmt {
                 Event [dict get $trace event]\
             ] {tuple update $mst Transition_count [expr {[tuple extract $mst Transition_count] + 1}]}
         }
-        log::notice \n[relformat [relvar set Model_State_Transition] "Wets Domain Transition Counts"]
 
         # Find any transition _not_ taken
         set not_taken [pipe {
@@ -545,9 +822,13 @@ namespace eval ::test_mgmt {
             relation restrictwith ~ {$Transition_count == 0}
         }]
         if {[relation isempty $not_taken]} {
-            log::notice "PASSED: all state machine transitions taken"
+            log::notice "PASSED: ALL state machine transitions taken"
         } else {
             log::error "FAILED: transitions not taken:\n[relformat $not_taken {Wets Domain Transitions Not Taken}]"
+        }
+
+        if {$::options(summary)} {
+            log::notice \n[relformat [relvar set Model_State_Transition] "Wets Domain Transition Counts"]
         }
     }
 
@@ -577,6 +858,7 @@ namespace eval ::test_mgmt {
     }
 
     proc waitForSync {} {
+        log::debug "waiting for ::done, currently: $::done"
         set timer [after $::options(timeout) {set ::done TIMEOUT}]
         vwait ::done
         after cancel $timer
@@ -597,6 +879,9 @@ namespace eval ::test_mgmt {
     source ./test_3.tcl
     source ./test_4.tcl
     source ./test_5.tcl
+    source ./test_6.tcl
     source ./test_7.tcl
     source ./test_8.tcl
+    source ./test_9.tcl
+    source ./test_10.tcl
 }

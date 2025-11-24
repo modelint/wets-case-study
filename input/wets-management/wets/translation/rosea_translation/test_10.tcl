@@ -1,7 +1,7 @@
 # 1.    Transfer request from a new vessel with no available Transit Lane
 #       Expect an instance of Waiting Vessel to be created
-namespace eval test_1 {
-    set service [string trimleft [namespace parent] :]::test_1
+namespace eval test_10 {
+    set service [string trimleft [namespace parent] :]::test_10
     set logger [::logger::init $service]
     set appenderType [expr {[dict exist [fconfigure stdout] -mode] ?\
             "colorConsole" : "console"}]
@@ -16,6 +16,12 @@ namespace eval test_1 {
 
     proc setup {test_case configuration test_phase} {
         log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
+
+        # Starting conditions are that all transit lanes are available as "up".
+        # This test request the request direction to be down
+        relvar update ::wets::Transit_Lane tl {[tuple extract $tl Wets] eq $configuration} {
+            tuple update $tl Available_transfer_direction down
+        }
 
         # The goal is to drive the system to the state where no transit lane
         # is available and a request for a new transfer arrives.
@@ -38,54 +44,33 @@ namespace eval test_1 {
     proc trigger {test_case configuration test_phase} {
         log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
 
+        # New transfer request. VS-99 will have to wait because all the transit
+        # lanes have been assigne.
         ::vessel_mgmt asyncCreationReceiver Vessel [list License VS-99]\
-            Start_transfer $configuration up
-
-        # Wait until a waiting vessel is created. This will be VS-99.
-        set waiting [waitForSync]
-        set license [dict get $waiting License]
-        if {[dict get $waiting License] eq "VS-99"} {
-            log::debug "$test_phase: $license is assigned a transit lane"
-        } else {
-            log::error "expected waiting vessel to be VS-99, got: $license"
-        }
+            Start_transfer $configuration down
     }
 
     proc reset {test_case configuration test_phase} {
         log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
 
-        # wait until the VS-99 is assigned
-        set assigned [waitForSync]
-        set license [dict get $assigned License]
-        if {$license eq "VS-99"} {
-            log::debug "reset: $license is assigned a transit lane"
-        } else {
-            error "expected VS-99 to be assigned, got 'license'"
+        # Wait until all the assigned vessels are deleted by the Vessel Management domain
+        set sync_count [expr {[getLaneCount $configuration] + 1}]
+        log::debug "sync_count = $sync_count"
+        for {set i 0} {$i < $sync_count} {incr i} {
+            set sync_trace [waitForSync]
+            set license [dict get $sync_trace License]
+            log::debug "reset: $license was deleted in the Vessel Management domain"
         }
 
-        # Wait until VS-99 is deleted. Note vessels in other transit lanes may
-        # be deleted before VS-99.
-        set lane_count [getLaneCount $configuration]
-        for {set lane 0} {$lane < $lane_count} {incr lane} {
-            set deleted [waitForSync]
-            set license [dict get $deleted License]
-            log::debug "reset: $license transfer is completed"
-            if {$license eq "VS-99"} {
-                break
-            }
-        }
+        log::debug "exiting reset section"
     }
 
     proc finalize {test_case configuration test_phase} {
         log::info "$test_phase, test case: '$test_case', configuration: '$configuration'"
 
-        # Wait for Vessel VS-99 to be deleted in the vessel_mgmt domain after the transfer has happened.
-        set deleted [waitForSync]
-        set license [dict get $deleted License]
-        if {$license eq "VS-99"} {
-            log::debug "reset: $license transfer is completed"
-        } else {
-            error "expected VS-99 to be deleted, got '$license'"
+        # Return the Transit Lane instances to their default "up" available transfer direction
+        relvar update ::wets::Transit_Lane tl {[tuple extract $tl Wets] eq $configuration} {
+            tuple update $tl Available_transfer_direction up
         }
     }
 }

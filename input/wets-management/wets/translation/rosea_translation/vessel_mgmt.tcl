@@ -32,6 +32,7 @@ set ::vessel_mgmt {
             }
             transition Waiting_To_Move - Move_through_gate -> Moving
             transition Waiting_To_Move - Cancel_transfer -> Canceling
+            transition Waiting_To_Move - Start_transfer -> Duplicate_Request
 
             state Moving {gate transfer_vector} {
                 updateAttribute $self\
@@ -57,6 +58,13 @@ set ::vessel_mgmt {
             transition Move_Completed - Transfer_complete -> Transfer_Completed
             transition Move_Completed - Cancel_transfer -> IG
 
+            state Duplicate_Request {wets_id direction} {
+                log::debug "duplicate transfer request"
+                wormhole VM01_request_transfer\
+                    $wets_id $direction [identifier $self] Request_granted Request_denied Transfer_complete
+            }
+            transition Duplicate_Request - Request_denied -> Waiting_To_Move
+
             state Transfer_Completed {} {}
 
             state Transfer_Aborted {} {
@@ -71,7 +79,7 @@ set ::vessel_mgmt {
             transition Canceling - Request_denied -> Waiting_To_Move
 
             state Transfer_Removed {} {
-                log::info "transfer removal for [readAttribute $self License] granted"
+                log::debug "transfer removal for [readAttribute $self License] granted"
             }
 
             terminal Transfer_Aborted Transfer_Completed Transfer_Removed

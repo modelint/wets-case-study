@@ -10,7 +10,9 @@ package require logger::appender
 set optlist {
     {level.arg notice {Log debug level}}
     {trace {Trace state machine transitions}}
-    {rash {Use rash package as dashboard}}
+    {rash {Use rash package as a dashboard}}
+    {summary {Print state machine transition counts}}
+    {tests.arg {*} {List of test cases to run}}
     {timeout.arg {20000} {Synchronization timeout in ms}}
 }
 
@@ -78,5 +80,5 @@ if {$::options(trace)} {
     rosea trace control logon
 }
 source ./test_mgmt.tcl
-::test_mgmt runTestCases
+::test_mgmt runTestCases $::options(tests)
 exit
