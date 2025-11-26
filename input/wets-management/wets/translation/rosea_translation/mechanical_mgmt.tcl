@@ -3,10 +3,36 @@
 # such as gates, valves, and culvert flow sensors
 
 set ::mechanical_mgmt {
+    operation randomizeTiming {{value true}} {
+        Motor randomizeTiming $value
+        Flow_Sensor randomizeTiming $value
+    }
+
     class Motor {
         attribute name string -id 1
-        attribute run_time int -default 100 ; # milliseconds
         attribute transfer_vector list -default [list]
+        attribute run_time int -default 100 ; # milliseconds
+        attribute randomize_timing boolean -default false
+        attribute min_run_time int -default 2000
+        attribute max_run_time int -default 5000
+
+        instop updateRunTime {} {
+            if {[readAttribute $self randomize_timing]} {
+                withAttribute $self run_time min_run_time max_run_time {
+                    set run_time [randomInRange $min_run_time $max_run_time]
+                }
+            }
+        }
+
+        classop randomizeTiming {{value true}} {
+            Motor update [pipe {
+                Motor findAll |
+                deRef ~ |
+                relation update ~ mtr_tup {true} {
+                    tuple update $mtr_tup randomize_timing $value
+                }
+            }]
+        }
 
         statemodel {
             initialstate In
@@ -19,6 +45,7 @@ set ::mechanical_mgmt {
 
             state Running_Out {transfer_vector} {
                 updateAttribute $self transfer_vector $transfer_vector
+                instop $self updateRunTime
                 delaysignal [readAttribute $self run_time] $self extent_reached
             }
             transition Running_Out - extent_reached -> Out
@@ -32,6 +59,7 @@ set ::mechanical_mgmt {
 
             state Running_In {transfer_vector} {
                 updateAttribute $self transfer_vector $transfer_vector
+                instop $self updateRunTime
                 delaysignal [readAttribute $self run_time] $self extent_reached
             }
             transition Running_In - extent_reached -> In
@@ -41,8 +69,29 @@ set ::mechanical_mgmt {
 
     class Flow_Sensor {
         attribute name string -id 1
-        attribute delay_time int -default 100 ; # milliseconds
         attribute transfer_vector list -default [list]
+        attribute delay_time int -default 100 ; # milliseconds
+        attribute randomize_timing boolean -default false
+        attribute min_delay_time int -default 2000
+        attribute max_delay_time int -default 5000
+
+        instop updateDelayTime {} {
+            if {[readAttribute $self randomize_timing]} {
+                withAttribute $self delay_time min_delay_time max_delay_time {
+                    set delay_time [randomInRange $min_delay_time $max_delay_time]
+                }
+            }
+        }
+
+        classop randomizeTiming {{value true}} {
+            Flow_Sensor update [pipe {
+                Flow_Sensor findAll |
+                deRef ~ |
+                relation update ~ fs_tup {true} {
+                    tuple update $fs_tup randomize_timing $value
+                }
+            }]
+        }
 
         statemodel {
             initialstate Idle
@@ -57,6 +106,7 @@ set ::mechanical_mgmt {
 
             state Sensing {transfer_vector} {
                 updateAttribute $self transfer_vector $transfer_vector
+                instop $self updateDelayTime
                 delaysignal [readAttribute $self delay_time] $self flow_zero
             }
             transition Sensing - flow_zero -> Idle

@@ -99,11 +99,6 @@ set ::vessel_mgmt {
 
     # async receiver for creation events
     operation asyncCreationReceiver {class_name attributes event_name args} {
-        set existing [$class_name findById License [dict get $attributes License]]
-        if {[isEmptyRef $existing]} {
-            $class_name createasync $event_name $args {*}$attributes
-        } else {
-            log::notice "attempt to create duplicate $class_name with $attributes"
-        }
+        $class_name createasync $event_name $args {*}$attributes
     }
 }
