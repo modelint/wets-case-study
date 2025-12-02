@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Andrew Mangogna" />
+  <meta name="dcterms.date" content="2025-12-01" />
+  <title>Wets Domain Integration Test Report</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="pantcl.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Wets Domain Integration Test Report</h1>
+<p class="author">Andrew Mangogna</p>
+<p class="date">2025-12-01</p>
+</header>
+<h1 id="introduction">Introduction</h1>
+<p></p>
+<p>This document contains a report on an integration test suite for the
+<a href="https://github.com/modelint/wets-case-study">Wets domain</a>.
+The Wets domain models the actions of canal locks as might be found on a
+river. The domain model was produced by Michael Lee as part of a case
+study project. This document shows how the translated Wets domain was
+tested in a simulated environment.</p>
+<p>The Wets domain model was translated using <a
+href="https://repos.modelrealization.com/cgi-bin/fossil/mrtools/wiki?name=RoseaPage">Rosea</a>.
+Rosea is a Tcl based model execution environment. Three other domains
+were constructed to complete the testing environment:</p>
+<ul>
+<li>The Mechanical Management domain provides services to the Wets
+domain for manipulating the gates, valves and flow sensors that are used
+to operate a lock.</li>
+<li>The Vessel Management domain provides services to request vessels to
+be transfer up or down the lock.</li>
+<li>The Test Management Domain orchestrates the running of the <a
+href="https://github.com/modelint/wets-case-study/wiki/Testing-Considerations">test
+cases</a>.</li>
+</ul>
+<p>The following diagram shows a domain chart of the testing
+environment.</p>
+<p></p>
+<p><img
+src="/home/andrewm/working/wets-case-study/input/wets-management/wets/translation/rosea_translation/images/testing_domains.png" /></p>
+<p>The Testing Management domain requires the Vessel Management domain
+to make requests to transfer the vessels used for the various test
+cases. The Vessel Management domain requires the Wets domain to sequence
+the necessary controls to cause the requested vessel transfers to
+happen. The Wets domain requires the Vessel Management domain to move
+vessels between chambers in the lock. The Wets domain requires the
+Mechanical Management domain to operate the physical gates, values, and
+flow sensors to effect a transfer.</p>
+<h2 id="test-management-domain">Test Management Domain</h2>
+<p>The Test Management domain is a realized domain. It is constructed
+using <a
+href="https://repos.modelrealization.com/cgi-bin/fossil/tclral/index">TclRAL</a>.
+Since Rosea is implemented using TclRAL, a plain TclRAL implementation
+of Test Management easily interoperates with the Wets integration test
+environment. The Wets integration test environment is unaware of the
+Test Management domain and no special considerations were necessary to
+have the Test Management domain monitor and interact with the Rosea
+domain translations.</p>
+<p>The following figure shows a class model for the Test Management
+Domain:</p>
+<p></p>
+<figure>
+<img src="./images/test_mgmt_cm.png"
+alt="Test Management Class Model" />
+<figcaption aria-hidden="true">Test Management Class Model</figcaption>
+</figure>
+<p>The fundamental mechanism the Test Management domain uses to track
+the execution is the <em>relvar trace</em> facilities of TclRAL. Since
+the other domains are Rosea translations and since Rosea uses TclRAL
+relvars to store classes, the Test Management domain can use relvar
+tracing to keep track of the high order execution of the domains. This
+mechanism also works for trace state transitions, since Rosea stores the
+current state of class instances in a relvar.</p>
+<p>The Test Managment domain considers the 11 test cases outlined in the
+<em>Testing Considerations</em> document and applies them to the 9
+configurations of Wets classes also defined in the <em>Testing
+Considerations</em> document (<em>R3</em>). Each test run of a
+<em>Tested Configuration</em> is divided into one or more phases. The
+phases are:</p>
+<dl>
+<dt>Setup</dt>
+<dd>
+The setup phase establishes the pre-conditions for the test.
+</dd>
+<dt>Trigger</dt>
+<dd>
+The trigger phase executes the necessary interactions with the modeled
+domains to cause the test to run.
+</dd>
+<dt>Reset</dt>
+<dd>
+The reset phase causes the domains to complete any outstanding transfers
+and to cause the system to return to statis.
+</dd>
+<dt>Finalize</dt>
+<dd>
+The finalize phase performs any remaining detailed work to ensure the
+system is in its original state.
+</dd>
+</dl>
+<p>For each test and each phase, there is specific code that executes to
+accomplish the goals of that phase. The Test Management domain will add
+relvar traces before the phase specific code executes and remove those
+traces at the end of the section. The details of the relvar traces are
+specified and an expected result based on the trace is also specified.
+During test execution, the actual trace capture result is recorded. A
+test passes when the specified expected capture result matches the
+actual one.</p>
+<h2 id="vessel-management-domain">Vessel Management Domain</h2>
+<p>The Vessel Management domain consists of only a single class, Vessel.
+An instance of Vessel is created each time a transfer request is made to
+the Wets domain.</p>
+<h3 id="vessel-class-state-model">Vessel Class State Model</h3>
+<p>The following figure shows the state model of the Vessel class.</p>
+<p></p>
+<p><img
+src="/home/andrewm/working/wets-case-study/input/wets-management/wets/translation/rosea_translation/images/Vessel.png" /></p>
+<p>The usual path through the state model is to asynchronously create a
+Vessel instance with the <em>Start transfer</em> creation event. The
+request is granted unless there is a conflict with the Vessel
+identifier. The Vessel instance then waits to fulfill move requests that
+appear as <em>Move through gate</em> events. The movement is simulated
+with a delayed event and eventually the <em>Passed gate</em> event is
+signaled. The machine bounces back and forth between the <em>Moving</em>
+and <em>Move Completed</em> state until the Wets domain completes the
+transfer, which is indicated by the <em>Transfer complete</em> event.
+Being a terminal state, the Vessel instance is deleted when the
+<em>Transfer complete</em> event is received.</p>
+<p>The remainder of the states and transitions in the Vessel state model
+are used to test cancelation and duplication of Vessel transfer
+requests. These states are necessary since separate granted and denied
+events are signaled as a result of any request made of the Wets
+domain.</p>
+<h2 id="mechanical-management-domain">Mechanical Management Domain</h2>
+<p>The Mechanical Management domain contains two classes:</p>
+<dl>
+<dt>Motor</dt>
+<dd>
+is an abstraction of an electric motor. A Motor is used to open and
+close mechanical devices. It is assumed that the Motor is attached to
+the necessary gears to accomplish the motion intended. The Motor is run
+in two direction. Running the Motor <em>out</em> opens the attached
+device. Running the Motor <em>in</em> closes it. Implicitly, the Motor
+has a mechanism to signal when when it has reached its furthest extent
+of running in either direction. The Mechanical Management domain uses
+Motors to open and close the lock gates and to open and close the
+culvert valves between chambers.
+</dd>
+<dt>Flow Sensor</dt>
+<dd>
+is an abstraction of a transducer that can register fluid flow. The Flow
+Sensor is a simple transducer used to determine if there is any water
+flow between two chambers through their connecting culvert.
+</dd>
+</dl>
+<h3 id="motor-class-state-model">Motor Class State Model</h3>
+<p>The following figure shows the state model of the Motor class.</p>
+<p></p>
+<p><img
+src="/home/andrewm/working/wets-case-study/input/wets-management/wets/translation/rosea_translation/images/Motor.png" /></p>
+<h3 id="flow-sensor-state-model">Flow Sensor State Model</h3>
+<p>The following figure shows the state model of the Flow Sensor
+class.</p>
+<p></p>
+<p><img
+src="/home/andrewm/working/wets-case-study/input/wets-management/wets/translation/rosea_translation/images/Flow_Sensor.png" /></p>
+<h2 id="test-results">Test Results</h2>
+<p>The follow is a report generated by the test script:</p>
+<p></p>
+<pre class="cmdout" data-results="show" data-eval="true"
+data-echo="false"><code>[test_mgmt] [notice] &#39;PASSED: test_1 / Wets_1 (Vessel waits when no 
+transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_1 / Wets_3 (Vessel waits when no 
+transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_1 / Wets_4 (Vessel waits when no 
+transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_2 / Wets_1 (Vessel requests up 
+transfer and an up transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_2 / Wets_2 (Vessel requests up 
+transfer and an up transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_2 / Wets_3 (Vessel requests up 
+transfer and an up transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_2 / Wets_4 (Vessel requests up 
+transfer and an up transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_2 / Wets_5 (Vessel requests up 
+transfer and an up transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_2 / Wets_6 (Vessel requests up 
+transfer and an up transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_2 / Wets_7 (Vessel requests up 
+transfer and an up transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_2 / Wets_8 (Vessel requests up 
+transfer and an up transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_2 / Wets_9 (Vessel requests up 
+transfer and an up transit lane is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_3 / Wets_1 (Vessel requests up 
+transfer when only down is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_3 / Wets_4 (Vessel requests up 
+transfer when only down is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_3 / Wets_9 (Vessel requests up 
+transfer when only down is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_4 / Wets_1 (Vessel requests down 
+transfer when only up is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_4 / Wets_4 (Vessel requests down 
+transfer when only up is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_5 / Wets_1 (Vessel requests down 
+transfer when only down is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_5 / Wets_4 (Vessel requests down 
+transfer when only down is available)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_6 / Wets_1 (Duplicate transfer 
+request is denied)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_7 / Wets_1 (Attempt a remove 
+transfer request and no Waiting Vessel matches)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_8 / Wets_1 (Attempt a remove 
+transfer request with a matching Waiting Vessel)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_9 / Wets_8 (Vessel must wait when 
+requesting an up transfer)&#39;
+[test_mgmt] [notice] &#39;PASSED: test_10 / Wets_6 (Vessel must wait when 
+requesting a down transfer)&#39;
+[test_mgmt] [notice] &#39;PASSED: ALL test cases&#39;
+[test_mgmt] [notice] &#39;PASSED: ALL state machine transitions taken&#39;
+</code></pre>
+</body>
+</html>

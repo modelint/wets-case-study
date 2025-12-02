@@ -425,4 +425,18 @@ Event: string        {I}
 Transition_count: int</panel_attributes>
     <additional_attributes/>
   </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>1050</x>
+      <y>960</y>
+      <w>200</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>bg=gray
+style=autoresize
+Test Management Domain
+Version 1.0.0</panel_attributes>
+    <additional_attributes/>
+  </element>
 </diagram>

@@ -1,0 +1,4 @@
+#!/bin/bash
+./wets_system.tcl |& tee wets_system.log
+pantcl test_report.md test_report.html -s
+pantcl test_report.md test_report.pdf
