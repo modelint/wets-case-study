@@ -3,7 +3,7 @@ metadata
     Author : Michael M. Lee
     Document ID : mint.wets.td.4
     Creation date : May 23, 2025
-    Version : 0.8
+    Version : 0.9
     Organization : Model Integration, LLC
     Copyright notice > MIT
     Organization logo > mint
@@ -26,12 +26,14 @@ transitions
 --
 state Assess Water Level ()
 activity
-    // See if the Assigned Vessel's transfer direction is the same as this
-    // Transit Lane's Available transfer direction
+    // If the Assigned Vessel's transfer direction is the same as this
+    // Transit Lane's Available transfer direction OR there are only 2
+    // Gates, no water adjustments are necessary.
 
-    (/R4/R2/Vessel.Transfer direction == Available transfer direction)?
+    number of gates = ??/R5/Gate
+    (/R4/R2/Vessel.Transfer direction == Available transfer direction) OR (number of gates == 2)?
 
-    // Same transfer direction, so no water adjustments to do. Start transfer.
+    // No water adjustments are necessary. Start transfer.
 
         Start transfer -> me :
     
