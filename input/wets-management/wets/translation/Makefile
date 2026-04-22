@@ -50,7 +50,7 @@ LDFLAGS	= -g --coverage
 
 TESTOPTS =\
 	-verbose bet\
-	-level debug\
+	-level info\
 	-showstates\
 	$(NULL)
 

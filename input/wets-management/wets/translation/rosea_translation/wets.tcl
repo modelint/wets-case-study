@@ -1,4 +1,5 @@
 # Rosea translation of Mike Lee's WETS domain model
+# Translation of version 0.9 of transit-lane.xsm
 
 set ::wets {
     class Wets {
@@ -260,19 +261,25 @@ set ::wets {
             transition Idle - Vessel_assigned -> Assess_Water_Level
 
 ##############
-# // See if the Assigned Vessel's transfer direction is the same as this
-# // Transit Lane's Available transfer direction
-# (/R4/R2/Vessel.Transfer direction == Available transfer direction)?
-# // Same transfer direction, so no water adjustments to do. Start transfer.
+# // If the Assigned Vessel's transfer direction is the same as this
+# // Transit Lane's Available transfer direction OR there are only 2
+# // Gates, no water adjustments are necessary.
+# 
+# number of gates = ??/R5/Gate
+# (/R4/R2/Vessel.Transfer direction == Available transfer direction) OR (number of gates == 2)?
+# 
+# // No water adjustments are necessary. Start transfer.
+# 
 #     Start transfer -> me :
+# 
 # // Different transfer directions, so we need to:
 # //1 - Change the Available transfer direction for this Transit Lane
 # Available transfer direction == _up?
 #     Available transfer direction = _down :
 #     Available transfer direction = _up
 # //2 - Get the set of Adjustment Steps to do this
-# adjustment step set .. = /R11/Adjustment Step (transit lane : Name ;
-#   Adjustment direction : Available transfer direction)
+# adjustment step set .. =
+#       /R11/Adjustment Step (transit lane : Name ; Adjustment direction : Available transfer direction)
 # //3 - Get the first step in this set
 # starting step .= adjustment step set/OR13/before/~|
 # //4 - Create the associative class Active Step
@@ -282,22 +289,28 @@ set ::wets {
 ##############
 
             state Assess_Water_Level {} {
+                set gates [findRelated $self ~R5]
                 set assigned_vessel [findRelated $self ~R4]
                 set vessel [findRelated $assigned_vessel R2]
-                withAttribute $self Available_transfer_direction {
-                    assignAttribute $vessel Transfer_direction
-                    if {$Transfer_direction eq $Available_transfer_direction} {
-                        signal $self Start_transfer
-                    } else {
-                        set Available_transfer_direction\
-                            [expr {$Available_transfer_direction eq "up" ? "down" : "up"}]
-                        set starting_step [instop $self Starting_step]
+                assignAttribute $self Available_transfer_direction
+                assignAttribute $vessel Transfer_direction
+                if {$Transfer_direction eq $Available_transfer_direction } {
+                    signal $self Start_transfer
+                } else {
+                    updateAttribute $self Available_transfer_direction\
+                        [expr {$Available_transfer_direction eq "up" ? "down" : "up"}]
+                    set starting_step [instop $self Starting_step]
+                    log::debug \n[relformat [deRef $starting_step] "Starting adjustment step"]
+
+                    if {[isNotEmptyRef $starting_step]} {
                         Active_Step create\
                             Transit_lane [readAttribute $starting_step Transit_lane]\
                             Adjustment_direction [readAttribute $starting_step Adjustment_direction]\
                             Step_number [readAttribute $starting_step Step_number]
 
                         signal $self Make_adjustments
+                    } else {
+                        signal $self Start_transfer
                     }
                 }
             }
@@ -320,7 +333,8 @@ set ::wets {
 # Adjust level -> /R12/Adjustment Step/R14/Transit Lane Gate
 ##############
             state Request_Gate_Adjustment {} {
-                set adjust_gate [findRelated $self ~R4 R10]
+                set adjust_gate [findRelated $self ~R12 R14]
+                log::debug \n[relformat [deRef $adjust_gate] "Gate to adjust"]
                 signal $adjust_gate Adjust_level
             }
             transition Request_Gate_Adjustment - Adjust_complete -> Assess_Adjustment_Complete
@@ -433,6 +447,9 @@ set ::wets {
             set adjustment_steps [findRelatedWhere $self ~R11 {
                 $Adjustment_direction eq $Available_transfer_direction
             }]
+            if {[isEmptyRef $adjustment_steps]} {
+                return [Adjustment_Step emptyRef]
+            }
             set starting_step [pipe {
                 deRef $adjustment_steps |
                 relation rank ~ -ascending Step_number Step_rank |
@@ -580,9 +597,9 @@ set ::wets {
                     [identifier $assigned_vessel]\
                     [identifier $gate_to_pass]\
                     [identifier $self]\
-                    Moved_past_gate
+                    Vessel_moved
             }
-            transition Move_Vessel - Moved_past_gate -> Close_Gate
+            transition Move_Vessel - Vessel_moved -> Close_Gate
 
 ##############
 # // Change my vessel status to "secured" and direct this gate to close.
@@ -686,15 +703,6 @@ set ::wets {
             relation assign $down_gate_pos Transit_lane Position
             return [Transit_Lane_Gate findById Transit_lane $Transit_lane Position $Position]
         }
-
-        instop Open_valve {} {
-        }
-
-        instop Close_valve {} {
-        }
-
-        instop Wait_for_zero_flow {} {
-        }
     }
 
     class Vessel {
@@ -784,11 +792,11 @@ set ::wets {
 
     association R10 Assigned_Vessel ?--? Transit_Lane_Gate -associator Active_Gate_Move
 
-    association R11 Adjustment_Step +--1 Transit_Lane
+    association R11 Adjustment_Step *--1 Transit_Lane
 
     association R12 Adjustment_Step ?--? Transit_Lane -associator Active_Step
 
-    association R14 Adjustment_Step +--1 Transit_Lane_Gate
+    association R14 Adjustment_Step *--1 Transit_Lane_Gate
 
     # identifier is a list of attribute name/attribute value
     operation asyncControlReceiver {class_name identifier event_name args} {
@@ -1067,125 +1075,53 @@ set ::wets_pop {
     }
     class Adjustment_Step {
         Transit_lane        Adjustment_direction    Step_number     Gate_position } {
-        Center_Wets_1_2     up                      1               2
-        Center_Wets_1_2     down                    1               1
         Center_Wets_1_3     up                      1               3
-        Center_Wets_1_3     up                      2               2
-        Center_Wets_1_3     up                      3               3
         Center_Wets_1_3     down                    1               1
-        Center_Wets_1_3     down                    2               2
-        Center_Wets_1_3     down                    3               1
         Center_Wets_1_4     up                      1               4
         Center_Wets_1_4     up                      2               3
-        Center_Wets_1_4     up                      3               2
-        Center_Wets_1_4     up                      4               4
-        Center_Wets_1_4     up                      5               3
-        Center_Wets_1_4     up                      6               4
+        Center_Wets_1_4     up                      3               4
         Center_Wets_1_4     down                    1               1
         Center_Wets_1_4     down                    2               2
         Center_Wets_1_4     down                    3               1
-        Center_Wets_1_4     down                    4               3
-        Center_Wets_1_4     down                    5               2
-        Center_Wets_1_4     down                    6               1
-        Left_Wets_2_2       up                      1               2
-        Left_Wets_2_2       down                    1               1
-        Right_Wets_2_2      up                      1               2
-        Right_Wets_2_2      down                    1               1
         Left_Wets_2_3       up                      1               3
-        Left_Wets_2_3       up                      2               2
-        Left_Wets_2_3       up                      3               3
         Left_Wets_2_3       down                    1               1
-        Left_Wets_2_3       down                    2               2
-        Left_Wets_2_3       down                    3               1
         Right_Wets_2_3      up                      1               3
-        Right_Wets_2_3      up                      2               2
-        Right_Wets_2_3      up                      3               3
         Right_Wets_2_3      down                    1               1
-        Right_Wets_2_3      down                    2               2
-        Right_Wets_2_3      down                    3               1
         Left_Wets_2_4       up                      1               4
         Left_Wets_2_4       up                      2               3
-        Left_Wets_2_4       up                      3               2
-        Left_Wets_2_4       up                      4               4
-        Left_Wets_2_4       up                      5               3
-        Left_Wets_2_4       up                      6               4
+        Left_Wets_2_4       up                      3               4
         Left_Wets_2_4       down                    1               1
         Left_Wets_2_4       down                    2               2
         Left_Wets_2_4       down                    3               1
-        Left_Wets_2_4       down                    4               3
-        Left_Wets_2_4       down                    5               2
-        Left_Wets_2_4       down                    6               1
         Right_Wets_2_4      up                      1               4
         Right_Wets_2_4      up                      2               3
-        Right_Wets_2_4      up                      3               2
-        Right_Wets_2_4      up                      4               4
-        Right_Wets_2_4      up                      5               3
-        Right_Wets_2_4      up                      6               4
+        Right_Wets_2_4      up                      3               4
         Right_Wets_2_4      down                    1               1
         Right_Wets_2_4      down                    2               2
         Right_Wets_2_4      down                    3               1
-        Right_Wets_2_4      down                    4               3
-        Right_Wets_2_4      down                    5               2
-        Right_Wets_2_4      down                    6               1
-        Left_Wets_3_2       up                      1               2
-        Left_Wets_3_2       down                    1               1
-        Center_Wets_3_2     up                      1               2
-        Center_Wets_3_2     down                    1               1
-        Right_Wets_3_2      up                      1               2
-        Right_Wets_3_2      down                    1               1
         Left_Wets_3_3       up                      1               3
-        Left_Wets_3_3       up                      2               2
-        Left_Wets_3_3       up                      3               3
         Left_Wets_3_3       down                    1               1
-        Left_Wets_3_3       down                    2               2
-        Left_Wets_3_3       down                    3               1
         Center_Wets_3_3     up                      1               3
-        Center_Wets_3_3     up                      2               2
-        Center_Wets_3_3     up                      3               3
         Center_Wets_3_3     down                    1               1
-        Center_Wets_3_3     down                    2               2
-        Center_Wets_3_3     down                    3               1
         Right_Wets_3_3      up                      1               3
-        Right_Wets_3_3      up                      2               2
-        Right_Wets_3_3      up                      3               3
         Right_Wets_3_3      down                    1               1
-        Right_Wets_3_3      down                    2               2
-        Right_Wets_3_3      down                    3               1
         Left_Wets_3_4       up                      1               4
         Left_Wets_3_4       up                      2               3
-        Left_Wets_3_4       up                      3               2
-        Left_Wets_3_4       up                      4               4
-        Left_Wets_3_4       up                      5               3
-        Left_Wets_3_4       up                      6               4
+        Left_Wets_3_4       up                      3               4
         Left_Wets_3_4       down                    1               1
         Left_Wets_3_4       down                    2               2
         Left_Wets_3_4       down                    3               1
-        Left_Wets_3_4       down                    4               3
-        Left_Wets_3_4       down                    5               2
-        Left_Wets_3_4       down                    6               1
         Center_Wets_3_4     up                      1               4
         Center_Wets_3_4     up                      2               3
-        Center_Wets_3_4     up                      3               2
-        Center_Wets_3_4     up                      4               4
-        Center_Wets_3_4     up                      5               3
-        Center_Wets_3_4     up                      6               4
+        Center_Wets_3_4     up                      3               4
         Center_Wets_3_4     down                    1               1
         Center_Wets_3_4     down                    2               2
         Center_Wets_3_4     down                    3               1
-        Center_Wets_3_4     down                    4               3
-        Center_Wets_3_4     down                    5               2
-        Center_Wets_3_4     down                    6               1
         Right_Wets_3_4      up                      1               4
         Right_Wets_3_4      up                      2               3
-        Right_Wets_3_4      up                      3               2
-        Right_Wets_3_4      up                      4               4
-        Right_Wets_3_4      up                      5               3
-        Right_Wets_3_4      up                      6               4
+        Right_Wets_3_4      up                      3               4
         Right_Wets_3_4      down                    1               1
         Right_Wets_3_4      down                    2               2
         Right_Wets_3_4      down                    3               1
-        Right_Wets_3_4      down                    4               3
-        Right_Wets_3_4      down                    5               2
-        Right_Wets_3_4      down                    6               1
     }
 }

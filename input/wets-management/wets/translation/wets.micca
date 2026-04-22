@@ -600,7 +600,7 @@ domain wets {
                 MRT_InstId me = <% my instid %>;
             <%  VESSEL Move_past_gate vessel_license My_vessel_license return_id me %>;
             }
-            transition Move_Vessel - Moved_past_gate -> Close_Gate
+            transition Move_Vessel - Vessel_moved -> Close_Gate
 
 ##############
 # // Change my vessel status to "secured" and direct this gate to close.

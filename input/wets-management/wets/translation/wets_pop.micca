@@ -290,8 +290,8 @@ population wets {
     class Active_Gate_Move {allocate 18} ; # one per Transit Lane
     class Adjustment_Step {
         table               {Adjustment_direction   Step_number     R11         R14}\
-        center_1_2_up_1     {dir_up                 1               center_1_2  gate_2_c1_2}\
-        center_1_2_dn_1     {dir_down               1               center_1_2  gate_1_c1_2}\
+        center_1_2_up_1     {dir_up                 1               center_1_2  gate_1_c1_2}\
+        center_1_2_dn_1     {dir_down               1               center_1_2  gate_2_c1_2}\
         center_1_3_up_1     {dir_up                 1               center_1_3  gate_3_c1_3}\
         center_1_3_up_2     {dir_up                 2               center_1_3  gate_2_c1_3}\
         center_1_3_up_3     {dir_up                 3               center_1_3  gate_3_c1_3}\

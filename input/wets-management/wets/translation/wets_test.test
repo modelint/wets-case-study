@@ -86,9 +86,9 @@ namespace eval ::wets::test {
             # Transfer request going up
             set wets_config wets_1
             wetstest signal wets Wets $wets_config Transfer_request "VS-9300" 0
-            # wetstest eloop toc nowait
+            wetstest eloop toc nowait
             # A Transit Lane has been assigned and V1 has been requested to open.
-            variable transit_lane_gate
+            set transit_lane [get_assigned_transit_lane wets_1]
             log::info "First up request assigned to $transit_lane_gate"
 
             # Move things along to transit the gate

@@ -6,6 +6,7 @@ package require cmdline
 package require logger
 package require logger::utils
 package require logger::appender
+package require textutil::wcswidth
 
 set optlist {
     {level.arg notice {Log debug level}}
